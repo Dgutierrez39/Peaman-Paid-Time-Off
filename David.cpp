@@ -1,61 +1,80 @@
-/* 
- *
- *compile code: g++ $(CFLAGS) David.cpp log.cpp libggfonts.a -Wall -Wextra $(LFLAGS) -odavid
- */
+//
+//modified by: David
+//date:
+//
+//original author: Gordon Griesel
+//date:            Fall 2024
+//purpose:         OpenGL sample program
+//
+//This program needs some refactoring.
+//We will do this in class together.
+//
+//
+#include <iostream>
+using namespace std;
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
-#include <time.h>
-#include <math.h>
+#include <string.h>
+#include <cstdlib>
+#include <ctime>
+#include <cstring>
+#include <cmath>
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <GL/glx.h>
-#include "log.h"
-//#include "ppm.h"
+//some structures
+//Added code 
+#include <time.h>
 #include "fonts.h"
-
-typedef double Flt;
-typedef double Vec[3];
-typedef Flt Matrix[4][4];
-
-//const float timeslice = 1.0f;
-//const float gravity = -0.2f;
-#define ALPHA 1
-
-//macros
-#define rnd() (((double)rand())/(double)RAND_MAX)
-#define random(a) (rand()%a)
-#define MakeVector(v, x, y, z) (v)[0]=(x),(v)[1]=(y),(v)[2]=(z)
-#define VecCopy(a,b) (b)[0]=(a)[0];(b)[1]=(a)[1];(b)[2]=(a)[2]
-#define VecDot(a,b) ((a)[0]*(b)[0]+(a)[1]*(b)[1]+(a)[2]*(b)[2])
-#define VecSub(a,b,c) (c)[0]=(a)[0]-(b)[0]; \
-                      (c)[1]=(a)[1]-(b)[1]; \
-                      (c)[2]=(a)[2]-(b)[2]
+#include "log.h"
 
 
-void checkMouse(XEvent *e);
-int checkKeys(XEvent *e);
-void init();
-void physics();
-void render();
+#define rnd() (float)rand() / (float)RAND_MAX
+
+
+class Global {
+public:
+    unsigned char keys[65536];
+	int xres, yres;
+	Global() {   
+        xres=800;
+        yres=600;
+        memset(keys, 0, 65536);
+    }
+} g;
+
+
+class Ball {
+public:
+    float pos[2];
+    float old_pos[2];
+    Ball() {
+        pos[0] = 50.0;
+        pos[1] = 50.0;
+        //memset(keys, 0, 65536);    
+    }
+} bal;
 
 class Level {
 public:
-    unsigned char arr[20][80];
+    unsigned char arr[19][80];
     int nrows, ncols;
-    int tilesize[2];
-    Flt ftsz[2];
-    Flt tile_base;
+    float tilesize[2];
+    float ftsz[2];
+    //Flt tile_base;
     int spawn;
+    float tx,ty;
     Level() {
         //Log("Level constructor\n");
         spawn = 0;
         tilesize[0] = 32;
         tilesize[1] = 32;
-        ftsz[0] = (Flt)tilesize[0];
-        ftsz[1] = (Flt)tilesize[1];
-        tile_base = 220.0;
+        ftsz[0] = (double)tilesize[0];
+        ftsz[1] = (double)tilesize[1];
+        //tile_base = 220.0;
+        tx = tilesize[0]/2;
+        ty = tilesize[1]/2;
         //read level
         FILE *fpi = fopen("level2.txt","r");
         if (fpi) {
@@ -95,380 +114,346 @@ public:
 } lev;
 
 
-class Global {
-public:
-    unsigned char keys[65536];
-    int xres, yres;
-    Vec ball_pos;
-    //camera is centered at (0,0) lower-left of screen.
-    Flt camera[2];
-    ~Global() {
-        logClose();
-    }
-    Global() {
-        logOpen();
-        camera[0] = camera[1] = 0.0;
-        xres=800;
-        yres=600;
-        MakeVector(ball_pos, 400.0, 150, 0);
-        memset(keys, 0, 65536);
-    }
-} gl;
+int n= 0;
 
 class X11_wrapper {
 private:
-    Display *dpy;
-    Window win;
+	Display *dpy;
+	Window win;
+	GLXContext glc;
 public:
-    ~X11_wrapper() {
-        XDestroyWindow(dpy, win);
-        XCloseDisplay(dpy);
-    }
-    void setTitle() {
-        //Set the window title bar.
-        XMapWindow(dpy, win);
-        XStoreName(dpy, win, "3350 - Walk Cycle");
-    }
-    void setupScreenRes(const int w, const int h) {
-        gl.xres = w;
-        gl.yres = h;
-    }
-    X11_wrapper() {
-        GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
-        //GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, None };
-        XSetWindowAttributes swa;
-        setupScreenRes(gl.xres, gl.yres);
-        dpy = XOpenDisplay(NULL);
-        if (dpy == NULL) {
-            printf("\n\tcannot connect to X server\n\n");
-            exit(EXIT_FAILURE);
-        }
-        Window root = DefaultRootWindow(dpy);
-        XVisualInfo *vi = glXChooseVisual(dpy, 0, att);
-        if (vi == NULL) {
-            printf("\n\tno appropriate visual found\n\n");
-            exit(EXIT_FAILURE);
-        }
-        Colormap cmap = XCreateColormap(dpy, root, vi->visual, AllocNone);
-        swa.colormap = cmap;
-        swa.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask |
-            StructureNotifyMask | SubstructureNotifyMask;
-        win = XCreateWindow(dpy, root, 0, 0, gl.xres, gl.yres, 0,
-            vi->depth, InputOutput, vi->visual,
-            CWColormap | CWEventMask, &swa);
-        GLXContext glc = glXCreateContext(dpy, vi, NULL, GL_TRUE);
-        glXMakeCurrent(dpy, win, glc);
-        setTitle();
-    }
-    void reshapeWindow(int width, int height) {
-        //window has been resized.
-        setupScreenRes(width, height);
-        glViewport(0, 0, (GLint)width, (GLint)height);
-        glMatrixMode(GL_PROJECTION); glLoadIdentity();
-        glMatrixMode(GL_MODELVIEW); glLoadIdentity();
-        glOrtho(0, gl.xres, 0, gl.yres, -1, 1);
-        setTitle();
-    }
-    void checkResize(XEvent *e) {
-        //The ConfigureNotify is sent by the
-        //server if the window is resized.
-        if (e->type != ConfigureNotify)
-            return;
-        XConfigureEvent xce = e->xconfigure;
-        if (xce.width != gl.xres || xce.height != gl.yres) {
-            //Window size did change.
-            reshapeWindow(xce.width, xce.height);
-        }
-    }
-    bool getXPending() {
-        return XPending(dpy);
-    }
-    XEvent getXNextEvent() {
-        XEvent e;
-        XNextEvent(dpy, &e);
-        return e;
-    }
-    void swapBuffers() {
-        glXSwapBuffers(dpy, win);
-    }
+	~X11_wrapper();
+	X11_wrapper();
+	void set_title();
+	bool getXPending();
+	XEvent getXNextEvent();
+	void swapBuffers();
+	void reshape_window(int width, int height);
+	void check_resize(XEvent *e);
+	void check_mouse(XEvent *e);
+	int check_keys(XEvent *e);
 } x11;
 
-int main(void)
+//Function prototypes
+void init_opengl(void);
+void physics(void);
+void render(void);
+
+
+int main()
 {
-    init();
-    int done = 0;
-    while (!done) {
-        while (x11.getXPending()) {
-            XEvent e = x11.getXNextEvent();
-            x11.checkResize(&e);
-            checkMouse(&e);
-            done = checkKeys(&e);
-        }
-        physics();
-        render();
-        x11.swapBuffers();
-    }
-    cleanup_fonts();
-    return 0;
+	init_opengl();
+	int done = 0;
+	//main game loop
+	while (!done) {
+		//look for external events such as keyboard, mouse.
+		while (x11.getXPending()) {
+			XEvent e = x11.getXNextEvent();
+			x11.check_resize(&e);
+			x11.check_mouse(&e);
+			done = x11.check_keys(&e);
+		}
+		physics();
+		render();
+		x11.swapBuffers();
+		usleep(200);
+	}
+	return 0;
 }
 
-void init() {
 
+X11_wrapper::~X11_wrapper()
+{
+	XDestroyWindow(dpy, win);
+	XCloseDisplay(dpy);
 }
 
-void checkMouse(XEvent *e)
+
+X11_wrapper::X11_wrapper()
 {
-    //printf("checkMouse()...\n"); fflush(stdout);
-    //Did the mouse move?
-    //Was a mouse button clicked?
-    static int savex = 0;
-    static int savey = 0;
-    //
-    if (e->type != ButtonRelease && e->type != ButtonPress &&
-            e->type != MotionNotify)
-        return;
-    if (e->type == ButtonRelease) {
-        return;
-    }
-    if (e->type == ButtonPress) {
-        if (e->xbutton.button==1) {
-            //Left button is down
-        }
-        if (e->xbutton.button==3) {
-            //Right button is down
-        }
-    }
-    if (e->type == MotionNotify) {
-        if (savex != e->xbutton.x || savey != e->xbutton.y) {
-            //Mouse moved
-            savex = e->xbutton.x;
-            savey = e->xbutton.y;
-        }
-    }
+	GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
+	int w = g.xres, h = g.yres;
+	dpy = XOpenDisplay(NULL);
+	if (dpy == NULL) {
+		cout << "\n\tcannot connect to X server\n" << endl;
+		exit(EXIT_FAILURE);
+	}
+	Window root = DefaultRootWindow(dpy);
+	XVisualInfo *vi = glXChooseVisual(dpy, 0, att);
+	if (vi == NULL) {
+		cout << "\n\tno appropriate visual found\n" << endl;
+		exit(EXIT_FAILURE);
+	} 
+	Colormap cmap = XCreateColormap(dpy, root, vi->visual, AllocNone);
+	XSetWindowAttributes swa;
+	swa.colormap = cmap;
+	swa.event_mask =
+		ExposureMask | KeyPressMask | KeyReleaseMask |
+		ButtonPress | ButtonReleaseMask |
+		PointerMotionMask |
+		StructureNotifyMask | SubstructureNotifyMask;
+	win = XCreateWindow(dpy, root, 0, 0, w, h, 0, vi->depth,
+		InputOutput, vi->visual, CWColormap | CWEventMask, &swa);
+	set_title();
+	glc = glXCreateContext(dpy, vi, NULL, GL_TRUE);
+	glXMakeCurrent(dpy, win, glc);
 }
 
-int checkKeys(XEvent *e)
+void X11_wrapper::set_title()
 {
-    //keyboard input?
+	//Set the window title bar.
+	XMapWindow(dpy, win);
+	XStoreName(dpy, win, "3350 Lab-1");
+}
+
+bool X11_wrapper::getXPending()
+{
+	//See if there are pending events.
+	return XPending(dpy);
+}
+
+XEvent X11_wrapper::getXNextEvent()
+{
+	//Get a pending event.
+	XEvent e;
+	XNextEvent(dpy, &e);
+	return e;
+}
+
+void X11_wrapper::swapBuffers()
+{
+	glXSwapBuffers(dpy, win);
+}
+
+void X11_wrapper::reshape_window(int width, int height)
+{
+	//Window has been resized.
+	g.xres = width;
+	g.yres = height;
+	//
+	glViewport(0, 0, (GLint)width, (GLint)height);
+	glMatrixMode(GL_PROJECTION); glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW); glLoadIdentity();
+	glOrtho(0, g.xres, 0, g.yres, -1, 1);
+}
+
+void X11_wrapper::check_resize(XEvent *e)
+{
+	//The ConfigureNotify is sent by the
+	//server if the window is resized.
+	if (e->type != ConfigureNotify)
+		return;
+	XConfigureEvent xce = e->xconfigure;
+	if (xce.width != g.xres || xce.height != g.yres) {
+		//Window size did change.
+		reshape_window(xce.width, xce.height);
+	}
+}
+//-----------------------------------------------------------------------------
+
+void X11_wrapper::check_mouse(XEvent *e)
+{
+	static int savex = 0;
+	static int savey = 0;
+
+	//Weed out non-mouse events
+	if (e->type != ButtonRelease &&
+		e->type != ButtonPress &&
+		e->type != MotionNotify) {
+		//This is not a mouse event that we care about.
+		return;
+	}
+	//
+	if (e->type == ButtonRelease) {
+		return;
+	}
+	if (e->type == ButtonPress) {
+		if (e->xbutton.button==1) {
+			//Left button was pressed.
+            return;
+		}
+		if (e->xbutton.button==3) {
+			//Right button was pressed.
+			return;
+		}
+	}
+	if (e->type == MotionNotify) {
+		//The mouse moved!
+		if (savex != e->xbutton.x || savey != e->xbutton.y) {
+			savex = e->xbutton.x;
+			savey = e->xbutton.y;
+			//Code placed here will execute whenever the mouse moves.
+
+		}
+	}
+}
+
+int X11_wrapper::check_keys(XEvent *e)
+{
     static int shift=0;
-    if (e->type != KeyPress && e->type != KeyRelease)
-        return 0;
-    int key = XLookupKeysym(&e->xkey, 0);
-    gl.keys[key]=1;
-    if (e->type == KeyRelease) {
-        gl.keys[key]=0;
+	if (e->type != KeyPress && e->type != KeyRelease)
+		return 0;
+	int key = XLookupKeysym(&e->xkey, 0);
+    g.keys[key]=1;
+		
+        if (e->type == KeyRelease) {
+        g.keys[key]=0;
         if (key == XK_Shift_L || key == XK_Shift_R)
             shift=0;
         return 0;
     }
-    gl.keys[key]=1;
+    g.keys[key]=1;
     if (key == XK_Shift_L || key == XK_Shift_R) {
         shift=1;
         return 0;
     }
     (void)shift;
+        
     switch (key) {
-        case XK_s:
-            break;
-        case XK_m:
+        case XK_a:
+				//the 'a' key was pressed
             break;
         case XK_w:
             break;
-        case XK_e:
-            break;
-        case XK_f:
-            break;
+        case XK_Escape:
+				//Escape key was pressed
+            return 1;
         case XK_Left:
+            bal.old_pos[0] = bal.pos[0];
+            bal.pos[0] -= 5;
             break;
         case XK_Right:
+            bal.old_pos[0] = bal.pos[0];
+            bal.pos[0] += 5;
             break;
         case XK_Up:
+            bal.old_pos[1] = bal.pos[1];
+            bal.pos[1] += 5;
             break;
         case XK_Down:
+            bal.old_pos[1] = bal.pos[1];
+            bal.pos[1] -= 5;
             break;
-        case XK_equal:
-            break;
-        case XK_minus:
-            break;
-        case XK_Escape:
-            return 1;
-            break;
-    }
-    return 0;
+	}
+	return 0;
 }
 
-void physics(void)
+void init_opengl(void)
 {
-    Flt dd = lev.ftsz[0];
-    int col = (int)((gl.camera[0]+gl.ball_pos[0]) / dd);
-    col = col % lev.ncols;
-    int row = (int)((gl.camera[1] + gl.ball_pos[1]) / dd);
-    row = row % lev.nrows;
-        
-        if (gl.keys[XK_w]) {
-            printf("row is: %i\n", row);
-            printf("Column is: %i\n", col);
-            printf("The slot has a : '%c'\n", lev.arr[row][col]);
-        }
-        if (gl.keys[XK_Left]) {
-            if ((lev.arr[row][col - 1] == ' ') ||
-                    (lev.arr[row][col - 1] == 'g')) {
-                //gl.camera[0] -= 1;
-                gl.ball_pos[0] -= 1;
-            }
-        } 
-       if (gl.keys[XK_Right]) {
-            if ((lev.arr[row][col + 1] == ' ') ||
-                    (lev.arr[row][col + 1] == 'g')) {
-                gl.ball_pos[0] += 1;
-                //gl.camera[0] += 1;
-            }
-        }
-    
+	//OpenGL initialization
+	glViewport(0, 0, g.xres, g.yres);
+	//Initialize matrices
+	glMatrixMode(GL_PROJECTION); glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW); glLoadIdentity();
+	//Set 2D mode (no perspective)
+	glOrtho(0, g.xres, 0, g.yres, -1, 1);
+	//Set the screen background color
+	glClearColor(0.1, 0.1, 0.1, 1.0);
+    glEnable(GL_TEXTURE_2D);
+    initialize_fonts();
+}
+void physics()
+{
+    int ncols_to_render = g.xres / lev.tilesize[0] + 2;
 
-        
-    
-    if (gl.keys[XK_Up]) {
-            if ((lev.arr[row + 1][col] == ' ') ||
-                    (lev.arr[row + 1][col] == 'g')) {
-                gl.ball_pos[1] += 1;
-                //gl.camera[1] += 1;
+    int b = (int)(bal.pos[1]/lev.ftsz[1]);
+    b = b % lev.ncols;
+    int a = (int)(bal.pos[0]/lev.ftsz[0]);
+    a = a % lev.nrows;
 
-            } 
+    if (g.keys[XK_w]) {
+            printf("row is: %i\n", a);
+            printf("Column is: %i\n", b);
+            printf("The slot has a : '%c'\n", lev.arr[a][b]);}
+
+    for (int i = 0; i<ncols_to_render; i++) {
+        int row = lev.nrows-1;
+        for (int j = 0; j<lev.nrows; j++) {
+             if ((lev.arr[row][i] == 'w' || lev.arr[row][i] == 'b'  )&&
+                  (bal.pos[1] - lev.tx) < ((2*lev.ty) + (lev.tilesize[1]*i))  && 
+                  (bal.pos[1] + lev.tx) > (lev.tilesize[1]*i)  &&
+                  (bal.pos[0] + lev.tx) > (lev.tilesize[0]*row) &&
+                  (bal.pos[0] - lev.tx) < ((2*lev.tx)+(lev.tilesize[0]*row))) {
+                 //Colssion, however the hell you spell it I'm tired
+                 bal.pos[0] = bal.old_pos[0];   
+                 bal.pos[1] = bal.old_pos[1];
+             }
+            /* if ((lev.arr[row][i] == 'b') &&
+                  (bal.pos[1]) < (lev.tilesize[1] + (lev.tilesize[1]*i))  &&
+                  (bal.pos[1]) > (lev.tilesize[1]*i)  &&
+                  (bal.pos[0]) > (lev.tilesize[0]*row) &&
+                  (bal.pos[0]) < (lev.tilesize[0] + (lev.tilesize[0]*row))) {
+                 //Colssion, however the hell you spell it I'm tired
+                 bal.pos[0] = bal.old_pos[0];
+                 bal.pos[1] = bal.old_pos[1];
+             }*/
+             row--;
+        }
     }
-    if (gl.keys[XK_Down]) {
-            if ((lev.arr[row - 1][col] == ' ') ||
-                    (lev.arr[row - 1][col] == 'g')) {      
-                gl.ball_pos[1] -= 1;
-                //gl.camera[1] -= 1;
-            }        
-    }
+
+
+
+ 
 }
 
-
-
-void render(void)
+void render()
 {
-    Rect r;
-    //Clear the screen
+    //Rect r;
+    int ncols_to_render = g.xres / lev.tilesize[0] + 2;
+    //int nrow_to_render = gl.yres / lev.tilesize[1] + 2;
     glClearColor(0.1, 0.1, 0.1, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
-    //
-   /* //show ground
-    glBegin(GL_QUADS);
-        glColor3f(0.2, 0.2, 0.2);
-        glVertex2i(0,       220);
-        glVertex2i(gl.xres, 220);
-        glColor3f(0.4, 0.4, 0.4);
-        glVertex2i(gl.xres,   0);
-        glVertex2i(0,         0);
-    glEnd();
-    
-    *///show boxes as background
-    //========================
-    //Render the tile system
-    //========================
-    float tx = lev.tilesize[0]/2;
-    float ty = lev.tilesize[1]/2;
-    Flt dd = lev.ftsz[0];
-    Flt offy = lev.tile_base;
-    int ncols_to_render = gl.xres / lev.tilesize[0] + 2;
-    int col = (int)(gl.camera[0] / dd);
-    col = col % lev.ncols;
-    //Partial tile offset must be determined here.
-    //The leftmost tile might be partially off-screen.
-    //cdd: camera position in terms of tiles.
-    Flt cdd = gl.ball_pos[0] / dd;
-    //flo: just the integer portion
-    Flt flo = floor(cdd);
-    //dec: just the decimal portion
-    Flt dec = (cdd - flo);
-    //offx: the offset to the left of the screen to start drawing tiles
-    Flt offx = -dec * dd;
-    //Log("gl.camera[0]: %lf   offx: %lf\n",gl.camera[0],offx);
-    for (int j=0; j<ncols_to_render; j++) {
+    for (int i = 0; i<ncols_to_render; i++) {
         int row = lev.nrows-1;
-        for (int i=0; i<lev.nrows; i++) {
-            if (lev.arr[row][col] == 'w') {
+        for (int j = 0; j<lev.nrows; j++) {
+             if (lev.arr[row][i] == 'w') {
                 glColor3f(0.8, 0.8, 0.6);
                 glPushMatrix();
-                //put tile in its place
-                glTranslated((Flt)j*dd+offx, (Flt)i*lev.ftsz[1]+offy, 0);
+                glTranslatef(lev.tx+(lev.tilesize[0]*row),
+                        lev.ty+(lev.tilesize[1]*i), 0.0);
                 glBegin(GL_QUADS);
-                    glVertex2f(-tx, -ty);
-                    glVertex2f(-tx,  ty);
-                    glVertex2f( tx,  ty);
-                    glVertex2f( tx, -ty);
+                    glVertex2f(-lev.tx, -lev.ty);
+                    glVertex2f(-lev.tx,  lev.ty);
+                    glVertex2f( lev.tx,  lev.ty);
+                    glVertex2f( lev.tx, -lev.ty);
                 glEnd();
                 glPopMatrix();
-            }
-            if (lev.arr[row][col] == 'b') {
+             }
+                          
+             if (lev.arr[row][i] == 'b') {
                 glColor3f(0.9, 0.2, 0.2);
                 glPushMatrix();
-                glTranslated((Flt)j*dd+offx, (Flt)i*lev.ftsz[1]+offy, 0);
+                glTranslatef(lev.tx+(lev.tilesize[0]*row),
+                        lev.ty+(lev.tilesize[1]*i), 0.0);
                 glBegin(GL_QUADS);
-                    glVertex2f(-tx,-ty);
-                    glVertex2f(-tx, ty);
-                    glVertex2f( tx, ty);
-                    glVertex2f( tx,-ty);
+                    glVertex2f(-lev.tx, -lev.ty);
+                    glVertex2f(-lev.tx,  lev.ty);
+                    glVertex2f( lev.tx,  lev.ty);
+                    glVertex2f( lev.tx, -lev.ty);
                 glEnd();
                 glPopMatrix();
-            }
-            if (lev.arr[row][col] == 'g') {
-                glColor3f(0.0, 0.0, 1.0);
-                glPushMatrix();
-                glTranslated((Flt)j*dd+offx, (Flt)i*lev.ftsz[1]+offy, 0);
-                glBegin(GL_QUADS);
-                    glVertex2f(-tx, -ty);
-                    glVertex2f(-tx,  ty);
-                    glVertex2f( tx,  ty);
-                    glVertex2f( tx, -ty);
-                glEnd();
-                glPopMatrix();
-            }
-
-
-
-
-            --row;
-        }
-        col = (col+1) % lev.ncols;
-    }
-    if (lev.spawn != 1){
-        for (int j=0; j<lev.ncols; j++) {
-            for (int i=0; i<lev.nrows; i++) {
-                if (lev.arr[i][j] == 'g') {
-                    gl.ball_pos[1] += j;
-                    gl.ball_pos[0] += i;
-                    lev.spawn = 1;
-                }           
-            }
+             }
+             row--;
         }
     }
 
-
+    //BALL
 
     glColor3f(1.0, 1.0, 0.1);
     glPushMatrix();
     //put ball in its place
-    glTranslated(gl.ball_pos[0], gl.ball_pos[1], 0);
+    glTranslated(bal.pos[0], bal.pos[1], 0);
     glBegin(GL_QUADS);
-        glVertex2i(-10, 0);
-        glVertex2i(-10, 20);
-        glVertex2i( 10, 20);
-        glVertex2i( 10, 0);
+        glVertex2i(-lev.tx, -lev.tx);
+        glVertex2i(-lev.tx,  lev.ty);
+        glVertex2i( lev.tx,  lev.ty);
+        glVertex2i( lev.tx, -lev.ty);
     glEnd();
     glPopMatrix();
 
-    unsigned int c = 0x00ffff44;
-    r.bot = gl.yres - 20;
-    r.left = 10;
-    r.center = 0;
-    ggprint8b(&r, 16, c, "w  - Current row, colume, and file letter");
-    ggprint8b(&r, 16, c, "down arrow  - move down");
-    ggprint8b(&r, 16, c, "up arrow    - move up");
-    ggprint8b(&r, 16, c, "right arrow - move right");
-    ggprint8b(&r, 16, c, "left arrow  - move left");
-    
 }
+
+
+
+
 
