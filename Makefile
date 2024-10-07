@@ -9,7 +9,7 @@ all: asteroids david
 asteroids: asteroids.cpp log.cpp timers.cpp
 	g++ $(CFLAGS) asteroids.cpp log.cpp timers.cpp libggfonts.a -Wall -Wextra $(LFLAGS) -oasteroids
 david: David.cpp log.cpp
-    g++ $(CFLAGS) David.cpp log.cpp libggfonts.a -Wall -Wextra $(LFLAGS) -odavid
+	g++ $(CFLAGS) David.cpp log.cpp libggfonts.a -Wall -Wextra $(LFLAGS) -odavid
 
 
 clean:
