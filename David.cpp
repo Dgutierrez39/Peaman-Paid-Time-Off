@@ -37,9 +37,11 @@ class Global {
 public:
     unsigned char keys[65536];
 	int xres, yres;
+    double delay;
 	Global() {   
         xres=800;
         yres=600;
+        delay = 0.1;
         memset(keys, 0, 65536);
     }
 } g;
@@ -49,10 +51,12 @@ class Ball {
 public:
     float pos[2];
     float old_pos[2];
+    float movement[2];
     Ball() {
-        pos[0] = 50.0;
-        pos[1] = 50.0;
-        //memset(keys, 0, 65536);    
+        pos[0] = g.xres/2;
+        pos[1] = g.yres/2;
+        movement[0] = g.xres / 100; 
+        movement[1] = g.yres / 100;
     }
 } bal;
 
@@ -68,8 +72,8 @@ public:
     Level() {
         //Log("Level constructor\n");
         spawn = 0;
-        tilesize[0] = 32;
-        tilesize[1] = 32;
+        tilesize[0] =  g.xres / 30;
+        tilesize[1] =  g.yres / 30;
         ftsz[0] = (double)tilesize[0];
         ftsz[1] = (double)tilesize[1];
         //tile_base = 220.0;
@@ -230,6 +234,8 @@ void X11_wrapper::reshape_window(int width, int height)
 	//Window has been resized.
 	g.xres = width;
 	g.yres = height;
+    bal.pos[0] = width/2;
+    bal.pos[1] = height/2;
 	//
 	glViewport(0, 0, (GLint)width, (GLint)height);
 	glMatrixMode(GL_PROJECTION); glLoadIdentity();
@@ -316,23 +322,15 @@ int X11_wrapper::check_keys(XEvent *e)
         case XK_w:
             break;
         case XK_Escape:
-				//Escape key was pressed
+            //Escape key was pressed
             return 1;
         case XK_Left:
-            bal.old_pos[0] = bal.pos[0];
-            bal.pos[0] -= 5;
             break;
         case XK_Right:
-            bal.old_pos[0] = bal.pos[0];
-            bal.pos[0] += 5;
             break;
         case XK_Up:
-            bal.old_pos[1] = bal.pos[1];
-            bal.pos[1] += 5;
             break;
         case XK_Down:
-            bal.old_pos[1] = bal.pos[1];
-            bal.pos[1] -= 5;
             break;
 	}
 	return 0;
@@ -365,6 +363,24 @@ void physics()
             printf("row is: %i\n", a);
             printf("Column is: %i\n", b);
             printf("The slot has a : '%c'\n", lev.arr[a][b]);}
+
+    if (g.keys[XK_Left]){
+        bal.old_pos[0] = bal.pos[0];
+        bal.pos[0] -= bal.movement[0];
+    }
+    if (g.keys[XK_Right]){
+        bal.old_pos[0] = bal.pos[0];    
+        bal.pos[0] += bal.movement[0];
+    }
+    if (g.keys[XK_Up]) {            
+        bal.old_pos[1] = bal.pos[1];
+        bal.pos[1] += bal.movement[1];
+        
+    }
+    if (g.keys[XK_Down]){
+        bal.old_pos[1] = bal.pos[1];
+        bal.pos[1] -= bal.movement[1];
+    }
 
     for (int i = 0; i<ncols_to_render; i++) {
         int row = lev.nrows-1;
@@ -399,11 +415,11 @@ void physics()
 void render()
 {
     //Rect r;
-    int ncols_to_render = g.xres / lev.tilesize[0] + 2;
-    //int nrow_to_render = gl.yres / lev.tilesize[1] + 2;
+    //int ncols_to_render = (bal.pos[0] * 2)  / lev.tilesize[0] + 2;
+    //int nrow_to_render = (bal.pos[1] * 2) / lev.tilesize[1] + 2;
     glClearColor(0.1, 0.1, 0.1, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
-    for (int i = 0; i<ncols_to_render; i++) {
+    for (int i = 0; i<lev.ncols; i++) {
         int row = lev.nrows-1;
         for (int j = 0; j<lev.nrows; j++) {
              if (lev.arr[row][i] == 'w') {
@@ -444,7 +460,7 @@ void render()
     //put ball in its place
     glTranslated(bal.pos[0], bal.pos[1], 0);
     glBegin(GL_QUADS);
-        glVertex2i(-lev.tx, -lev.tx);
+        glVertex2i(-lev.tx, -lev.ty);
         glVertex2i(-lev.tx,  lev.ty);
         glVertex2i( lev.tx,  lev.ty);
         glVertex2i( lev.tx, -lev.ty);
