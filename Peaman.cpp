@@ -27,15 +27,19 @@ using namespace std;
 #include <GL/glx.h>
 //some structures
 //Added code 
-//#include <time.h>
 #include "fonts.h"
 #include "log.h"
+
+//David's functions
+extern void Tile_layer(unsigned char map[19][80],int row, int col, float offx,
+        float offy, float tile[2]);
 
 //sky added
 //defined types
 typedef double Flt;
 typedef double Vec[3];
 typedef Flt Matrix[4][4];
+
 
 //macros
 #define ALPHA 1
@@ -51,7 +55,7 @@ typedef Flt Matrix[4][4];
 //constants
 const float timeslice = 1.0f;
 const float gravity = -0.2f;
-
+/*
 class Image {
     public:
         int width, height;
@@ -109,7 +113,7 @@ class Image {
 Image img[2] = {
 "./sprites/Play.png",
 "./sprites/Menu Screen.gif"};
-//
+*/
 class Global {
     public:
         unsigned char keys[65536];
@@ -229,7 +233,7 @@ void render(void);
 
 int main()
 {
-    init_opengl();
+    //init_opengl();
     int done = 0;
   //clock_gettime(CLOCK_REALTIME, &timePause);
   //clock_gettime(CLOCK_REALTIME, &timeStart);
@@ -420,7 +424,7 @@ int X11_wrapper::check_keys(XEvent *e)
     }
     return 0;
 }
-
+/*
 unsigned char *buildAlphaData(Image *img)
 {
     //Add 4th component to an RGB stream...
@@ -443,14 +447,14 @@ unsigned char *buildAlphaData(Image *img)
         *(ptr+2) = c;
         //-----------------------------------------------
         //get largest color component...
-        //*(ptr+3) = (unsigned char)((
+        //(ptr+3) = (unsigned char)((
         //      (int)*(ptr+0) +
         //      (int)*(ptr+1) +
         //      (int)*(ptr+2)) / 3);
         //d = a;
         //if (b >= a && b >= c) d = b;
         //if (c >= a && c >= b) d = c;
-        //*(ptr+3) = d;
+        //(ptr+3) = d;
         //-----------------------------------------------
         //this code optimizes the commented code above.
         //code contributed by student: Chris Smith
@@ -490,7 +494,8 @@ void init_opengl(void)
     glBindTexture(GL_TEXTURE_2D, g.bigfootTexture);
     //
 
-}
+} */
+
 void physics()
 {
     int ncols_to_render = g.xres / lev.tilesize[0] + 2;
@@ -555,44 +560,9 @@ void physics()
 
 void render()
 {
-    //Rect r;
-    //int ncols_to_render = (bal.pos[0] * 2)  / lev.tilesize[0] + 2;
-    //int nrow_to_render = (bal.pos[1] * 2) / lev.tilesize[1] + 2;
-    glClearColor(0.1, 0.1, 0.1, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT);
-    for (int i = 0; i<lev.ncols; i++) {
-        int row = lev.nrows-1;
-        for (int j = 0; j<lev.nrows; j++) {
-            if (lev.arr[row][i] == 'w') {
-                glColor3f(0.8, 0.8, 0.6);
-                glPushMatrix();
-                glTranslatef(lev.tx+(lev.tilesize[0]*row),
-                        lev.ty+(lev.tilesize[1]*i), 0.0);
-                glBegin(GL_QUADS);
-                glVertex2f(-lev.tx, -lev.ty);
-                glVertex2f(-lev.tx,  lev.ty);
-                glVertex2f( lev.tx,  lev.ty);
-                glVertex2f( lev.tx, -lev.ty);
-                glEnd();
-                glPopMatrix();
-            }
-
-            if (lev.arr[row][i] == 'b') {
-                glColor3f(0.9, 0.2, 0.2);
-                glPushMatrix();
-                glTranslatef(lev.tx+(lev.tilesize[0]*row),
-                        lev.ty+(lev.tilesize[1]*i), 0.0);
-                glBegin(GL_QUADS);
-                glVertex2f(-lev.tx, -lev.ty);
-                glVertex2f(-lev.tx,  lev.ty);
-                glVertex2f( lev.tx,  lev.ty);
-                glVertex2f( lev.tx, -lev.ty);
-                glEnd();
-                glPopMatrix();
-            }
-            row--;
-        }
-    }
+    //Bulids the map for the ball to roam in
+    Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx,
+               lev.ty, lev.tilesize);
 
     //BALL
 
