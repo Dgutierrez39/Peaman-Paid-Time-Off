@@ -602,7 +602,7 @@ void render()
     glClearColor(0.1, 0.1, 0.1, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
     //draw a quad with texture
-    float wid = 120.0f;
+    //float wid = 120.0f;
     glColor3f(1.0, 1.0, 1.0);
 
     if (g.menu) {
