@@ -108,8 +108,8 @@ class Image {
 
 Image img[2] = {
 "./sprites/Play.png",
-"./sprites/Menu Screen.gif"};
-//
+"./sprites/menuScreen.gif"};
+
 class Global {
     public:
         unsigned char keys[65536];
@@ -117,8 +117,11 @@ class Global {
         double delay;
         //skyadded
         GLuint MenuTexture;
+        GLuint silhouetteTexture;
         GLuint PlayTexture;
         int playPress;
+        int silhouette;
+        int menu;
         //
         Global() {   
             xres=800;
@@ -478,17 +481,55 @@ void init_opengl(void)
     initialize_fonts();
     //create opengl texture elements
     glGenTextures(1, &g.PlayTexture);
-    glGenTextures(1, &g.menuTexture);
-    glGenTextures(1, &g.forestTexture);
-    glGenTextures(1, &g.umbrellaTexture);
+    glGenTextures(1, &g.MenuTexture);
     //-------------------------------------------------------------------------
     //Play button
     //
     int w = img[0].width;
     int h = img[0].height;
     //
-    glBindTexture(GL_TEXTURE_2D, g.bigfootTexture);
+    glBindTexture(GL_TEXTURE_2D, g.PlayTexture);
     //
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+        GL_RGB, GL_UNSIGNED_BYTE, img[0].data);
+//-------------------------------------------------------------------------
+    //
+    //silhouette
+    //this is similar to a sprite graphic
+    //
+    glBindTexture(GL_TEXTURE_2D, g.silhouetteTexture);
+    //
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    //
+    //must build a new set of data...
+    unsigned char *silhouetteData = buildAlphaData(&img[0]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+                                GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+    free(silhouetteData);
+  //-------------------------------------------------------------------------
+    //
+    //Menu Screen
+    glBindTexture(GL_TEXTURE_2D, g.MenuTexture);
+    //
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, img[1].width, img[1].height,
+                                    0, GL_RGB, GL_UNSIGNED_BYTE, img[1].data);
+    //-------------------------------------------------------------------------
+    //must build a new set of data...
+    w = img[2].width;
+    h = img[2].height;
+    unsigned char *ftData = buildAlphaData(&img[2]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+                                            GL_RGBA, GL_UNSIGNED_BYTE, ftData);
+    free(ftData);
+    //glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
+    //GL_RGB, GL_UNSIGNED_BYTE, bigfootImage->data);
+    //-------------------------------------------------------------------------
+
 
 }
 void physics()
@@ -560,6 +601,20 @@ void render()
     //int nrow_to_render = (bal.pos[1] * 2) / lev.tilesize[1] + 2;
     glClearColor(0.1, 0.1, 0.1, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
+    //draw a quad with texture
+    float wid = 120.0f;
+    glColor3f(1.0, 1.0, 1.0);
+
+    if (g.menu) {
+        glBindTexture(GL_TEXTURE_2D, g.MenuTexture);
+        glBegin(GL_QUADS);
+            glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+            glTexCoord2f(0.0f, 0.0f); glVertex2i(0, g.yres);
+            glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
+            glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
+        glEnd();
+    }
+
     for (int i = 0; i<lev.ncols; i++) {
         int row = lev.nrows-1;
         for (int j = 0; j<lev.nrows; j++) {
