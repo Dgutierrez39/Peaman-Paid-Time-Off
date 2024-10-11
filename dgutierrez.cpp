@@ -57,9 +57,6 @@ float Player_Collision_x(unsigned char map[19][80], int row, int col,
                 while ((player[0] - offx) <= ((2*offx) + (tile[0]*row_count))) {
                     player[0] += 0.1;
                 }
-                //while (player[0] + offx >= tile[0]*row_count) {    
-                //    player[0] -= 0.1;
-                //}
                 return player[0];
             
             }
