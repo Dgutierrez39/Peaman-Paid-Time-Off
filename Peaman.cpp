@@ -31,6 +31,15 @@ using namespace std;
 #include "fonts.h"
 #include "log.h"
 
+
+//David's functions
+extern void Tile_layer(unsigned char map[19][80],int row, int col, float offx,
+        float offy, float tile[2]);
+extern float Player_Collision_x(unsigned char map[19][80], int row, int col,
+                      float player[2], float offx, float offy, float tile[2]);
+extern float Player_Collision_y(unsigned char map[19][80], int row, int col,
+                      float player[2], float offx, float offy, float tile[2]);
+
 //sky added
 //defined types
 typedef double Flt;
@@ -136,7 +145,6 @@ class Global {
 class Ball {
     public:
         float pos[2];
-        float old_pos[2];
         float movement[2];
         double camera [2];
         Ball() {
@@ -539,7 +547,7 @@ void init_opengl(void)
 }
 void physics()
 {
-    int ncols_to_render = g.xres / lev.tilesize[0] + 2;
+
 
     int b = (int)(bal.pos[1]/lev.ftsz[1]);
     b = b % lev.ncols;
@@ -552,23 +560,30 @@ void physics()
         printf("The slot has a : '%c'\n", lev.arr[a][b]);}
 
     if (g.keys[XK_Left]){
-        bal.old_pos[0] = bal.pos[0];
         bal.pos[0] -= bal.movement[0];
+        bal.pos[0] = Player_Collision_x(lev.arr, lev.nrows, lev.ncols,
+                                    bal.pos, lev.tx, lev.ty, lev.tilesize);
+
     }
     if (g.keys[XK_Right]){
-        bal.old_pos[0] = bal.pos[0];    
         bal.pos[0] += bal.movement[0];
+        bal.pos[0] = Player_Collision_x(lev.arr, lev.nrows, lev.ncols,
+                                    bal.pos, lev.tx, lev.ty, lev.tilesize);
+    
     }
     if (g.keys[XK_Up]) {            
-        bal.old_pos[1] = bal.pos[1];
         bal.pos[1] += bal.movement[1];
-
+        bal.pos[1] = Player_Collision_y(lev.arr, lev.nrows, lev.ncols,
+                                    bal.pos, lev.tx, lev.ty, lev.tilesize);
     }
     if (g.keys[XK_Down]){
-        bal.old_pos[1] = bal.pos[1];
         bal.pos[1] -= bal.movement[1];
+        bal.pos[1] = Player_Collision_y(lev.arr, lev.nrows, lev.ncols,
+                                    bal.pos, lev.tx, lev.ty, lev.tilesize);   
     }
 
+
+/*
     for (int i = 0; i<ncols_to_render; i++) {
         int row = lev.nrows-1;
         for (int j = 0; j<lev.nrows; j++) {
@@ -581,7 +596,7 @@ void physics()
                 bal.pos[0] = bal.old_pos[0];   
                 bal.pos[1] = bal.old_pos[1];
             }
-            /* if ((lev.arr[row][i] == 'b') &&
+             if ((lev.arr[row][i] == 'b') &&
                (bal.pos[1]) < (lev.tilesize[1] + (lev.tilesize[1]*i))  &&
                (bal.pos[1]) > (lev.tilesize[1]*i)  &&
                (bal.pos[0]) > (lev.tilesize[0]*row) &&
@@ -589,11 +604,11 @@ void physics()
             //Colssion, however the hell you spell it I'm tired
             bal.pos[0] = bal.old_pos[0];
             bal.pos[1] = bal.old_pos[1];
-            }*/
+            }
             row--;
         }
     }
-
+*/
 
 
 
@@ -604,11 +619,11 @@ void render()
     //Rect r;
     //int ncols_to_render = (bal.pos[0] * 2)  / lev.tilesize[0] + 2;
     //int nrow_to_render = (bal.pos[1] * 2) / lev.tilesize[1] + 2;
-    glClearColor(0.1, 0.1, 0.1, 1.0);
+   // glClearColor(0.1, 0.1, 0.1, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
     //draw a quad with texture
     //float wid = 120.0f;
-    glColor3f(1.0, 1.0, 1.0);
+   // glColor3f(1.0, 1.0, 1.0);
 
     if (g.menu) {
         glBindTexture(GL_TEXTURE_2D, g.MenuTexture);
@@ -618,9 +633,12 @@ void render()
             glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
             glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
         glEnd();
+        glPopMatrix();
     }
+    else
+        Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize);
 
-    for (int i = 0; i<lev.ncols; i++) {
+    /*for (int i = 0; i<lev.ncols; i++) {
         int row = lev.nrows-1;
         for (int j = 0; j<lev.nrows; j++) {
             if (lev.arr[row][i] == 'w') {
@@ -653,7 +671,7 @@ void render()
             row--;
         }
     }
-
+*/
     //BALL
 
     glColor3f(1.0, 1.0, 0.1);

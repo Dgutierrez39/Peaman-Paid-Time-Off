@@ -54,11 +54,17 @@ float Player_Collision_x(unsigned char map[19][80], int row, int col,
                     (player[1] - offy) < ((2*offy) + (tile[1]*i))  &&
                     (player[1] + offy) > (tile[1]*i)) {
                 //Colssion, however the hell you spell it I'm tired
-                while ((player[0] - offx) <= ((2*offx) + (tile[0]*row_count))) {
-                    player[0] += 0.1;
+                if ((player[0] - offx) < (2*offx + tile[0]*row_count)) {
+                    while ((player[0] - offx) <= ((2*offx) + (tile[0]*row_count))) {
+                        player[0] += 0.1;
+                    }
                 }
+                if ((player[0] + offx) > (tile[0]*row_count)) {
+                    while ((player[0] + offx) >= (tile[0]*row_count)) {
+                        player[0] -= 0.1;
+                    }
+                }    
                 return player[0];
-            
             }
             row_count--;
         }
@@ -77,22 +83,18 @@ float Player_Collision_y(unsigned char map[19][80], int row, int col,
                     (player[0] - offx) < ((2*offx)+(tile[0]*row_count)) &&
                     (player[1] - offy) < ((2*offy) + (tile[1]*i))  &&
                     (player[1] + offy) > (tile[1]*i)) {
-                /*Colssion, however the hell you spell it I'm tired
-                if (player[1] - offy < (2*offy) + (tile[1]*i)) {
-                    while (player[1] >= (2*offy) + (tile[1]*i)) {
-                        player[1] -= 1; 
+                //going down
+                if ((player[1] - offy) < ((2*offy) + (tile[1]*i))) {
+                    while ((player[1] - offy) <= ((2*offy) + (tile[1]*i))) {
+                        player[1] += 0.1;
                     }
                 }
-                else {
-                    while (player[1] >= tile[1]*i) {
-                        player[1] += 1;
+                //Going up
+                if ((player[1] + offy) > (tile[1]*i)) {
+                    while ((player[1] + offy) >= (tile[1]*i)) {
+                        player[1] -= 0.1;
                     }
-                }*/
-                                
-                while ((player[1] - offy) <= ((2*offy) + (tile[1]*i))) {
-                    player[1] += 0.1;
-                
-                }
+                }                              
                 return player[1];
             }
             row_count--;
