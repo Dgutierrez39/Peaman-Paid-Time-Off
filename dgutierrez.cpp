@@ -43,7 +43,7 @@ void Tile_layer(unsigned char map[19][80],int row, int col, float offx,
     }
 }
 float Player_Collision_x(unsigned char map[19][80], int row, int col,
-                      float player[2], float player_past[2], float offx, float offy, float tile[2])
+                      float player[2], float offx, float offy, float tile[2])
 {
     for (int i = 0; i<col; i++) {
         int row_count = row-1;
@@ -67,7 +67,7 @@ float Player_Collision_x(unsigned char map[19][80], int row, int col,
 }
 
 float Player_Collision_y(unsigned char map[19][80], int row, int col,
-                      float player[2], float player_past[2], float offx, float offy, float tile[2])
+                      float player[2], float offx, float offy, float tile[2])
 {
     for (int i = 0; i<col; i++) {
         int row_count = row-1;
@@ -88,6 +88,11 @@ float Player_Collision_y(unsigned char map[19][80], int row, int col,
                         player[1] += 1;
                     }
                 }*/
+                                
+                while ((player[1] - offy) <= ((2*offy) + (tile[1]*i))) {
+                    player[1] += 0.1;
+                
+                }
                 return player[1];
             }
             row_count--;
