@@ -108,7 +108,7 @@ class Image {
 
 Image img[2] = {
 "./sprites/Play.png",
-"./sprites/menuScreen.gif"};
+"./sprites/menuScreen.png"};
 
 class Global {
     public:
@@ -124,10 +124,12 @@ class Global {
         int menu;
         //
         Global() {   
-            xres=800;
+            xres=800;            
             yres=600;
             delay = 0.1;
             memset(keys, 0, 65536);
+            menu = 1;
+            silhouette = 0;
         }
 } g;
 
@@ -409,6 +411,9 @@ int X11_wrapper::check_keys(XEvent *e)
             break;
         case XK_w:
             break;
+        case XK_p:
+            g.menu = 0;
+            break;
         case XK_Escape:
             //Escape key was pressed
             return 1;
@@ -520,12 +525,12 @@ void init_opengl(void)
                                     0, GL_RGB, GL_UNSIGNED_BYTE, img[1].data);
     //-------------------------------------------------------------------------
     //must build a new set of data...
-    w = img[2].width;
-    h = img[2].height;
-    unsigned char *ftData = buildAlphaData(&img[2]);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
-                                            GL_RGBA, GL_UNSIGNED_BYTE, ftData);
-    free(ftData);
+   // w = img[2].width;
+   // h = img[2].height;
+  //  unsigned char *ftData = buildAlphaData(&img[2]);
+  //  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0,
+  //                                          GL_RGBA, GL_UNSIGNED_BYTE, ftData);
+  //  free(ftData);
     //glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
     //GL_RGB, GL_UNSIGNED_BYTE, bigfootImage->data);
     //-------------------------------------------------------------------------
