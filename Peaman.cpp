@@ -609,7 +609,7 @@ void render()
     //draw a quad with texture
     //float wid = 120.0f;
     glColor3f(1.0, 1.0, 1.0);
-
+/*
     if (g.menu) {
         glBindTexture(GL_TEXTURE_2D, g.MenuTexture);
         glBegin(GL_QUADS);
@@ -618,6 +618,19 @@ void render()
             glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
             glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
         glEnd();
+    } 
+    */
+    if (g.menu) {
+        glBindTexture(GL_TEXTURE_2D, g.MenuTexture);
+        glBegin(GL_QUADS);
+            glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+            glTexCoord2f(0.0f, 0.12f); glVertex2i(0, g.yres);
+            glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
+            glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
+        glEnd();
+    } 
+    else {
+        glDisable(GL_TEXTURE_2D);
     }
 
     for (int i = 0; i<lev.ncols; i++) {
