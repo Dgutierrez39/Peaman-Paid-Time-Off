@@ -623,13 +623,11 @@ void render()
     glClear(GL_COLOR_BUFFER_BIT);
     //draw a quad with texture
     //float wid = 120.0f;
-<<<<<<< HEAD
     glColor3f(1.0, 1.0, 1.0);
 /*
 =======
    // glColor3f(1.0, 1.0, 1.0);
 
->>>>>>> cdb737a003b09868e310116892d2be4ad980a8e8
     if (g.menu) {
         glBindTexture(GL_TEXTURE_2D, g.MenuTexture);
         glBegin(GL_QUADS);
@@ -638,9 +636,9 @@ void render()
             glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
             glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
         glEnd();
-<<<<<<< HEAD
     } 
     */
+    Rect r;
     if (g.menu) {
         glBindTexture(GL_TEXTURE_2D, g.MenuTexture);
         glBegin(GL_QUADS);
@@ -649,16 +647,19 @@ void render()
             glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
             glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
         glEnd();
+        r.bot = 25;
+        r.left = 75;
+        r.center = 0;
+ 
+        ggprint8b(&r, 32, 0xFF87CEEB, "Press p to play");
     } 
     else {
         glDisable(GL_TEXTURE_2D);
-=======
         glPopMatrix();
->>>>>>> cdb737a003b09868e310116892d2be4ad980a8e8
-    }
-    else
         Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize);
-
+    }
+    
+    
     /*for (int i = 0; i<lev.ncols; i++) {
         int row = lev.nrows-1;
         for (int j = 0; j<lev.nrows; j++) {
