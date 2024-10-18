@@ -46,6 +46,9 @@ typedef double Flt;
 typedef double Vec[3];
 typedef Flt Matrix[4][4];
 
+//Shane added
+const int MAX_BULLETS = 11;
+
 //macros
 #define ALPHA 1
 #define rnd() (((double)rand())/(double)RAND_MAX)
@@ -57,9 +60,23 @@ typedef Flt Matrix[4][4];
                              (c)[1]=(a)[1]-(b)[1]; \
 (c)[2]=(a)[2]-(b)[2]
 
+
+
 //constants
 const float timeslice = 1.0f;
 const float gravity = -0.2f;
+#define PI 3.141592653589793
+
+//Setup timers //added more timers - Shane
+const double physicsRate = 1.0 / 60.0;
+const double oobillion = 1.0 / 1e9;
+extern struct timespec timeStart, timeCurrent;
+extern struct timespec timePause;
+extern double physicsCountdown;
+extern double timeSpan;
+extern double timeDiff(struct timespec *start, struct timespec *end);
+extern void timeCopy(struct timespec *dest, struct timespec *source);
+
 
 class Image {
     public:
@@ -144,17 +161,53 @@ class Global {
 
 class Ball {
     public:
+        Vec vel;
+        Vec dir;
+        float angle;
+        float color[3];
         float pos[2];
         float movement[2];
         double camera [2];
         Ball() {
             pos[0] = g.xres/2;
             pos[1] = g.yres/2;
+            //VecZero(dir);
+            angle = 0.0;
             movement[0] = g.xres / 100; 
             movement[1] = g.yres / 100;
             camera[0] = camera[1] = 0;
         }
 } bal;
+
+class Bullet {
+public:
+    Vec pos;
+    Vec vel;
+    float color[3];
+    struct timespec time;
+public:
+    Bullet() { }
+};
+
+class Game {
+public:
+    Ball bal;
+    Bullet *barr;
+    int nbullets;
+    struct timespec bulletTimer;
+
+public:
+    Game() {
+        barr = new Bullet[MAX_BULLETS];
+        nbullets = 0;
+        clock_gettime(CLOCK_REALTIME, &bulletTimer);
+    }
+    ~Game() {
+        delete [] barr;
+    }
+
+} ga;
+
 
 class Level {
     public:
@@ -374,7 +427,36 @@ void X11_wrapper::check_mouse(XEvent *e)
     if (e->type == ButtonPress) {
         if (e->xbutton.button==1) {
             //Left button was pressed.
-            return;
+            struct timespec bt;
+            clock_gettime(CLOCK_REALTIME, &bt);
+            double ts = timeDiff(&ga.bulletTimer, &bt);
+            if (ts > 0.1) {
+                timeCopy(&ga.bulletTimer, &bt);
+                //shoot a bullet...
+                if (ga.nbullets < MAX_BULLETS) {
+                    Bullet *b = &ga.barr[ga.nbullets];
+                    timeCopy(&b->time, &bt);
+                    b->pos[0] = ga.bal.pos[0];
+                    b->pos[1] = ga.bal.pos[1];
+                    b->vel[0] = ga.bal.vel[0];
+                    b->vel[1] = ga.bal.vel[1];
+                    //convert ship angle to radians
+                    Flt rad = ((ga.bal.angle+90.0) / 360.0f) * PI * 2.0;
+                    //convert angle to a vector
+                    Flt xdir = cos(rad);
+                    Flt ydir = sin(rad);
+                    b->pos[0] += xdir*20.0f;
+                    b->pos[1] += ydir*20.0f;
+                    b->vel[0] += xdir*6.0f + rnd()*0.1;
+                    b->vel[1] += ydir*6.0f + rnd()*0.1;
+                    b->color[0] = 1.0f;
+                    b->color[1] = 1.0f;
+                    b->color[2] = 1.0f;
+                    ++ga.nbullets;
+        
+           // return;
+                }
+            }
         }
         if (e->xbutton.button==3) {
             //Right button was pressed.
@@ -609,6 +691,40 @@ void physics()
         }
     }
 */
+    struct timespec bt;
+    clock_gettime(CLOCK_REALTIME, &bt);
+    int i = 0;
+    while (i < ga.nbullets) {
+        Bullet *b = &ga.barr[i];
+        //How long has bullet been alive?
+        double ts = timeDiff(&b->time, &bt);
+        if (ts > 2.5) {
+            //time to delete the bullet.
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
+                sizeof(Bullet));
+            ga.nbullets--;
+            //do not increment i.
+            continue;
+        }
+        //move the bullet
+        b->pos[0] += b->vel[0];
+        b->pos[1] += b->vel[1];
+        //Check for collision with window edges
+        if (b->pos[0] < 0.0) {
+            b->pos[0] += (float)g.xres;
+        }
+        else if (b->pos[0] > (float)g.xres) {
+            b->pos[0] -= (float)g.xres;
+        }
+        else if (b->pos[1] < 0.0) {
+            b->pos[1] += (float)g.yres;
+        }
+        else if (b->pos[1] > (float)g.yres) {
+            b->pos[1] -= (float)g.yres;
+        }
+        ++i;
+    }
+
 
 
 
@@ -623,7 +739,7 @@ void render()
     glClear(GL_COLOR_BUFFER_BIT);
     //draw a quad with texture
     //float wid = 120.0f;
-<<<<<<< HEAD
+///*<<<<<<<*/ HEAD
     glColor3f(1.0, 1.0, 1.0);
 /*
 =======
@@ -652,12 +768,14 @@ void render()
     } 
     else {
         glDisable(GL_TEXTURE_2D);
-=======
+//=======
         glPopMatrix();
->>>>>>> cdb737a003b09868e310116892d2be4ad980a8e8
+///*>>>>>>>*/ cdb737a003b09868e310116892d2be4ad980a8e8
+     Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize);
+
     }
-    else
-        Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize);
+    //else
+       // Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize);
 
     /*for (int i = 0; i<lev.ncols; i++) {
         int row = lev.nrows-1;
@@ -706,6 +824,25 @@ void render()
     glVertex2i( lev.tx, -lev.ty);
     glEnd();
     glPopMatrix();
+
+    //Draw the bullets
+     for (int i=0; i<ga.nbullets; i++) {
+        Bullet *b = &ga.barr[i];
+        //Log("draw bullet...\n");
+        glColor3f(1.0, 1.0, 1.0);
+        glBegin(GL_POINTS);
+        glVertex2f(b->pos[0],      b->pos[1]);
+        glVertex2f(b->pos[0]-1.0f, b->pos[1]);
+        glVertex2f(b->pos[0]+1.0f, b->pos[1]);
+        glVertex2f(b->pos[0],      b->pos[1]-1.0f);
+        glVertex2f(b->pos[0],      b->pos[1]+1.0f);
+        glColor3f(0.8, 0.8, 0.8);
+        glVertex2f(b->pos[0]-1.0f, b->pos[1]-1.0f);
+        glVertex2f(b->pos[0]-1.0f, b->pos[1]+1.0f);
+        glVertex2f(b->pos[0]+1.0f, b->pos[1]-1.0f);
+        glVertex2f(b->pos[0]+1.0f, b->pos[1]+1.0f);
+        glEnd();
+     }
 
 }
 
