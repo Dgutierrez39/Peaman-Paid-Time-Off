@@ -4,9 +4,9 @@
 
 //Spend a lot of the time working to git hub working
 
-#include "fonts.h"
-int shane_show = 0;
-const int MAX_BULLETS = 30;
+//#include "fonts.h"
+//int shane_show = 0;
+//const int MAX_BULLETS = 30;
 /* Can we include classes in separate function?
 class Game {
     public: 
@@ -38,6 +38,7 @@ public:
 
 
 //Draw bullets -- will go in render function
+/*
 void drawbullets()
 {
     for (int i=0; i<g.nbullets; i++) {
@@ -58,8 +59,8 @@ void drawbullets()
         glEnd();
     }
 
-}
-
+}*/
+/*
 void show_my_feature(int x, int y)
 {
     //draw a rectangle 
@@ -72,4 +73,4 @@ void show_my_feature(int x, int y)
 
 
 }
-
+*/
