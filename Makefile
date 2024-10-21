@@ -2,7 +2,7 @@ CFLAGS = -I ./include
 ##LIB    = ./libggfonts.so
 LFLAGS = -lrt -lX11 -lGLU -lGL -pthread -lm #-lXrandr
 
-PFILES = dgutierrez.cpp sgonzales.cpp smonungolh.cpp #swilkerson.cpp
+PFILES = dgutierrez.cpp sgonzales.cpp smonungolh.cpp swilkerson.cpp
 
 all: asteroids Peaman  
 
