@@ -398,6 +398,10 @@ void X11_wrapper::reshape_window(int width, int height)
     g.yres = height;
     bal.pos[0] = width/2;
     bal.pos[1] = height/2;
+    lev.tilesize[0] =  width / 30;
+    lev.tilesize[1] =  height / 30;
+    lev.tx = lev.tilesize[0]/2;
+    lev.ty = lev.tilesize[1]/2;
     //
     glViewport(0, 0, (GLint)width, (GLint)height);
     glMatrixMode(GL_PROJECTION); glLoadIdentity();
