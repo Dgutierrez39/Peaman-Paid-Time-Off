@@ -30,8 +30,7 @@ using namespace std;
 //#include <time.h>
 #include "fonts.h"
 #include "log.h"
-
-
+#include "sgonzales.h"
 //David's functions
 extern void Tile_layer(unsigned char map[19][80],int row, int col, float offx,
         float offy, float tile[2]);
@@ -297,9 +296,11 @@ int main()
 {
     init_opengl();
     int done = 0;
+
   //clock_gettime(CLOCK_REALTIME, &timePause);
   //clock_gettime(CLOCK_REALTIME, &timeStart);
     //main game loop
+    
     while (!done) {
         //look for external events such as keyboard, mouse.
         while (x11.getXPending()) {
@@ -772,6 +773,7 @@ void render()
     } 
     else {
         glDisable(GL_TEXTURE_2D);
+        extern void drawCarrot();
         glPopMatrix();
         Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize);
     }
