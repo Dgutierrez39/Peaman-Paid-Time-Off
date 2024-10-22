@@ -43,58 +43,62 @@ void Tile_layer(unsigned char map[19][80],int row, int col, float offx,
     }
 }
 float Player_Collision_x(unsigned char map[19][80], int row, int col,
-                      float player[2], float offx, float offy, float tile[2])
+                      float player[2], float offx, float offy, float tile[2], int way)
 {
     for (int i = 0; i<col; i++) {
-        int row_count = row-1;
+        //int row_count = row-1;
         for (int j = 0; j<row; j++) {
-            if ((map[row_count][i] == 'w' || map[row_count][i] == 'b'  )&&
-                    (player[0] + offx) > (tile[0]*row_count) &&
-                    (player[0] - offx) < ((2*offx)+(tile[0]*row_count)) &&
-                    (player[1] - offy) < ((2*offy) + (tile[1]*i))  &&
-                    (player[1] + offy) > (tile[1]*i)) {
-                //Colssion, however the hell you spell it I'm tired
-                if ((player[0] - offx) < (2*offx + tile[0]*row_count)) {
-                    while ((player[0] - offx) <= ((2*offx) + (tile[0]*row_count))) {
-                        player[0] += 0.1;
-                    }
+            if ((map[j][i] == 'w' || map[j][i] == 'b'  )&&
+                    (player[0] + offx-1) > (tile[0]*j) &&
+                    (player[0] - offx+1) < ((2*offx)+(tile[0]*j)) &&
+                    (player[1] - offy+1) < ((2*offy) + (tile[1]*i))  &&
+                    (player[1] + offy-1) > (tile[1]*i)) {
+                    
+                if (way == 0){
+                    while((player[0] + offx) > (tile[0]*j))   
+                        player[0] -= 0.1;    
                 }
-                if ((player[0] + offx) > (tile[0]*row_count)) {
-                    while ((player[0] + offx) >= (tile[0]*row_count)) {
-                        player[0] -= 0.1;
-                    }
-                }    
+                if (way == 1){
+                    while((player[0] - offx) < ((2*offx) + (tile[0]*j)))
+                        player[0] += 0.1;
+                }
+
                 return player[0];
             }
-            row_count--;
+          //  row_count--;
         }
     }
     return player[0];
 }
+  
+
+
 
 float Player_Collision_y(unsigned char map[19][80], int row, int col,
-                      float player[2], float offx, float offy, float tile[2])
+                      float player[2], float offx, float offy, float tile[2], int way)
 {
     for (int i = 0; i<col; i++) {
         int row_count = row-1;
         for (int j = 0; j<row; j++) {
             if ((map[row_count][i] == 'w' || map[row_count][i] == 'b'  )&&
-                    (player[0] + offx) > (tile[0]*row_count) &&
-                    (player[0] - offx) < ((2*offx)+(tile[0]*row_count)) &&
-                    (player[1] - offy) < ((2*offy) + (tile[1]*i))  &&
-                    (player[1] + offy) > (tile[1]*i)) {
+                    (player[0] + offx-1) > (tile[0]*row_count) &&
+                    (player[0] - offx+1) < ((2*offx)+(tile[0]*row_count)) &&
+                    (player[1] - offy+1) < ((2*offy) + (tile[1]*i))  &&
+                    (player[1] + offy-1) > (tile[1]*i)) {
+                
                 //going down
-                if ((player[1] - offy) < ((2*offy) + (tile[1]*i))) {
-                    while ((player[1] - offy) <= ((2*offy) + (tile[1]*i))) {
-                        player[1] += 0.1;
+                
+                if (way == 0) {
+                while ((player[1] - offy) < ((2*offy) + (tile[1]*i))) {
+                        player[1] += 0.1;   
                     }
                 }
                 //Going up
-                if ((player[1] + offy) > (tile[1]*i)) {
-                    while ((player[1] + offy) >= (tile[1]*i)) {
+                if (way == 1){
+                    while ((player[1] + offy) > (tile[1]*i))    
                         player[1] -= 0.1;
-                    }
-                }                              
+                   
+                }                
                 return player[1];
             }
             row_count--;
