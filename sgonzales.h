@@ -1,7 +1,7 @@
 // sgonzales.h
-#ifndef _MY_INCLUDE_
-#define _MY_INCLUDE_
+#ifndef SGONZALES_H
 
+#define SGONZALES_H
 
 #include <vector>
 #include <GL/gl.h>   
@@ -9,6 +9,9 @@
 #include <iostream>
 
 
+class yerr {
+    int other;
+};
 
 
 
@@ -20,5 +23,4 @@
 
 
 
-
-#endif _MY_INCLUDE_
+#endif 
