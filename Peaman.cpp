@@ -70,6 +70,7 @@ const int MAX_BULLETS = 11;
 
 
 //constants
+const float something = 0.0f;
 const float timeslice = 1.0f;
 const float gravity = -0.2f;
 #define PI 3.141592653589793
@@ -145,6 +146,7 @@ Image img[2] = {
 
 class Global {
     public:
+        int useless_Var;
         unsigned char keys[65536];
         int xres, yres;
         double delay;
@@ -594,6 +596,25 @@ void init_opengl(void)
     //
     glBindTexture(GL_TEXTURE_2D, g.PlayTexture);
     //
+   Gordon will demonstrate this process now.
+
+   • git clone                  # Get your group project.
+   • branch [branch name]       # Start a new branch.
+   • checkout                   # Go to your branch.
+   • modify some code           # Write some program code. Test it.
+   • git add                    # Stage the source file(s).
+   • git commit                 # Commit the changes.
+   • git checkout master        # Go to the master branch.
+   • git pull                   # See if any other changes while you worked. Resolve the conflicts.
+   • git merge [branch name]    # Merge your branch into the project!
+   • git push origin master     # Add your changes to the project.
+
+
+   Now we will get a volunteer group member to show us this
+   process using Github.
+   
+   Can I get a volunteer?
+
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0,
