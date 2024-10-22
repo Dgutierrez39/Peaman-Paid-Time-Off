@@ -55,6 +55,7 @@ typedef Flt Matrix[4][4];
 
 //Shane added
 const int MAX_BULLETS = 11;
+extern void show_my_featureSW(int, int);
 
 //macros
 #define ALPHA 1
@@ -489,6 +490,8 @@ void X11_wrapper::check_mouse(XEvent *e)
     }
 }
 
+extern int shane_show;
+
 int X11_wrapper::check_keys(XEvent *e)
 {
     static int shift=0;
@@ -515,6 +518,9 @@ int X11_wrapper::check_keys(XEvent *e)
             //the 'a' key was pressed
             break;
         case XK_w:
+            break;
+        case XK_l:
+            shane_show = !shane_show;
             break;
         case XK_p:
             g.menu = 0;
@@ -745,6 +751,8 @@ void physics()
 
 }
 
+
+
 void render()
 {
     //Rect r;
@@ -790,6 +798,8 @@ void render()
         extern void drawCarrot(int,int);
         Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize);
         drawCarrot(g.xres,g.yres);
+        if(shane_show == 1)
+            show_my_featureSW(10, g.yres - 80);
     }
     
     
