@@ -64,6 +64,7 @@ const int MAX_BULLETS = 11;
 
 
 //constants
+const float something = 0.0f;
 const float timeslice = 1.0f;
 const float gravity = -0.2f;
 #define PI 3.141592653589793
