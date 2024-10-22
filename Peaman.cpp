@@ -783,9 +783,9 @@ void render()
     } 
     else {
         glDisable(GL_TEXTURE_2D);
-        extern void drawCarrot();
-        glPopMatrix();
+        extern void drawCarrot(int,int);
         Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize);
+        drawCarrot(g.xres,g.yres);
     }
     
     
