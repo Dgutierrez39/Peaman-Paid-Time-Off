@@ -34,10 +34,12 @@ using namespace std;
 //David's functions
 extern void Tile_layer(unsigned char map[19][80],int row, int col, float offx,
         float offy, float tile[2]);
+
 extern float Player_Collision_x(unsigned char map[19][80], int row, int col,
-                      float player[2], float offx, float offy, float tile[2]);
+        float player[2], float offx, float offy, float tile[2], int way);
+
 extern float Player_Collision_y(unsigned char map[19][80], int row, int col,
-                      float player[2], float offx, float offy, float tile[2]);
+        float player[2], float offx, float offy, float tile[2], int way);
 
 //sky added
 //defined types
@@ -645,24 +647,24 @@ void physics()
     if (g.keys[XK_Left]){
         bal.pos[0] -= bal.movement[0];
         bal.pos[0] = Player_Collision_x(lev.arr, lev.nrows, lev.ncols,
-                                    bal.pos, lev.tx, lev.ty, lev.tilesize);
+                                    bal.pos, lev.tx, lev.ty, lev.tilesize,1);
 
     }
     if (g.keys[XK_Right]){
         bal.pos[0] += bal.movement[0];
         bal.pos[0] = Player_Collision_x(lev.arr, lev.nrows, lev.ncols,
-                                    bal.pos, lev.tx, lev.ty, lev.tilesize);
+                                    bal.pos, lev.tx, lev.ty, lev.tilesize,0);
     
     }
     if (g.keys[XK_Up]) {            
         bal.pos[1] += bal.movement[1];
         bal.pos[1] = Player_Collision_y(lev.arr, lev.nrows, lev.ncols,
-                                    bal.pos, lev.tx, lev.ty, lev.tilesize);
+                                    bal.pos, lev.tx, lev.ty, lev.tilesize,1);
     }
     if (g.keys[XK_Down]){
         bal.pos[1] -= bal.movement[1];
         bal.pos[1] = Player_Collision_y(lev.arr, lev.nrows, lev.ncols,
-                                    bal.pos, lev.tx, lev.ty, lev.tilesize);   
+                                    bal.pos, lev.tx, lev.ty, lev.tilesize,0);   
     }
 
 
