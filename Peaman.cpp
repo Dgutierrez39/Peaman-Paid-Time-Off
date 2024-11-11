@@ -37,6 +37,8 @@ using namespace std;
 #include "fonts.h"
 #include "log.h"
 #include "sgonzales.h"
+#include "game.h"
+
 //David's functions
 extern void Tile_layer(unsigned char map[19][80],int row, int col, float offx,
         float offy, float tile[2]);
@@ -56,6 +58,7 @@ typedef Flt Matrix[4][4];
 //Shane added
 const int MAX_BULLETS = 11;
 extern void show_my_featureSW(int, int);
+//extern Gun* currentGun;
 
 //macros
 #define ALPHA 1
@@ -85,6 +88,7 @@ extern double physicsCountdown;
 extern double timeSpan;
 extern double timeDiff(struct timespec *start, struct timespec *end);
 extern void timeCopy(struct timespec *dest, struct timespec *source);
+
 
 
 class Image {
@@ -144,6 +148,8 @@ class Image {
 Image img[2] = {
 "./sprites/Play.png",
 "./sprites/menuScreen.png"};
+
+
 
 class Global {
     public:
