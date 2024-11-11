@@ -795,9 +795,11 @@ void render()
     } 
     else {
         glDisable(GL_TEXTURE_2D);
-        extern void drawCarrot(int,int);
+        extern void drawCarrot(float,float);
+        extern void drawBrock(float,float);
         Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize);
-        drawCarrot(g.xres,g.yres);
+        drawCarrot(bal.pos[0], bal.pos[1]);
+        drawBrock(bal.pos[0], bal.pos[1]);
         if(shane_show == 1)
             show_my_featureSW(10, g.yres - 80);
     }
