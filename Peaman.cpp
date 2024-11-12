@@ -17,6 +17,7 @@
 //
 //
 #include <iostream>
+#include <chrono>
 using namespace std;
 #include <stdio.h>
 #include <stdlib.h>
@@ -751,33 +752,37 @@ void physics()
 
 }
 
+/*
+extern struct timespec lastShotTime;
+const float SHOOT_INTERVAL = 0.5;
+float timediff(struct timespec *start, struct timespec *end) {
+    return (end->tv_sec - start->tv_sec) + (end->tv_nsec - start->tv_nsec) / 1e9;
+}
+*/
+
 
 
 void render()
 {
-    //Rect r;
-    //int ncols_to_render = (bal.pos[0] * 2)  / lev.tilesize[0] + 2;
-    //int nrow_to_render = (bal.pos[1] * 2) / lev.tilesize[1] + 2;
-   // glClearColor(0.1, 0.1, 0.1, 1.0);
+    /*
+   static struct timespec lastResetTime;
+   struct timespec currentTimeSpec;
+   clock_gettime(CLOCK_REALTIME, &currentTimeSpec);
+   float currentTime = currentTimeSpec.tv_sec + currentTimeSpec.tv_nsec / 1e9;
+   //std::cout << "Current Time: " << currentTime << std::endl; 
+   float elapsedTime = timediff(&lastShotTime, &currentTimeSpec);
+   //std::cout << "Elapsed Time: " << elapsedTime << " seconds" << std::endl;
+   
+   if (currentTime - lastResetTime.tv_sec >= 5.0f) {
+        currentTime = 0.0f;  // Reset currentTime to 0
+        lastResetTime = currentTimeSpec;  // Update lastResetTime to current time
+    }
+    */
+   //float elapsedTime = getElapsedTime(lastShotTime, currentTimeSpec);
+  // std::cout << "Elapsed Time: " << elapsedTime << std::endl; 
     glClear(GL_COLOR_BUFFER_BIT);
     //draw a quad with texture
-    //float wid = 120.0f;
-///*<<<<<<<*/ HEAD
     glColor3f(1.0, 1.0, 1.0);
-/*
-=======
-   // glColor3f(1.0, 1.0, 1.0);
-
-    if (g.menu) {
-        glBindTexture(GL_TEXTURE_2D, g.MenuTexture);
-        glBegin(GL_QUADS);
-            glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-            glTexCoord2f(0.0f, 0.0f); glVertex2i(0, g.yres);
-            glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
-            glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
-        glEnd();
-    } 
-    */
     Rect r;
     if (g.menu) {
         glBindTexture(GL_TEXTURE_2D, g.MenuTexture);
@@ -800,6 +805,7 @@ void render()
         Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize);
         drawCarrot(bal.pos[0], bal.pos[1]);
         drawBrock(bal.pos[0], bal.pos[1]);
+        
         if(shane_show == 1)
             show_my_featureSW(10, g.yres - 80);
     }
