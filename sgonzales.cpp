@@ -31,7 +31,8 @@ struct Bullet {
 Bullet bullets[MAX_BULLETS];  
 int bulletCount = 0;
 
-void shootBullet(float brockX, float brockY, float playerX, float playerY) {
+void shootBullet(float brockX, float brockY, float playerX, float playerY) 
+{
     if (bulletCount < MAX_BULLETS) { 
         float dx = playerX - brockX;
         float dy = playerY - brockY;
@@ -51,14 +52,16 @@ void shootBullet(float brockX, float brockY, float playerX, float playerY) {
 }
 
 
-void updateBullets() {
+void updateBullets() 
+{
     for (int i = 0; i < bulletCount; ++i) {
         bullets[i].x += bullets[i].dx * bullets[i].speed;  
         bullets[i].y += bullets[i].dy * bullets[i].speed;
     }
 }
 
-void drawBullet(const Bullet& bullet) {
+void drawBullet(const Bullet& bullet) 
+{
     glColor3f(0.0f, 1.0f, 0.0f); 
     glPushMatrix();
     glTranslatef(bullet.x, bullet.y, 0.0f);  
@@ -72,7 +75,8 @@ void drawBullet(const Bullet& bullet) {
     glPopMatrix();
 }
 
-void drawCarrot(float playerX, float playerY) {
+void drawCarrot(float playerX, float playerY) 
+{
     glColor3f(1.0f, 0.7f, 0.0f);  // orange color
     glPushMatrix();
     float speed = 5.0f;
