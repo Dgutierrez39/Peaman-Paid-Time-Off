@@ -4,11 +4,16 @@
  * Purpose: Individual source file for CMPS 3350 project
  */
 
+#ifndef SMONUNGOLH_H
+#define SMONUNGOLH_H
+
 #include "fonts.h"
+
+#endif
 
 int smonungolh_show = 0;
 
-void show_my_feature(int x, int y)
+void show_my_featureSM(int x, int y)
 {
     // Draw a rectangle
     // Show some text
