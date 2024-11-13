@@ -41,13 +41,13 @@ using namespace std;
 #include "game.h"
 
 //David's functions
-extern void Tile_layer(unsigned char map[19][80],int row, int col, float offx,
+extern void Tile_layer(unsigned char map[31][30],int row, int col, float offx,
         float offy, float tile[2]);
 
-extern float Player_Collision_x(unsigned char map[19][80], int row, int col,
+extern float Player_Collision_x(unsigned char map[31][30], int row, int col,
         float player[2], float offx, float offy, float tile[2], int way);
 
-extern float Player_Collision_y(unsigned char map[19][80], int row, int col,
+extern float Player_Collision_y(unsigned char map[31][30], int row, int col,
         float player[2], float offx, float offy, float tile[2], int way);
 
 //sky added
@@ -228,7 +228,7 @@ public:
 
 class Level {
     public:
-        unsigned char arr[19][80];
+        unsigned char arr[31][30];
         int nrows, ncols;
         float tilesize[2];
         float ftsz[2];

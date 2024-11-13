@@ -1,19 +1,31 @@
-                                        bbbbbbbb
-                                    bbbbbb                                    
-                                bbbbbbbb  
-bbbbbbbbbbbbbb              bbbbbbbbbb
-bb  bb  bb  bb          bbbbbbbbbbbb                    
-bbbbbbbbbbbbbb    ww      bbbbbbbbbbbbbbbbbbbbbbbbbbbbb         bbb bbb bbb
-bbbbbbbbbbbbb      bbbbbbb   bbbbbbbbbbbbbbbbbbbbbbbbbb      bbbbbbbbbbbbbb
-bbbbbbbbbbb      bbbbbbb   bbbbbbbbbbbbbbbbbbbbbbbbbbbb      bbbbbbbbbbbbbb
-bbbbbbbbbbbb      bbbbbbb   bbbbbbbbbbbbbbbbbbbbbbbbbbbb      bbbbbbbbbbbbbb
-bbbbbbbbbbbbb      bbbbbbb   bbbbbbbbbbbbbbbbbbbbbbbbbbbb      bbbbbbbbbbbbbb
-bbbbbbbbbbbbb      bbbbbbb   bbbbbbbbbbbbbbbbbbbbbbbbbbbb      bbbbbbbbbbbbbb
-                                        bbbbbbbb                              
-                                    bbbbbb                                    
-                                bbbbbbbb                                    
-bbbbbbbbbbbbbb              bbbbbbbbbb                                 
-bb  bb  bb  bb          bbbbbbbbbbbb                    b   b   b   b         
-bbbbbbbbbbbbbb    g     bbbbbbbbbbbbbbbbbbbbbbbbbbbbb  bbb bbb bbb bbb        
-bbbbbbbbbbbbbb          bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
-wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+wwwwwwwwwwwwwwwwwwwwwwwwwwwwww
+w                            w                                    
+w                            w  
+wbbibbbbbbbbbb              bw
+wb  bb  bb  bb          bbbbbw                    
+wbbbbbbbbbbbbb    ww      bbbw
+wbbbbbbbbbbbb      bbbbbbb   w
+wbbbbbbbbbb      bbbbbbb   bbw
+wbbbbbbbbbbb      bbbbbbb   bw
+wbbbbbbbbbbbb      bbbbbbb   w
+w                            w                              
+w                            w                                  
+w                            w                                    
+wbbbbbbbbbbbbb              bw                                 
+wb  bb  bb  bb          bbbbbw
+wbbbbbbbbbbbbb          bbbbbw        
+w0bbbbbbbbbbbb          bbbbbw
+w                            w
+w                            w
+w                            w
+w                            w
+w                            w
+w                            w
+w                            w
+w                            w
+w                            w
+w                            w
+w                            w
+w                            w
+w                            w
+wwwwwwwwwwwwwwwwwwwwwwwwwwwwww

@@ -4,18 +4,17 @@
 #include <X11/Xlib.h>
 
 
-void Tile_layer(unsigned char map[19][80],int row, int col, float offx,
+void Tile_layer(unsigned char map[31][30],int row, int col, float offx,
         float offy, float tile[2])
 {
     glClearColor(0.1, 0.1, 0.1, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
     for (int i = 0; i<col; i++) {
-        int row_counter = row-1;
         for (int j = 0; j<row; j++) {
-             if (map[row_counter][i] == 'w') {
+             if (map[j][i] == 'w') {
                 glColor3f(0.8, 0.8, 0.6);
                 glPushMatrix();
-                glTranslatef(offx+(tile[0]*row_counter),
+                glTranslatef(offx+(tile[0]*j),
                         offy+(tile[1]*i), 0.0);
                 glBegin(GL_QUADS);
                     glVertex2f(-offx, -offy);
@@ -25,10 +24,10 @@ void Tile_layer(unsigned char map[19][80],int row, int col, float offx,
                 glEnd();
                 glPopMatrix();
              }
-             if (map[row_counter][i] == 'b') {
+             if (map[j][i] == 'b') {
                 glColor3f(0.9, 0.2, 0.2);
                 glPushMatrix();
-                glTranslatef(offx+(tile[0]*row_counter),
+                glTranslatef(offx+(tile[0]*j),
                         offy+(tile[1]*i), 0.0);
                 glBegin(GL_QUADS);
                     glVertex2f(-offx, -offy);
@@ -38,11 +37,11 @@ void Tile_layer(unsigned char map[19][80],int row, int col, float offx,
                 glEnd();
                 glPopMatrix();
              }
-             row_counter--;
+            
         }
     }
 }
-float Player_Collision_x(unsigned char map[19][80], int row, int col,
+float Player_Collision_x(unsigned char map[31][30], int row, int col,
                       float player[2], float offx, float offy, float tile[2], int way)
 {
     for (int i = 0; i<col; i++) {
@@ -74,7 +73,7 @@ float Player_Collision_x(unsigned char map[19][80], int row, int col,
 
 
 
-float Player_Collision_y(unsigned char map[19][80], int row, int col,
+float Player_Collision_y(unsigned char map[31][30], int row, int col,
                       float player[2], float offx, float offy, float tile[2], int way)
 {
     for (int i = 0; i<col; i++) {
