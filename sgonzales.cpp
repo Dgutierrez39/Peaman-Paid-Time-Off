@@ -32,6 +32,26 @@ struct Bullet {
 
 Bullet bullets[MAX_BULLETS];  
 int bulletCount = 0;
+Bullet enemyBullets[MAX_BULLETS];
+void shootEnemyBullet(float tomatoX, float tomatoY, float playerX, float playerY)
+{
+
+    if (bulletCount < MAX_BULLETS) { 
+        float dx = playerX - tomatoX;
+        float dy = playerY - tomatoY;
+        float distance = sqrt(dx * dx + dy * dy);
+        dx /= distance; 
+        dy /= distance;
+        Bullet newBullet;
+        newBullet.x = tomatoX;  
+        newBullet.y = tomatoY;
+        newBullet.dx = dx;   
+        newBullet.dy = dy;
+        newBullet.speed = 5.0f;
+        enemyBullets[bulletCount] = newBullet;
+        bulletCount++;  
+    }
+}
 
 void shootBullet(float brockX, float brockY, float playerX, float playerY) 
 {
@@ -62,9 +82,31 @@ void updateBullets()
     }
 }
 
+void updateEnemyBullets() 
+{
+    for (int i = 0; i < bulletCount; ++i) {
+        enemyBullets[i].x += enemyBullets[i].dx * enemyBullets[i].speed;  
+        enemyBullets[i].y += enemyBullets[i].dy * enemyBullets[i].speed;
+    }
+}
 void drawBullet(const Bullet& bullet) 
 {
     glColor3f(0.0f, 1.0f, 0.0f); 
+    glPushMatrix();
+    glTranslatef(bullet.x, bullet.y, 0.0f);  
+    float size = 5.0f; 
+    glBegin(GL_QUADS);
+    glVertex2f(-size / 2, -size / 2); 
+    glVertex2f(size / 2, -size / 2);   
+    glVertex2f(size / 2, size / 2);   
+    glVertex2f(-size / 2, size / 2); 
+    glEnd();
+    glPopMatrix();
+}
+
+void drawEnemyBullet(const Bullet& bullet) 
+{
+    glColor3f(1.0f, 0.0f, 0.0f); 
     glPushMatrix();
     glTranslatef(bullet.x, bullet.y, 0.0f);  
     float size = 5.0f; 
@@ -107,6 +149,14 @@ void drawCarrot(float playerX, float playerY)
     glVertex2f(0.0f + size, -10.0f + size);
     glVertex2f(0.0f,  10.0f - size);
     glVertex2f(50.0f,  0.0f + size);
+    glEnd();
+    
+    glColor3f(0.0f, 0.8f, 0.0f);
+    glBegin(GL_LINE_STRIP);
+    glVertex2f(-12.0f, -6.0f);
+    glVertex2f(-6.0f, -12.0f);
+    glVertex2f(2.0f, -4.0f);
+    glVertex2f(4.0f, -2.0f);
     glEnd();
 
     glPopMatrix();
@@ -234,12 +284,12 @@ void drawTomato(float playerX, float playerY)
 
 
     if (time(NULL) > timer) {
-        shootBullet(tomatoX, tomatoY, playerX, playerY);
+        shootEnemyBullet(tomatoX, tomatoY, playerX, playerY);
         timer = time(NULL) + 1.5;
     }
-    updateBullets();
+    updateEnemyBullets();
     for (int i = 0; i < bulletCount; ++i) {
-        drawBullet(bullets[i]);
+        drawEnemyBullet(enemyBullets[i]);
     }
 
 }
