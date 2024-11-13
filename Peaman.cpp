@@ -41,14 +41,20 @@ using namespace std;
 #include "game.h"
 
 //David's functions
-extern void Tile_layer(unsigned char map[31][30],int row, int col, float offx,
-        float offy, float tile[2]);
+extern void Tile_layer(unsigned char map[2][31][30],int row, int col, float offx,
+        float offy, float tile[2], int stage);
 
-extern float Player_Collision_x(unsigned char map[31][30], int row, int col,
-        float player[2], float offx, float offy, float tile[2], int way);
+extern float Player_Collision_x(unsigned char map[2][31][30], int row, int col,
+        float player[2], float offx, float offy, float tile[2], int way, int Xres, int stage);
 
-extern float Player_Collision_y(unsigned char map[31][30], int row, int col,
-        float player[2], float offx, float offy, float tile[2], int way);
+extern float Player_Collision_y(unsigned char map[2][31][30], int row, int col,
+        float player[2], float offx, float offy, float tile[2], int way, int Yres, int stage);
+
+extern int Door_X(unsigned char map[2][31][30], int row, int col,
+           float player[2], float offx, float offy,
+           float tile[2], int way, int stage);
+
+const char stages[][16] = {"level1.txt","level2.txt"};
 
 //sky added
 //defined types
@@ -231,16 +237,18 @@ public:
 
 class Level {
     public:
-        unsigned char arr[31][30];
+        unsigned char arr[2][31][30];
         int nrows, ncols;
         float tilesize[2];
         float ftsz[2];
         //Flt tile_base;
         int spawn;
         float tx,ty;
+        int current_stage;
         Level() {
             //Log("Level constructor\n");
             spawn = 0;
+            current_stage = 0;
             tilesize[0] =  g.xres / 30;
             tilesize[1] =  g.yres / 30;
             ftsz[0] = (double)tilesize[0];
@@ -249,28 +257,31 @@ class Level {
             tx = tilesize[0]/2;
             ty = tilesize[1]/2;
             //read level
-            FILE *fpi = fopen("level2.txt","r");
-            if (fpi) {
-                nrows=0;
-                char line[100];
-                while (fgets(line, 100, fpi) != NULL) {
-                    removeCrLf(line);
-                    int slen = strlen(line);
-                    ncols = slen;
-                    //Log("line: %s\n", line);
-                    for (int j=0; j<slen; j++) {
-                        arr[nrows][j] = line[j];
+            for (int c = 0; c < 2 ; c++){
+                FILE *fpi = fopen(stages[c],"r");
+                if (fpi) {
+                    nrows=0;
+                    char line[100];
+                    while (fgets(line, 100, fpi) != NULL) {
+                        removeCrLf(line);
+                        int slen = strlen(line);
+                        ncols = slen;
+                        //Log("line: %s\n", line);
+                        for (int j=0; j<slen; j++) {
+                            arr[c][nrows][j] = line[j];
+                        }
+                        ++nrows;
                     }
-                    ++nrows;
+                    fclose(fpi);
+                    //printf("nrows of background data: %i\n", nrows);
                 }
-                fclose(fpi);
-                //printf("nrows of background data: %i\n", nrows);
-            }
+            
             for (int i=0; i<nrows; i++) {
                 for (int j=0; j<ncols; j++) {
-                    printf("%c", arr[i][j]);
+                    printf("%c", arr[c][i][j]);
                 }
                 printf("\n");
+            }
             }
         }
         void removeCrLf(char *str) {
@@ -672,29 +683,33 @@ void physics()
     if (g.keys[XK_w]) {
         printf("row is: %i\n", a);
         printf("Column is: %i\n", b);
-        printf("The slot has a : '%c'\n", lev.arr[a][b]);}
+        printf("The slot has a : '%c'\n", lev.arr[lev.current_stage][a][b]);}
 
     if (g.keys[XK_Left]){
         bal.pos[0] -= bal.movement[0];
         bal.pos[0] = Player_Collision_x(lev.arr, lev.nrows, lev.ncols,
-                                    bal.pos, lev.tx, lev.ty, lev.tilesize,1);
+                                    bal.pos, lev.tx, lev.ty, lev.tilesize,0, g.xres, lev.current_stage);
+        lev.current_stage = Door_X(lev.arr, lev.nrows, lev.ncols,
+                            bal.pos, lev.tx, lev.ty, lev.tilesize,0, lev.current_stage);
 
     }
     if (g.keys[XK_Right]){
         bal.pos[0] += bal.movement[0];
         bal.pos[0] = Player_Collision_x(lev.arr, lev.nrows, lev.ncols,
-                                    bal.pos, lev.tx, lev.ty, lev.tilesize,0);
-    
+                                    bal.pos, lev.tx, lev.ty, lev.tilesize,1, g.xres, lev.current_stage);
+        lev.current_stage = Door_X(lev.arr, lev.nrows, lev.ncols,
+                                    bal.pos, lev.tx, lev.ty, lev.tilesize,1, lev.current_stage);
+
     }
     if (g.keys[XK_Up]) {            
         bal.pos[1] += bal.movement[1];
         bal.pos[1] = Player_Collision_y(lev.arr, lev.nrows, lev.ncols,
-                                    bal.pos, lev.tx, lev.ty, lev.tilesize,1);
+                                    bal.pos, lev.tx, lev.ty, lev.tilesize,1, g.yres, lev.current_stage);
     }
     if (g.keys[XK_Down]){
         bal.pos[1] -= bal.movement[1];
         bal.pos[1] = Player_Collision_y(lev.arr, lev.nrows, lev.ncols,
-                                    bal.pos, lev.tx, lev.ty, lev.tilesize,0);   
+                                    bal.pos, lev.tx, lev.ty, lev.tilesize,0, g.yres, lev.current_stage);   
     }
 
 
@@ -815,7 +830,7 @@ void render()
         extern void drawBrock(float,float);
         extern void drawTomato(float, float);
         extern void drawLettuce(float, float);
-        Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize);
+        Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize, lev.current_stage);
         drawCarrot(bal.pos[0], bal.pos[1]);
         drawTomato(bal.pos[0], bal.pos[1]);
         drawLettuce(bal.pos[0], bal.pos[1]);
