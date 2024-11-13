@@ -8,6 +8,7 @@
 #define SMONUNGOLH_H
 
 #include "fonts.h"
+#include <cstdio>
 
 #endif
 
@@ -21,7 +22,8 @@ void show_my_featureSM(int x, int y)
     r.bot = y;
     r.left = x;
     r.center = 0;
-    ggprint8b(&r, 16, 0x00ff0000, "smonungolh's feature");
+    ggprint8b(&r, 16, 0x00ff0000, "text test");
+    ggprint8b(&r, 16, 0x00ff0000, "Peaman");
 }
 
 void show_if_thrust(int x, int y)
@@ -33,4 +35,10 @@ void show_if_thrust(int x, int y)
     r.left = x;
     r.center = 0;
     ggprint8b(&r, 16, 0x00ff0000, "thrust!");
+}
+
+void health(int health) {
+    if (health <= 0) {
+        printf("Peaman is Dead! Long live Peaman!");
+    }
 }

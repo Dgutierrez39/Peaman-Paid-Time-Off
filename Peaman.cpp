@@ -61,6 +61,9 @@ const int MAX_BULLETS = 11;
 extern void show_my_featureSW(int, int);
 //extern Gun* currentGun;
 
+// Sebastiann's functions
+extern void show_my_featureSM(int, int);
+
 //macros
 #define ALPHA 1
 #define rnd() (((double)rand())/(double)RAND_MAX)
@@ -498,6 +501,7 @@ void X11_wrapper::check_mouse(XEvent *e)
 }
 
 extern int shane_show;
+extern int smonungolh_show;
 
 int X11_wrapper::check_keys(XEvent *e)
 {
@@ -528,6 +532,7 @@ int X11_wrapper::check_keys(XEvent *e)
             break;
         case XK_l:
             shane_show = !shane_show;
+            smonungolh_show = !smonungolh_show;
             break;
         case XK_p:
             g.menu = 0;
@@ -815,8 +820,10 @@ void render()
         drawTomato(bal.pos[0], bal.pos[1]);
         drawLettuce(bal.pos[0], bal.pos[1]);
         drawBrock(bal.pos[0], bal.pos[1]);
-        if(shane_show == 1)
+        if (shane_show == 1)
             show_my_featureSW(10, g.yres - 80);
+        if (smonungolh_show == 1)
+            show_my_featureSM(35, g.yres - 80);
     }
     
     
