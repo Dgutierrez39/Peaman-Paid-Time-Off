@@ -13,6 +13,7 @@
 #endif
 
 int smonungolh_show = 0;
+bool is_dead = false;
 
 void show_my_featureSM(int x, int y)
 {
@@ -37,8 +38,17 @@ void show_if_thrust(int x, int y)
     ggprint8b(&r, 16, 0x00ff0000, "thrust!");
 }
 
-void health(int health) {
-    if (health <= 0) {
-        printf("Peaman is Dead! Long live Peaman!");
+void isDead(int health)
+{
+    if (health == 0 && !is_dead) {
+        printf("Peaman is Dead! Long live Peaman!\n\n");
+        is_dead = true;
     }
 }
+
+/*
+void healthBar(int health)
+{
+    // Draw boxes here
+}
+*/

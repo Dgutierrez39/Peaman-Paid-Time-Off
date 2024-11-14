@@ -72,6 +72,10 @@ extern void show_my_featureSW(int, int);
 
 // Sebastiann's functions
 extern void show_my_featureSM(int, int);
+extern int health;
+extern bool is_dead;
+//extern void healthBar(int);
+extern void isDead(int);
 
 //macros
 #define ALPHA 1
@@ -183,7 +187,7 @@ class Global {
             yres=600;
             delay = 0.1;
             memset(keys, 0, 65536);
-            menu = 1;
+            menu = 0;
             silhouette = 0;
         }
 } g;
@@ -553,7 +557,7 @@ int X11_wrapper::check_keys(XEvent *e)
             smonungolh_show = !smonungolh_show;
             break;
         case XK_p:
-            g.menu = 0;
+            g.menu = 1;
             break;
         case XK_Escape:
             //Escape key was pressed
@@ -807,7 +811,8 @@ void render()
     //draw a quad with texture
     glColor3f(1.0, 1.0, 1.0);
     Rect r;
-    if (g.menu) {
+    if (g.menu == 0) {
+        // On the menu screen
         glBindTexture(GL_TEXTURE_2D, g.MenuTexture);
         glBegin(GL_QUADS);
             glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
@@ -821,7 +826,8 @@ void render()
  
         ggprint8b(&r, 32, 0xFF87CEEB, "Press p to play");
     } 
-    else {
+    else if (g.menu == 1) {
+        // Game loop
         glDisable(GL_TEXTURE_2D);
         extern void drawCarrot(float,float);
         extern void drawBrock(float,float);
@@ -836,7 +842,28 @@ void render()
             show_my_featureSW(10, g.yres - 80);
         if (smonungolh_show == 1)
             show_my_featureSM(35, g.yres - 80);
+
+        // checks for death condition
+        isDead(health);
+        if (is_dead == true) {
+            g.menu = 2;
+        }
+    } else {
+        // to a dd formal GAME OVER screen here - Sebastiann
+        glBindTexture(GL_TEXTURE_2D, g.MenuTexture);
+        glBegin(GL_QUADS);
+            glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+            glTexCoord2f(0.0f, 0.12f); glVertex2i(0, g.yres);
+            glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
+            glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
+        glEnd();
+        r.bot = 25;
+        r.left = 75;
+        r.center = 0;
+ 
+        ggprint8b(&r, 32, 0xFF87CEEB, "GAME OVER");
     }
+
     //BALL
 
     glColor3f(1.0, 1.0, 0.1);
