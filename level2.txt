@@ -1,25 +1,25 @@
 wwwwwwwwwwwwwddddwwwwwwwwwwwww
 w                            w                                    
 w                            w  
-w                            w
-wbbbbbbbbb  bbbbbbbbbbbbbbbbbw                    
-w                          bbw
-w                         bb w
-w            bbbbbbbbbbbbb   w
-w            bbbbbbbbbbbb    w
-w                            w
+wbbibbbbbbbbbb              bw
+wb  bb  bb  bb          bbbbbw                    
+wbbbbbbbbbbbbb    ww      bbbw
+wbbbbbbbbbbbb      bbbbbbb   w
+wbbbbbbbbbb      bbbbbbb   bbw
+wbbbbbbbbbbb      bbbbbbb   bw
+wbbbbbbbbbbbb      bbbbbbb   w
 w                            w                              
 w                            w                                  
 w                            w                                    
-wbbbbbbbbbbbbbbbbbbbbb       w                                 
-wb    bbb    bb    bbb       w
-wbbbbbbbbbbbbbbbbbbbbb       w        
+wbbbbbbbbbbbbb              bw                                 
+wb  bb  bb  bb          bbbbbw
+wbbbbbbbbbbbbb          bbbbbw        
+w0bbbbbbbbbbbb          bbbbbw
 w                            w
-w                            w
-w                            w
-w                            w
-w                            w
-w                            w
+w                            d
+w                            d
+w                            d
+w                            d
 w                            w
 w                            w
 w                            w

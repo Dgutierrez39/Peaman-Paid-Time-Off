@@ -4,7 +4,7 @@
 #include <X11/Xlib.h>
 
 
-void Tile_layer(unsigned char map[2][31][30],int row, int col, float offx,
+void Tile_layer(unsigned char map[3][31][30],int row, int col, float offx,
         float offy, float tile[2], int stage)
 {
     glClearColor(0.1, 0.1, 0.1, 1.0);
@@ -38,7 +38,7 @@ void Tile_layer(unsigned char map[2][31][30],int row, int col, float offx,
                 glPopMatrix();
              }
              if (map[stage][j][i] == 'd') {
-                glColor3f(1, 0.0, 0.0);
+                glColor3f(0, 0, 1);
                 glPushMatrix();
                 glTranslatef(offx+(tile[0]*j),
                         offy+(tile[1]*i), 0.0);
@@ -55,8 +55,8 @@ void Tile_layer(unsigned char map[2][31][30],int row, int col, float offx,
         }
     }
 }
-float Player_Collision_x(unsigned char map[2][31][30], int row, int col,
-                      float player[2], float offx, float offy, float tile[2], int way, int Xres, int stage)
+float Player_Collision_x(unsigned char map[3][31][30], int row, int col,
+                      float player[2], float offx, float offy, float tile[2], int way, int stage)
 {
     for (int i = 0; i<col; i++) {
         //int row_count = row-1;
@@ -78,15 +78,6 @@ float Player_Collision_x(unsigned char map[2][31][30], int row, int col,
 
                 return player[0];
             }
-            if (map[stage][j][i] == 'd' && (player[0] + offx-1) > (tile[0]*j) &&
-                    (player[0] - offx+1) < ((2*offx)+(tile[0]*j)) &&
-                    (player[1] - offy+1) < ((2*offy) + (tile[1]*i))  &&
-                    (player[1] + offy-1) > (tile[1]*i)) {
-                if (way == 0)
-                    return Xres - (2*tile[0]); 
-                if (way == 1)
-                    return 2*tile[0];
-            }
         }
     }
     return player[0];
@@ -95,8 +86,8 @@ float Player_Collision_x(unsigned char map[2][31][30], int row, int col,
 
 
 
-float Player_Collision_y(unsigned char map[2][31][30], int row, int col,
-                      float player[2], float offx, float offy, float tile[2], int way, int Yres, int stage)
+float Player_Collision_y(unsigned char map[3][31][30], int row, int col,
+                      float player[2], float offx, float offy, float tile[2], int way, int stage)
 {
     for (int i = 0; i<col; i++) {
         for (int j = 0; j<row; j++) {
@@ -121,38 +112,52 @@ float Player_Collision_y(unsigned char map[2][31][30], int row, int col,
                 }                
                 return player[1];
             }
-            if (map[stage][j][i] == 'd' && (player[0] + offx-1) > (tile[0]*j) &&
-                    (player[0] - offx+1) < ((2*offx)+(tile[0]*j)) &&
-                    (player[1] - offy+1) < ((2*offy) + (tile[1]*i))  &&
-                    (player[1] + offy-1) > (tile[1]*i)) {
-                if (way == 1)
-                    return 2*tile[1];
-                if (way == 0)
-                    return Yres - (2*tile[1]);
-            }
-
         }
     }
     return player[1];
 }
 
-int Door_X(unsigned char map[2][31][30], int row, int col,
+int Door_X(unsigned char map[3][31][30], int row, int col,
            float player[2], float offx, float offy, 
            float tile[2], int way, int stage)
 { 
     int temp = stage;
     for (int i = 0; i<col; i++) {
         for (int j = 0; j<row; j++) {
-            if (map[stage][j][i] == 'd' && (player[0] + offx-1) > (tile[0]*j) &&
-                (player[0] - offx+1) < ((2*offx)+(tile[0]*j)) &&
-                (player[1] - offy+1) < ((2*offy) + (tile[1]*i))  &&
-                (player[1] + offy-1) > (tile[1]*i)) {
+            if (map[stage][j][i] == 'd' && 
+                    (player[0] + offx) > (tile[0]*j) &&
+                    (player[0] - offx) < ((2*offx)+(tile[0]*j)) &&
+                    (player[1] - offy) < ((2*offy) + (tile[1]*i))  &&
+                    (player[1] + offy) > (tile[1]*i)) {
                 if (way == 0)
-                    temp = 1;
+                    temp = 0;
                 if (way == 1)
-                    temp = 0;;
+                    temp = 1;
             }
         }
     }
     return temp;
 }
+
+int Door_Y(unsigned char map[3][31][30], int row, int col,
+           float player[2], float offx, float offy,
+           float tile[2], int way, int stage)
+{
+    int temp = stage;
+    for (int i = 0; i<col; i++) {
+        for (int j = 0; j<row; j++) {
+            if (map[stage][j][i] == 'd' &&
+                    (player[0] + offx) > (tile[0]*j) &&
+                    (player[0] - offx) < ((2*offx)+(tile[0]*j)) &&
+                    (player[1] - offy) < ((2*offy) + (tile[1]*i))  &&
+                    (player[1] + offy) > (tile[1]*i)) {
+                if (way == 0)
+                    temp = 1;
+                if (way == 1)
+                    temp = 2;
+            }
+        }
+    }
+    return temp;
+}
+

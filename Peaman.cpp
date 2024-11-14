@@ -41,20 +41,23 @@ using namespace std;
 #include "game.h"
 
 //David's functions
-extern void Tile_layer(unsigned char map[2][31][30],int row, int col, float offx,
+extern void Tile_layer(unsigned char map[3][31][30],int row, int col, float offx,
         float offy, float tile[2], int stage);
 
-extern float Player_Collision_x(unsigned char map[2][31][30], int row, int col,
-        float player[2], float offx, float offy, float tile[2], int way, int Xres, int stage);
+extern float Player_Collision_x(unsigned char map[3][31][30], int row, int col,
+        float player[2], float offx, float offy, float tile[2], int way, int stage);
 
-extern float Player_Collision_y(unsigned char map[2][31][30], int row, int col,
-        float player[2], float offx, float offy, float tile[2], int way, int Yres, int stage);
+extern float Player_Collision_y(unsigned char map[3][31][30], int row, int col,
+        float player[2], float offx, float offy, float tile[2], int way, int stage);
 
-extern int Door_X(unsigned char map[2][31][30], int row, int col,
+extern int Door_X(unsigned char map[3][31][30], int row, int col,
+           float player[2], float offx, float offy,
+           float tile[2], int way, int stage);
+extern int Door_Y(unsigned char map[3][31][30], int row, int col,
            float player[2], float offx, float offy,
            float tile[2], int way, int stage);
 
-const char stages[][16] = {"level1.txt","level2.txt"};
+const char stages[][16] = {"level1.txt","level2.txt", "level3.txt"};
 
 //sky added
 //defined types
@@ -237,7 +240,7 @@ public:
 
 class Level {
     public:
-        unsigned char arr[2][31][30];
+        unsigned char arr[3][31][30];
         int nrows, ncols;
         float tilesize[2];
         float ftsz[2];
@@ -257,7 +260,7 @@ class Level {
             tx = tilesize[0]/2;
             ty = tilesize[1]/2;
             //read level
-            for (int c = 0; c < 2 ; c++){
+            for (int c = 0; c < 3; c++){
                 FILE *fpi = fopen(stages[c],"r");
                 if (fpi) {
                     nrows=0;
@@ -538,6 +541,10 @@ int X11_wrapper::check_keys(XEvent *e)
     switch (key) {
         case XK_a:
             //the 'a' key was pressed
+            if (lev.current_stage != 0)
+                lev.current_stage = 0;
+            else
+                lev.current_stage = 1;
             break;
         case XK_w:
             break;
@@ -674,7 +681,7 @@ void init_opengl(void)
 void physics()
 {
 
-
+    int temp_stage = lev.current_stage;
     int b = (int)(bal.pos[1]/lev.ftsz[1]);
     b = b % lev.ncols;
     int a = (int)(bal.pos[0]/lev.ftsz[0]);
@@ -683,62 +690,52 @@ void physics()
     if (g.keys[XK_w]) {
         printf("row is: %i\n", a);
         printf("Column is: %i\n", b);
+        printf("The stage number is: %i\n", lev.current_stage);
         printf("The slot has a : '%c'\n", lev.arr[lev.current_stage][a][b]);}
 
     if (g.keys[XK_Left]){
         bal.pos[0] -= bal.movement[0];
-        bal.pos[0] = Player_Collision_x(lev.arr, lev.nrows, lev.ncols,
-                                    bal.pos, lev.tx, lev.ty, lev.tilesize,0, g.xres, lev.current_stage);
         lev.current_stage = Door_X(lev.arr, lev.nrows, lev.ncols,
                             bal.pos, lev.tx, lev.ty, lev.tilesize,0, lev.current_stage);
-
+        if (temp_stage != lev.current_stage)
+            bal.pos[0] = g.xres-(2*lev.tilesize[0]);
+        else
+            bal.pos[0] = Player_Collision_x(lev.arr, lev.nrows, lev.ncols,
+                                    bal.pos, lev.tx, lev.ty, lev.tilesize,0,  lev.current_stage);
     }
     if (g.keys[XK_Right]){
         bal.pos[0] += bal.movement[0];
-        bal.pos[0] = Player_Collision_x(lev.arr, lev.nrows, lev.ncols,
-                                    bal.pos, lev.tx, lev.ty, lev.tilesize,1, g.xres, lev.current_stage);
         lev.current_stage = Door_X(lev.arr, lev.nrows, lev.ncols,
+                                    bal.pos, lev.tx, lev.ty, lev.tilesize,1, lev.current_stage);
+        if (temp_stage != lev.current_stage)
+            bal.pos[0] = 2*lev.tilesize[0];
+        else
+            bal.pos[0] = Player_Collision_x(lev.arr, lev.nrows, lev.ncols,
                                     bal.pos, lev.tx, lev.ty, lev.tilesize,1, lev.current_stage);
 
     }
     if (g.keys[XK_Up]) {            
         bal.pos[1] += bal.movement[1];
-        bal.pos[1] = Player_Collision_y(lev.arr, lev.nrows, lev.ncols,
-                                    bal.pos, lev.tx, lev.ty, lev.tilesize,1, g.yres, lev.current_stage);
+        lev.current_stage = Door_Y(lev.arr, lev.nrows, lev.ncols,
+                                    bal.pos, lev.tx, lev.ty, lev.tilesize,1, lev.current_stage);
+        if (temp_stage != lev.current_stage)
+            bal.pos[1] = 2*lev.tilesize[1];
+        else
+            bal.pos[1] = Player_Collision_y(lev.arr, lev.nrows, lev.ncols,
+                                    bal.pos, lev.tx, lev.ty, lev.tilesize,1, lev.current_stage);
     }
     if (g.keys[XK_Down]){
         bal.pos[1] -= bal.movement[1];
-        bal.pos[1] = Player_Collision_y(lev.arr, lev.nrows, lev.ncols,
-                                    bal.pos, lev.tx, lev.ty, lev.tilesize,0, g.yres, lev.current_stage);   
+        lev.current_stage = Door_Y(lev.arr, lev.nrows, lev.ncols,
+                                    bal.pos, lev.tx, lev.ty, lev.tilesize,0, lev.current_stage);
+        if (temp_stage != lev.current_stage)
+            bal.pos[1] = g.yres-(2*lev.tilesize[1]);
+        else
+            bal.pos[1] = Player_Collision_y(lev.arr, lev.nrows, lev.ncols,
+                                    bal.pos, lev.tx, lev.ty, lev.tilesize,0, lev.current_stage);   
     }
 
 
-/*
-    for (int i = 0; i<ncols_to_render; i++) {
-        int row = lev.nrows-1;
-        for (int j = 0; j<lev.nrows; j++) {
-            if ((lev.arr[row][i] == 'w' || lev.arr[row][i] == 'b'  )&&
-                    (bal.pos[1] - lev.tx) < ((2*lev.ty) + (lev.tilesize[1]*i))  && 
-                    (bal.pos[1] + lev.tx) > (lev.tilesize[1]*i)  &&
-                    (bal.pos[0] + lev.tx) > (lev.tilesize[0]*row) &&
-                    (bal.pos[0] - lev.tx) < ((2*lev.tx)+(lev.tilesize[0]*row))) {
-                //Colssion, however the hell you spell it I'm tired
-                bal.pos[0] = bal.old_pos[0];   
-                bal.pos[1] = bal.old_pos[1];
-            }
-             if ((lev.arr[row][i] == 'b') &&
-               (bal.pos[1]) < (lev.tilesize[1] + (lev.tilesize[1]*i))  &&
-               (bal.pos[1]) > (lev.tilesize[1]*i)  &&
-               (bal.pos[0]) > (lev.tilesize[0]*row) &&
-               (bal.pos[0]) < (lev.tilesize[0] + (lev.tilesize[0]*row))) {
-            //Colssion, however the hell you spell it I'm tired
-            bal.pos[0] = bal.old_pos[0];
-            bal.pos[1] = bal.old_pos[1];
-            }
-            row--;
-        }
-    }
-*/
     struct timespec bt;
     clock_gettime(CLOCK_REALTIME, &bt);
     int i = 0;
@@ -840,42 +837,6 @@ void render()
         if (smonungolh_show == 1)
             show_my_featureSM(35, g.yres - 80);
     }
-    
-    
-    /*for (int i = 0; i<lev.ncols; i++) {
-        int row = lev.nrows-1;
-        for (int j = 0; j<lev.nrows; j++) {
-            if (lev.arr[row][i] == 'w') {
-                glColor3f(0.8, 0.8, 0.6);
-                glPushMatrix();
-                glTranslatef(lev.tx+(lev.tilesize[0]*row),
-                        lev.ty+(lev.tilesize[1]*i), 0.0);
-                glBegin(GL_QUADS);
-                glVertex2f(-lev.tx, -lev.ty);
-                glVertex2f(-lev.tx,  lev.ty);
-                glVertex2f( lev.tx,  lev.ty);
-                glVertex2f( lev.tx, -lev.ty);
-                glEnd();
-                glPopMatrix();
-            }
-
-            if (lev.arr[row][i] == 'b') {
-                glColor3f(0.9, 0.2, 0.2);
-                glPushMatrix();
-                glTranslatef(lev.tx+(lev.tilesize[0]*row),
-                        lev.ty+(lev.tilesize[1]*i), 0.0);
-                glBegin(GL_QUADS);
-                glVertex2f(-lev.tx, -lev.ty);
-                glVertex2f(-lev.tx,  lev.ty);
-                glVertex2f( lev.tx,  lev.ty);
-                glVertex2f( lev.tx, -lev.ty);
-                glEnd();
-                glPopMatrix();
-            }
-            row--;
-        }
-    }
-*/
     //BALL
 
     glColor3f(1.0, 1.0, 0.1);
