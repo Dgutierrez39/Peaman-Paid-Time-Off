@@ -76,6 +76,7 @@ extern int health;
 extern bool is_dead;
 //extern void healthBar(int);
 extern void isDead(int);
+// test game over
 
 //macros
 #define ALPHA 1
