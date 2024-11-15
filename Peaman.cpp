@@ -78,7 +78,7 @@ extern void show_gun(int, int);
 
 // Sebastiann's functions
 extern void show_my_featureSM(int, int);
-extern int health;
+extern int playerHealth;
 extern bool is_dead;
 //extern void healthBar(int);
 extern void isDead(int);
@@ -847,7 +847,7 @@ void render()
         }
 
         // checks for death condition
-        isDead(health);
+        isDead(playerHealth);
         if (is_dead == true) {
             g.menu = 2;
         }

@@ -14,7 +14,7 @@
 #define MAX_BULLETS 10000 
 #define MAX_ENEMIES 10 
 const float shootInterval = 0.1f;
-int health = 20;
+int playerHealth = 20;
 float collisionThreshold = 10.0f;
 float collisionCarrotThreshold = 25.0f;
 float collisionTomatoThreshold = 35.0f;
@@ -67,12 +67,14 @@ void shootEnemyBullet(float tomatoX, float tomatoY, float playerX, float playerY
         bulletCount++;  
     }
 }
+/*
 bool meleeColliding(float brockX, float brockY, float brockSize, float enemyX, float enemyY, float enemySize) {
     float dx = brockX - enemyX;
     float dy = brockY - enemyY;
     float distance = sqrt(dx * dx + dy * dy);
     return distance < (brockSize / 2 + enemySize / 2);
 }
+*/
 bool checkCollision(float bulletX, float bulletY, float tomatoX, float tomatoY, float threshold) {
     float dx = bulletX - tomatoX;
     float dy = bulletY - tomatoY;
@@ -272,8 +274,8 @@ void drawCarrot(float playerX, float playerY)
         carrotX = playerX;
         carrotY = playerY;
         if (distance <= collisionThreshold && health > 0) {
-            health -= 1;
-            printf("Player health: %d\n", health);
+            playerHealth -= 1;
+            printf("Player health: %d\n", playerHealth);
         }
     }
     glTranslatef(carrotX,carrotY,0.0f);
@@ -349,6 +351,7 @@ void drawBrock(float playerX, float playerY)
     glPopMatrix();
 
     // Collision
+    /*
     for (int i = 0; i < enemyCount; ++i) {
         if (enemies[i].active && meleeColliding(brockX, brockY, size, enemies[i].x, enemies[i].y, enemies[i].size)) {
             enemies[i].health -= 1; 
@@ -357,7 +360,7 @@ void drawBrock(float playerX, float playerY)
             }
         }
     }
-    
+    */
     if (time(NULL) > timer) {
         shootBullet(brockX, brockY, playerX, playerY);
         shootBullet(brockX, brockY, -playerX, -playerY);
@@ -394,9 +397,9 @@ void drawTomato(float playerX, float playerY)
     } else {
         tomatoX = playerX;
         tomatoY = playerY;
-        if (distance <= collisionThreshold && health > 0) {
-            health -= 1;
-            printf("Player health: %d\n", health);
+        if (distance <= collisionThreshold && playerHealth > 0) {
+            playerHealth -= 1;
+            printf("Player health: %d\n", playerHealth);
         }
     
     }
@@ -495,9 +498,9 @@ void drawLettuce(float playerX, float playerY)
     } else {
         lettuceX = playerX;
         lettuceY = playerY;
-        if (distance <= collisionThreshold && health > 0) {
-            health -= 1;
-            printf("Player health: %d\n", health);
+        if (distance <= collisionThreshold && playerHealth > 0) {
+            playerHealth -= 1;
+            printf("Player health: %d\n", playerHealth);
         }
 
     }
