@@ -557,7 +557,10 @@ int X11_wrapper::check_keys(XEvent *e)
             smonungolh_show = !smonungolh_show;
             break;
         case XK_p:
-            g.menu = 1;
+            if (g.menu == 0) {
+                // Menu to game loop
+                g.menu = 1;
+            }
             break;
         case XK_Escape:
             //Escape key was pressed
@@ -823,7 +826,6 @@ void render()
         r.bot = 25;
         r.left = 75;
         r.center = 0;
- 
         ggprint8b(&r, 32, 0xFF87CEEB, "Press p to play");
     } 
     else if (g.menu == 1) {
@@ -843,13 +845,47 @@ void render()
         if (smonungolh_show == 1)
             show_my_featureSM(35, g.yres - 80);
 
+        //BALL
+        glColor3f(1.0, 1.0, 0.1);
+        glPushMatrix();
+        //put ball in its place
+        glTranslated(bal.pos[0], bal.pos[1], 0);
+        glBegin(GL_QUADS);
+        glVertex2i(-lev.tx, -lev.ty);
+        glVertex2i(-lev.tx,  lev.ty);
+        glVertex2i( lev.tx,  lev.ty);
+        glVertex2i( lev.tx, -lev.ty);
+        glEnd();
+        glPopMatrix();
+
+        //Draw the bullets
+        for (int i=0; i<ga.nbullets; i++) {
+            Bullet *b = &ga.barr[i];
+            //Log("draw bullet...\n");
+            glColor3f(1.0, 1.0, 1.0);
+            glBegin(GL_POINTS);
+            glVertex2f(b->pos[0],      b->pos[1]);
+            glVertex2f(b->pos[0]-1.0f, b->pos[1]);
+            glVertex2f(b->pos[0]+1.0f, b->pos[1]);
+            glVertex2f(b->pos[0],      b->pos[1]-1.0f);
+            glVertex2f(b->pos[0],      b->pos[1]+1.0f);
+            glColor3f(0.8, 0.8, 0.8);
+            glVertex2f(b->pos[0]-1.0f, b->pos[1]-1.0f);
+            glVertex2f(b->pos[0]-1.0f, b->pos[1]+1.0f);
+            glVertex2f(b->pos[0]+1.0f, b->pos[1]-1.0f);
+            glVertex2f(b->pos[0]+1.0f, b->pos[1]+1.0f);
+            glEnd();
+        }
+
         // checks for death condition
         isDead(health);
         if (is_dead == true) {
             g.menu = 2;
         }
+        
     } else {
-        // to a dd formal GAME OVER screen here - Sebastiann
+        // GAME OVER screen
+        glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, g.MenuTexture);
         glBegin(GL_QUADS);
             glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
@@ -857,46 +893,14 @@ void render()
             glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
             glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
         glEnd();
-        r.bot = 25;
+        r.bot = 35;
         r.left = 75;
         r.center = 0;
- 
-        ggprint8b(&r, 32, 0xFF87CEEB, "GAME OVER");
-    }
-
-    //BALL
-
-    glColor3f(1.0, 1.0, 0.1);
-    glPushMatrix();
-    //put ball in its place
-    glTranslated(bal.pos[0], bal.pos[1], 0);
-    glBegin(GL_QUADS);
-    glVertex2i(-lev.tx, -lev.ty);
-    glVertex2i(-lev.tx,  lev.ty);
-    glVertex2i( lev.tx,  lev.ty);
-    glVertex2i( lev.tx, -lev.ty);
-    glEnd();
-    glPopMatrix();
-
-    //Draw the bullets
-     for (int i=0; i<ga.nbullets; i++) {
-        Bullet *b = &ga.barr[i];
-        //Log("draw bullet...\n");
-        glColor3f(1.0, 1.0, 1.0);
-        glBegin(GL_POINTS);
-        glVertex2f(b->pos[0],      b->pos[1]);
-        glVertex2f(b->pos[0]-1.0f, b->pos[1]);
-        glVertex2f(b->pos[0]+1.0f, b->pos[1]);
-        glVertex2f(b->pos[0],      b->pos[1]-1.0f);
-        glVertex2f(b->pos[0],      b->pos[1]+1.0f);
-        glColor3f(0.8, 0.8, 0.8);
-        glVertex2f(b->pos[0]-1.0f, b->pos[1]-1.0f);
-        glVertex2f(b->pos[0]-1.0f, b->pos[1]+1.0f);
-        glVertex2f(b->pos[0]+1.0f, b->pos[1]-1.0f);
-        glVertex2f(b->pos[0]+1.0f, b->pos[1]+1.0f);
-        glEnd();
-     }
-
+        ggprint8b(&r, 32, 0xFFF44336, "GAME OVER");
+        r.bot = 20;
+        r.left = 75;
+        ggprint8b(&r, 32, 0xFFF44336, "Press Esc to close");
+    }       
 }
 
 
