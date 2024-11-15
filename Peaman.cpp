@@ -66,13 +66,19 @@ typedef double Vec[3];
 typedef Flt Matrix[4][4];
 
 //Shane added
-const int MAX_BULLETS = 11;
+//const int MAX_BULLETS = 11;
 extern void show_my_featureSW(int, int);
+void fire_bullet(void);
+void update_bullets(void);
+extern void show_gun(int, int);
+
+#define BULLET_LIFESPAN 1.0
+
 //extern Gun* currentGun;
 
 // Sebastiann's functions
 extern void show_my_featureSM(int, int);
-extern int health;
+extern int playerHealth;
 extern bool is_dead;
 //extern void healthBar(int);
 extern void isDead(int);
@@ -96,18 +102,6 @@ const float something = 0.0f;
 const float timeslice = 1.0f;
 const float gravity = -0.2f;
 #define PI 3.141592653589793
-
-//Setup timers //added more timers - Shane
-const double physicsRate = 1.0 / 60.0;
-const double oobillion = 1.0 / 1e9;
-extern struct timespec timeStart, timeCurrent;
-extern struct timespec timePause;
-extern double physicsCountdown;
-extern double timeSpan;
-extern double timeDiff(struct timespec *start, struct timespec *end);
-extern void timeCopy(struct timespec *dest, struct timespec *source);
-
-
 
 class Image {
     public:
@@ -167,80 +161,61 @@ Image img[2] = {
 "./sprites/Play.png",
 "./sprites/menuScreen.png"};
 
+Global g;
+Ball bal;
+Game ga;
 
 
-class Global {
-    public:
-        int useless_Var;
-        unsigned char keys[65536];
-        int xres, yres;
-        double delay;
-        //skyadded
-        GLuint MenuTexture;
-        GLuint silhouetteTexture;
-        GLuint PlayTexture;
-        int playPress;
-        int silhouette;
-        int menu;
-        //
-        Global() {   
-            xres=800;            
-            yres=600;
-            delay = 0.1;
-            memset(keys, 0, 65536);
-            menu = 0;
-            silhouette = 0;
+Global::Global() {
+    xres = 800;
+    yres = 600;
+    delay = 0.1;
+    memset(keys, 0, 65536);
+    menu = 1;
+    silhouette = 0;
+    mx = my = 0;
+}
+
+Ball::Ball() {
+    pos[0] = g.xres / 2;
+    pos[1] = g.yres / 2;
+    angle = 0.0;
+    movement[0] = g.xres / 100;
+    movement[1] = g.yres / 100;
+    camera[0] = camera[1] = 0;
+}
+
+Bullet::Bullet() {
+}
+
+Game::Game() {
+    barr = new Bullet[MAX_BULLETS];
+    nbullets = 0;
+    clock_gettime(CLOCK_REALTIME, &bulletTimer);
+}
+
+Game::~Game() {
+    delete[] barr;
+}
+
+void Game::check_bullet_lifetime() {
+    struct timespec currentTime;
+    clock_gettime(CLOCK_REALTIME, &currentTime);
+
+    for (int i = 0; i < nbullets; i++) {
+        double time_diff = (currentTime.tv_sec - barr[i].time.tv_sec) +
+                           (currentTime.tv_nsec - barr[i].time.tv_nsec) / 1000000000.0;
+
+        if (time_diff > BULLET_LIFESPAN) {
+
+            for (int j = i; j < nbullets - 1; j++) {
+                barr[j] = barr[j + 1];
+            }
+            nbullets--;
+            i--;
         }
-} g;
-
-class Ball {
-    public:
-        Vec vel;
-        Vec dir;
-        float angle;
-        float color[3];
-        float pos[2];
-        float movement[2];
-        double camera [2];
-        Ball() {
-            pos[0] = g.xres/2;
-            pos[1] = g.yres/2;
-            //VecZero(dir);
-            angle = 0.0;
-            movement[0] = g.xres / 100; 
-            movement[1] = g.yres / 100;
-            camera[0] = camera[1] = 0;
-        }
-} bal;
-
-class Bullet {
-public:
-    Vec pos;
-    Vec vel;
-    float color[3];
-    struct timespec time;
-public:
-    Bullet() { }
-};
-
-class Game {
-public:
-    Ball bal;
-    Bullet *barr;
-    int nbullets;
-    struct timespec bulletTimer;
-
-public:
-    Game() {
-        barr = new Bullet[MAX_BULLETS];
-        nbullets = 0;
-        clock_gettime(CLOCK_REALTIME, &bulletTimer);
     }
-    ~Game() {
-        delete [] barr;
-    }
-
-} ga;
+}
 
 
 class Level {
@@ -457,6 +432,13 @@ void X11_wrapper::check_mouse(XEvent *e)
 {
     static int savex = 0;
     static int savey = 0;
+    
+    int mx = e->xbutton.x;
+    int my = e->xbutton.y;
+
+    g.mx = mx;
+    g.my = my;
+
 
     //Weed out non-mouse events
     if (e->type != ButtonRelease &&
@@ -472,42 +454,16 @@ void X11_wrapper::check_mouse(XEvent *e)
     if (e->type == ButtonPress) {
         if (e->xbutton.button==1) {
             //Left button was pressed.
-            struct timespec bt;
-            clock_gettime(CLOCK_REALTIME, &bt);
-            double ts = timeDiff(&ga.bulletTimer, &bt);
-            if (ts > 0.1) {
-                timeCopy(&ga.bulletTimer, &bt);
-                //shoot a bullet...
-                if (ga.nbullets < MAX_BULLETS) {
-                    Bullet *b = &ga.barr[ga.nbullets];
-                    timeCopy(&b->time, &bt);
-                    b->pos[0] = ga.bal.pos[0];
-                    b->pos[1] = ga.bal.pos[1];
-                    b->vel[0] = ga.bal.vel[0];
-                    b->vel[1] = ga.bal.vel[1];
-                    //convert ship angle to radians
-                    Flt rad = ((ga.bal.angle+90.0) / 360.0f) * PI * 2.0;
-                    //convert angle to a vector
-                    Flt xdir = cos(rad);
-                    Flt ydir = sin(rad);
-                    b->pos[0] += xdir*20.0f;
-                    b->pos[1] += ydir*20.0f;
-                    b->vel[0] += xdir*6.0f + rnd()*0.1;
-                    b->vel[1] += ydir*6.0f + rnd()*0.1;
-                    b->color[0] = 1.0f;
-                    b->color[1] = 1.0f;
-                    b->color[2] = 1.0f;
-                    ++ga.nbullets;
-        
+            fire_bullet(g.mx, g.my); 
            // return;
                 }
             }
-        }
+        
         if (e->xbutton.button==3) {
             //Right button was pressed.
             return;
         }
-    }
+    
     if (e->type == MotionNotify) {
         //The mouse moved!
         if (savex != e->xbutton.x || savey != e->xbutton.y) {
@@ -516,6 +472,13 @@ void X11_wrapper::check_mouse(XEvent *e)
             //Code placed here will execute whenever the mouse moves.
 
         }
+        if (savex != mx || savey != my) {
+            savex = mx;
+            savey = my;
+            g.mx = mx;  // Update mouse X position
+            g.my = my;  // Update mouse Y position
+        }
+
     }
 }
 
@@ -573,6 +536,12 @@ int X11_wrapper::check_keys(XEvent *e)
         case XK_Up:
             break;
         case XK_Down:
+            break;
+        case XK_1:
+            currentGun = AR;
+            break;
+        case XK_2:
+            currentGun = SHOTGUN;
             break;
     }
     return 0;
@@ -779,7 +748,7 @@ void physics()
     }
 
 
-
+update_bullets();
 
 }
 
@@ -879,7 +848,7 @@ void render()
         }
 
         // checks for death condition
-        isDead(health);
+        isDead(playerHealth);
         if (is_dead == true) {
             g.menu = 2;
         }
@@ -902,6 +871,7 @@ void render()
         r.left = 75;
         ggprint8b(&r, 32, 0xFFF44336, "Press Esc to close");
     }       
+    show_gun(50, g.yres - 100);
 }
 
 
