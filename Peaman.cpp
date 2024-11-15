@@ -171,7 +171,7 @@ Global::Global() {
     yres = 600;
     delay = 0.1;
     memset(keys, 0, 65536);
-    menu = 1;
+    menu = 0;
     silhouette = 0;
     mx = my = 0;
 }
