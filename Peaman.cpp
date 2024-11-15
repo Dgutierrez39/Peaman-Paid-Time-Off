@@ -536,6 +536,12 @@ int X11_wrapper::check_keys(XEvent *e)
             break;
         case XK_Down:
             break;
+        case XK_1:
+            currentGun = AR;
+            break;
+        case XK_2:
+            currentGun = SHOTGUN;
+            break;
     }
     return 0;
 }

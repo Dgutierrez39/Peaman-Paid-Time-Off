@@ -18,6 +18,16 @@
 #include <string.h>
 #include <cstdlib>
 
+#define AR 1
+#define SHOTGUN 2
+
+extern int currentGun;  
+extern const float shotgunSpread;  
+extern struct timespec lastShotAR; 
+extern struct timespec lastShotShotgun;  
+extern const double arCooldown;  
+extern const double shotgunCooldown;  
+
 typedef double Vec[3];
 const double physicsRate = 1.0 / 60.0;
 const double oobillion = 1.0 / 1e9;

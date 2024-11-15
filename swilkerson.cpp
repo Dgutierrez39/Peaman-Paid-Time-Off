@@ -21,6 +21,79 @@
 
 using namespace std;
 
+struct timespec lastShotAR = {0, 0};  //Last shot time for AR
+struct timespec lastShotShotgun = {0, 0};  //Last shot time for Shotgun
+const double arCooldown = 0.2;  
+const double shotgunCooldown = 1.0;  
+
+int currentGun = AR;  
+const float shotgunSpread = 0.15;  //Shotgun spread
+
+void fire_bullet(int mx, int my) {
+    struct timespec currentTime;
+    clock_gettime(CLOCK_REALTIME, &currentTime);
+
+    if (currentGun == AR) {
+        double timeDiff = (currentTime.tv_sec - lastShotAR.tv_sec) +
+                          (currentTime.tv_nsec - lastShotAR.tv_nsec) / 1000000000.0;
+
+        if (timeDiff >= arCooldown) {
+            if (ga.nbullets < MAX_BULLETS) {
+                Bullet new_bullet;
+                new_bullet.pos[0] = bal.pos[0];
+                new_bullet.pos[1] = bal.pos[1];
+                float dx = mx - new_bullet.pos[0];
+                float dy = new_bullet.pos[1] - my;
+                float magnitude = sqrt(dx * dx + dy * dy);
+                new_bullet.vel[0] = dx / magnitude * 9.5;
+                new_bullet.vel[1] = dy / magnitude * 9.5;
+                clock_gettime(CLOCK_REALTIME, &new_bullet.time);
+                ga.barr[ga.nbullets++] = new_bullet;
+                lastShotAR = currentTime;
+            }
+        }
+    }
+    else if (currentGun == SHOTGUN) {
+        double timeDiff = (currentTime.tv_sec - lastShotShotgun.tv_sec) +
+                          (currentTime.tv_nsec - lastShotShotgun.tv_nsec) / 1000000000.0;
+
+        if (timeDiff >= shotgunCooldown) {
+            if (ga.nbullets + 3 <= MAX_BULLETS) {
+                Bullet middle_bullet;
+                middle_bullet.pos[0] = bal.pos[0];
+                middle_bullet.pos[1] = bal.pos[1];
+                float dx = mx - middle_bullet.pos[0];
+                float dy = middle_bullet.pos[1] - my;
+                float magnitude = sqrt(dx * dx + dy * dy);
+                middle_bullet.vel[0] = dx / magnitude * 9.5;
+                middle_bullet.vel[1] = dy / magnitude * 9.5;
+                clock_gettime(CLOCK_REALTIME, &middle_bullet.time);
+                ga.barr[ga.nbullets++] = middle_bullet;
+
+                for (int i = -1; i <= 1; i += 2) {
+                    Bullet side_bullet;
+                    side_bullet.pos[0] = bal.pos[0];
+                    side_bullet.pos[1] = bal.pos[1];
+                    dx = mx - side_bullet.pos[0];
+                    dy = side_bullet.pos[1] - my;
+                    magnitude = sqrt(dx * dx + dy * dy);
+                    float angleOffset = 0.2f * i;
+                    float angle = atan2(dy, dx) + angleOffset;
+                    dx = cos(angle);
+                    dy = sin(angle);
+                    side_bullet.vel[0] = dx / magnitude * 9.5;
+                    side_bullet.vel[1] = dy / magnitude * 9.5;
+                    clock_gettime(CLOCK_REALTIME, &side_bullet.time);
+                    ga.barr[ga.nbullets++] = side_bullet;
+                }
+
+                lastShotShotgun = currentTime;
+            }
+        }
+    }
+}
+
+/*
 void fire_bullet(int mx, int my) {
     if (ga.nbullets < MAX_BULLETS) {
         Bullet new_bullet;
@@ -45,7 +118,7 @@ void fire_bullet(int mx, int my) {
         ga.barr[ga.nbullets++] = new_bullet;
     }
 }
-
+*/
 void update_bullets() {
     //move each bullet based on its velocity
     for (int i = 0; i < ga.nbullets; ++i) {
@@ -57,7 +130,6 @@ void update_bullets() {
     //remove expired bullets
     ga.check_bullet_lifetime();
 }
-int currentWeapon = 1;
 
 int shane_show = 0;
 
