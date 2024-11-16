@@ -57,8 +57,9 @@ extern int Door_Y(unsigned char map[3][31][30], int row, int col,
            float player[2], float offx, float offy,
            float tile[2], int way, int stage);
 
+extern bool checkCollision(float,float,float,float,float);
 const char stages[][16] = {"level1.txt","level2.txt", "level3.txt"};
-
+extern void removeBullet(int);
 //sky added
 //defined types
 typedef double Flt;
@@ -79,6 +80,7 @@ extern void show_gun(int, int);
 // Sebastiann's functions
 extern void show_my_featureSM(int, int);
 extern int playerHealth;
+extern int bulletCount;
 extern bool is_dead;
 //extern void healthBar(int);
 extern void isDead(int);
@@ -175,7 +177,6 @@ Global::Global() {
     silhouette = 0;
     mx = my = 0;
 }
-
 Ball::Ball() {
     pos[0] = g.xres / 2;
     pos[1] = g.yres / 2;
@@ -712,7 +713,17 @@ void physics()
                                     bal.pos, lev.tx, lev.ty, lev.tilesize,0, lev.current_stage);   
     }
 
+/*
+    for (int i = 0; i < bulletCount; ++i) {
+        if (checkCollision(bullets[i].x, bullets[i].y, bal.pos[0], bal.pos[1], 40.0f)) {
+            playerHealth -= 1;  
+            printf("Player health: %d\n", playerHealth);
 
+            removeBullet(i);
+            break; 
+        }
+    }
+ */   
     struct timespec bt;
     clock_gettime(CLOCK_REALTIME, &bt);
     int i = 0;
