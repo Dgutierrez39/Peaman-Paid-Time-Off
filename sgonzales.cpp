@@ -30,7 +30,10 @@ float slowdown = 0.05f;
 float lastShotTime = 0.0f;
 int playerScore = 0;
 extern Ball bal;
-
+int tomatoHealth = 5;
+int carrotHealth = 5;
+int lettuceHealth = 5;
+int eggplantHealth = 5;
 struct Projectile {
     float x, y; 
     float dx, dy;  
@@ -51,6 +54,7 @@ int bulletCount = 0;
 Projectile enemyProjectiles[MAX_BULLETS];
 Projectile enemyGreenProjectiles[MAX_BULLETS];
 Projectile enemyOrangeProjectiles[MAX_BULLETS];
+Projectile enemyPurpleProjectiles[MAX_BULLETS];
 void shootEnemyBullet(float tomatoX, float tomatoY, float playerX, float playerY)
 {
 
@@ -71,7 +75,7 @@ void shootEnemyBullet(float tomatoX, float tomatoY, float playerX, float playerY
     }
 }
 
-bool meleeColliding(float brockX, float brockY, float brockSize, float enemyX,float enemySize, float enemyY) {
+bool meleeCollision(float brockX, float brockY, float brockSize, float enemyX,float enemySize, float enemyY) {
     float dx = brockX - enemyX;
     float dy = brockY - enemyY;
     float distance = sqrt(dx * dx + dy * dy);
@@ -100,6 +104,25 @@ void shootGreenEnemyBullet(float tomatoX, float tomatoY, float playerX, float pl
         newProjectile.dy = dy;
         newProjectile.speed = 5.0f;
         enemyGreenProjectiles[bulletCount] = newProjectile;
+        bulletCount++;
+    }
+}
+void shootPurpleEnemyBullet(float tomatoX, float tomatoY, float playerX, float playerY)
+{
+
+    if (bulletCount < MAX_BULLETS) {
+        float dx = playerX - tomatoX;
+        float dy = playerY - tomatoY;
+        float distance = sqrt(dx * dx + dy * dy);
+        dx /= distance;
+        dy /= distance;
+        Projectile newProjectile;
+        newProjectile.x = tomatoX;
+        newProjectile.y = tomatoY;
+        newProjectile.dx = dx;
+        newProjectile.dy = dy;
+        newProjectile.speed = 5.0f;
+        enemyPurpleProjectiles[bulletCount] = newProjectile;
         bulletCount++;
     }
 }
@@ -151,7 +174,7 @@ void updateBullets()
     for (int i = 0; i < bulletCount; ++i) {
         projectiles[i].x += projectiles[i].dx * projectiles[i].speed;  
         projectiles[i].y += projectiles[i].dy * projectiles[i].speed;
-    
+
     }
 }
 
@@ -181,6 +204,15 @@ void updateOrangeEnemyBullets()
 
     }
 }
+void updatePurpleEnemyBullets()
+{
+    for (int i = 0; i < bulletCount; ++i) {
+        enemyPurpleProjectiles[i].x += enemyPurpleProjectiles[i].dx * enemyPurpleProjectiles[i].speed;
+        enemyPurpleProjectiles[i].y += enemyPurpleProjectiles[i].dy * enemyPurpleProjectiles[i].speed;
+
+    }
+}
+
 
 void removeBullet(int index) {
     if (index < 0 || index >= bulletCount) {
@@ -240,7 +272,20 @@ void drawGreenEnemyBullet(const Projectile& projectile)
     glEnd();
     glPopMatrix();
 }
-
+void drawPurpleEnemyBullet(const Projectile& projectile)
+{
+    glColor3f(0.5f, 0.0f, 0.5f);
+    glPushMatrix();
+    glTranslatef(projectile.x, projectile.y, 0.0f);
+    float size = 7.0f;
+    glBegin(GL_QUADS);
+    glVertex2f(-size / 2, -size / 2);
+    glVertex2f(size / 2, -size / 2);
+    glVertex2f(size / 2, size / 2);
+    glVertex2f(-size / 2, size / 2);
+    glEnd();
+    glPopMatrix();
+}
 void drawOrangeEnemyBullet(const Projectile& projectile)
 {
     glColor3f(1.0f, 0.5f, 0.0f);
@@ -259,8 +304,7 @@ void drawOrangeEnemyBullet(const Projectile& projectile)
 void drawCarrot(float playerX, float playerY) 
 {
     static int timer = time(NULL) + 2;
-    static int health = 5;
-    if (health <= 0) {
+    if (carrotHealth <= 0) {
         enemies[0].active = false;
         return;
     }
@@ -284,7 +328,7 @@ void drawCarrot(float playerX, float playerY)
     } else {
         carrotX = playerX;
         carrotY = playerY;
-        if (distance <= collisionThreshold && health > 0) {
+        if (distance <= collisionThreshold && playerHealth > 0) {
             playerHealth -= 1;
             printf("Player health: %d\n", playerHealth);
         }
@@ -297,7 +341,7 @@ void drawCarrot(float playerX, float playerY)
     glVertex2f(0.0f,  10.0f - size);
     glVertex2f(50.0f,  0.0f + size);
     glEnd();
-    
+
     glColor3f(0.0f, 0.8f, 0.0f);
     glBegin(GL_LINE_STRIP);
     glVertex2f(-12.0f, -6.0f);
@@ -317,30 +361,12 @@ void drawCarrot(float playerX, float playerY)
     }
     for (int i = 0; i < bulletCount; ++i) {
         if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX, tomatoY, collisionCarrotThreshold)) {
-            health -= 1;
-            printf("Carrot health: %d\n", health);
+            carrotHealth -= 1;
+            printf("Carrot health: %d\n", carrotHealth);
             removeBullet(i);
             break;
         }
     }
-    for (int i = 0; i < bulletCount; ++i) {
-        if (checkCollision(enemyOrangeProjectiles[i].x, enemyOrangeProjectiles[i].y, 
-            bal.pos[0], bal.pos[1], 20.0f) || checkCollision(enemyGreenProjectiles[i].x, 
-            enemyGreenProjectiles[i].y,bal.pos[0], bal.pos[1], 20.0f) || 
-            checkCollision(enemyProjectiles[i].x, enemyProjectiles[i].y,
-            bal.pos[0], bal.pos[1], 20.0f)) {
-            playerHealth -= 1;
-            printf("Player health: %d\n", playerHealth);
-
-            removeBullet(i);
-            break;
-        } 
-
-        
-        
-    }
-
-
 }
 
 void drawBrock(float playerX, float playerY) 
@@ -381,14 +407,59 @@ void drawBrock(float playerX, float playerY)
     glPopMatrix();
 
     // Collision
-    
-    
+    for (int i = 0; i < bulletCount; ++i) {
+        if (checkCollision(enemyOrangeProjectiles[i].x, enemyOrangeProjectiles[i].y,
+            bal.pos[0], bal.pos[1], 20.0f) || checkCollision(enemyGreenProjectiles[i].x,
+            enemyGreenProjectiles[i].y,bal.pos[0], bal.pos[1], 20.0f) ||
+            checkCollision(enemyProjectiles[i].x, enemyProjectiles[i].y,
+            bal.pos[0], bal.pos[1], 20.0f) || checkCollision(enemyPurpleProjectiles[i].x, 
+            enemyPurpleProjectiles[i].y, bal.pos[0], bal.pos[1], 20.0f)) {
+            playerHealth -= 1;
+            printf("Player health: %d\n", playerHealth);
+
+            removeBullet(i);
+            break;
+        }
+
+
+
+    }
+
+    if (meleeCollision(brockX, brockY, 25.0f, enemies[0].x, enemies[0].size, enemies[0].y)) {
+        if(carrotHealth > 0) {
+            carrotHealth -= 1;
+            printf("Carrot health: %d\n", carrotHealth);
+            printf("Melee collision detected!\n");
+        }
+    }
+    if (meleeCollision(brockX, brockY, 25.0f, enemies[1].x, enemies[1].size, enemies[1].y)) {
+        if(tomatoHealth > 0) {
+            tomatoHealth -= 1;
+            printf("Tomato health: %d\n", tomatoHealth);
+            printf("Melee collision detected!\n");
+        }
+    }
+    if (meleeCollision(brockX, brockY, 25.0f, enemies[2].x, enemies[2].size, enemies[2].y)) {
+        if(lettuceHealth > 0) {
+            lettuceHealth -= 1;
+            printf("Lettuce health: %d\n", lettuceHealth);
+            printf("Melee collision detected!\n");
+        }
+    }
+    if (meleeCollision(brockX, brockY, 25.0f, enemies[3].x, enemies[3].size, enemies[3].y)) {
+        if(eggplantHealth > 0) {
+            eggplantHealth -= 1;
+            printf("Eggplant health: %d\n", eggplantHealth);
+            printf("Melee collision detected!\n");
+        }
+    }
+
     if (time(NULL) > timer) {
         shootBullet(brockX, brockY, playerX, playerY);
         shootBullet(brockX, brockY, -playerX, -playerY);
         shootBullet(brockX, brockY, playerX, -playerY);
         shootBullet(brockX, brockY, -playerX, playerY);
-        timer = time(NULL) + 2;
+        timer = time(NULL) + 1;
     }
     updateBullets();
     for (int i = 0; i < bulletCount; ++i) {
@@ -400,12 +471,11 @@ void drawBrock(float playerX, float playerY)
 void drawTomato(float playerX, float playerY)
 {
     static int timer = time(NULL) + 2;
-    static int health = 5;
     enemies[1].x = tomatoX;
     enemies[1].y = tomatoY;
     enemies[1].size = 35.0f;
 
-    if (health <= 0) {
+    if (tomatoHealth <= 0) {
         enemies[1].active = false;
         return;
     }
@@ -427,7 +497,7 @@ void drawTomato(float playerX, float playerY)
             playerHealth -= 1;
             printf("Player health: %d\n", playerHealth);
         }
-    
+
     }
     glTranslatef(tomatoX, tomatoY, 0.0f);
     float radius = 15.0f;
@@ -464,7 +534,7 @@ void drawTomato(float playerX, float playerY)
     glVertex2f(7.0f, 7.0f);  
     glVertex2f(5.0f, 7.0f);   
     glEnd();
-    
+
     glColor3f(0.0f, 0.0f, 0.0f);  
     glBegin(GL_LINE_STRIP);
     glVertex2f(-4.0f, -2.0f);
@@ -487,8 +557,8 @@ void drawTomato(float playerX, float playerY)
 
     for (int i = 0; i < bulletCount; ++i) {
         if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX, tomatoY, collisionTomatoThreshold)) {
-            health -= 1; 
-            printf("Tomato health: %d\n", health);
+            tomatoHealth -= 1; 
+            printf("Tomato health: %d\n", tomatoHealth);
 
             removeBullet(i);
             break; 
@@ -501,8 +571,7 @@ void drawTomato(float playerX, float playerY)
 void drawLettuce(float playerX, float playerY)
 {
     static int timer = time(NULL) + 2;
-    static int health = 5;
-    if (health <= 0) {
+    if (lettuceHealth <= 0) {
         enemies[2].active = false;
         return;
     }
@@ -519,7 +588,7 @@ void drawLettuce(float playerX, float playerY)
     float dy = playerY - lettuceY;
     float distance = sqrt(dx * dx + dy * dy);
 
-   
+
     if (distance > speed) {
         dx /= distance;
         dy /= distance;
@@ -535,9 +604,9 @@ void drawLettuce(float playerX, float playerY)
 
     }
 
-    
+
     glTranslatef(lettuceX, lettuceY, 0.0f);
-    
+
     //draw square lettuce
     glColor3f(0.5f, 1.0f, 0.5f);  
     float size = 20.0f;  
@@ -547,7 +616,7 @@ void drawLettuce(float playerX, float playerY)
     glVertex2f(size, size);    
     glVertex2f(-size, size);   
     glEnd();
-    
+
     //left eye
     glColor3f(0.0f, 0.0f, 0.0f);  
     glBegin(GL_QUADS);
@@ -576,9 +645,86 @@ void drawLettuce(float playerX, float playerY)
     }
     for (int i = 0; i < bulletCount; ++i) {
         if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX, tomatoY, collisionLettuceThreshold)) {
-            health -= 1;
-            printf("Lettuce health: %d\n", health);
+            lettuceHealth -= 1;
+            printf("Lettuce health: %d\n", lettuceHealth);
 
+            removeBullet(i);
+            break;
+        }
+    }
+}
+
+void drawEggplant(float playerX, float playerY)
+{
+    static int timer = time(NULL) + 2;
+    if (eggplantHealth <= 0) {
+        enemies[3].active = false;
+        return;
+    }
+
+    glPushMatrix();
+    static float eggplantX = playerX + 200.0f; 
+    static float eggplantY = playerY + 200.0f;
+    static float radius = 15.0f;
+    enemies[3].x = eggplantX;
+    enemies[3].y = eggplantY;
+    enemies[3].size = 40.0f;
+    float speed = 1.5f;
+
+    float dx = playerX - eggplantX;
+    float dy = playerY - eggplantY;
+    float distance = sqrt(dx * dx + dy * dy);
+
+
+    if (distance > speed) {
+        dx /= distance;
+        dy /= distance;
+        eggplantX += dx * speed;
+        eggplantY += dy * speed;
+    } else {
+        eggplantX = playerX;
+        eggplantY = playerY;
+        if (distance <= collisionThreshold && playerHealth > 0) {
+            playerHealth -= 1;
+            printf("Player health: %d\n", playerHealth);
+        }
+
+    }
+
+
+    glTranslatef(eggplantX, eggplantY, 0.0f);
+    
+    //draw eggplant
+    glColor3f(0.5f, 0.0f, 0.5f); 
+    float size = 25.0f;
+    glBegin(GL_POLYGON);
+    for (int i = 0; i < 360; i += 10) {
+        float theta = i * M_PI / 180.0f;
+        glVertex2f(size * cos(theta), size * sin(theta));
+    }
+    glEnd();
+    
+    glColor3f(0.0f, 0.5f, 0.0f); 
+    glBegin(GL_TRIANGLES);
+    glVertex2f(-radius / 2, radius);
+    glVertex2f(0.0f, radius + 15.0f);
+    glVertex2f(radius / 2, radius);
+    glEnd();
+
+    glPopMatrix();
+
+    if (time(NULL) > timer) {
+        shootPurpleEnemyBullet(eggplantX, eggplantY, playerX, playerY);
+        timer = time(NULL) + 1.5;
+    }
+    updatePurpleEnemyBullets();
+    for (int i = 0; i < bulletCount; ++i) {
+        drawPurpleEnemyBullet(enemyPurpleProjectiles[i]);
+    }
+    for (int i = 0; i < bulletCount; ++i) {
+        if (checkCollision(projectiles[i].x, projectiles[i].y, eggplantX, eggplantY, collisionLettuceThreshold)) {
+            eggplantHealth -= 1;
+            printf("Eggplant health: %d\n", eggplantHealth);
             removeBullet(i);
             break;
         }

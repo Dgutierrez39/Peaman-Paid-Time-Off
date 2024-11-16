@@ -816,10 +816,12 @@ void render()
         extern void drawBrock(float,float);
         extern void drawTomato(float, float);
         extern void drawLettuce(float, float);
+        extern void drawEggplant(float, float);
         Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize, lev.current_stage);
         drawCarrot(bal.pos[0], bal.pos[1]);
         drawTomato(bal.pos[0], bal.pos[1]);
         drawLettuce(bal.pos[0], bal.pos[1]);
+        drawEggplant(bal.pos[0], bal.pos[1]);
         drawBrock(bal.pos[0], bal.pos[1]);
         if (shane_show == 1)
             show_my_featureSW(10, g.yres - 80);
