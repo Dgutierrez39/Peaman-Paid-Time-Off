@@ -28,12 +28,12 @@ float brockX = 0.0f;
 float brockY = 0.0f;
 float slowdown = 0.05f;
 float lastShotTime = 0.0f;
-int playerScore = 0;
 extern Ball bal;
 int tomatoHealth = 5;
 int carrotHealth = 5;
 int lettuceHealth = 5;
 int eggplantHealth = 5;
+int playerScore = 0;
 struct Projectile {
     float x, y; 
     float dx, dy;  
@@ -55,6 +55,7 @@ Projectile enemyProjectiles[MAX_BULLETS];
 Projectile enemyGreenProjectiles[MAX_BULLETS];
 Projectile enemyOrangeProjectiles[MAX_BULLETS];
 Projectile enemyPurpleProjectiles[MAX_BULLETS];
+
 void shootEnemyBullet(float tomatoX, float tomatoY, float playerX, float playerY)
 {
 
@@ -362,7 +363,9 @@ void drawCarrot(float playerX, float playerY)
     for (int i = 0; i < bulletCount; ++i) {
         if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX, tomatoY, collisionCarrotThreshold)) {
             carrotHealth -= 1;
+            playerScore += 10;
             printf("Carrot health: %d\n", carrotHealth);
+            printf("Player Score: %d\n", playerScore);
             removeBullet(i);
             break;
         }
@@ -428,29 +431,37 @@ void drawBrock(float playerX, float playerY)
     if (meleeCollision(brockX, brockY, 25.0f, enemies[0].x, enemies[0].size, enemies[0].y)) {
         if(carrotHealth > 0) {
             carrotHealth -= 1;
+            playerScore += 10;
             printf("Carrot health: %d\n", carrotHealth);
             printf("Melee collision detected!\n");
+            printf("Player Score: %d\n", playerScore);
         }
     }
     if (meleeCollision(brockX, brockY, 25.0f, enemies[1].x, enemies[1].size, enemies[1].y)) {
         if(tomatoHealth > 0) {
             tomatoHealth -= 1;
+            playerScore += 10;
             printf("Tomato health: %d\n", tomatoHealth);
             printf("Melee collision detected!\n");
+            printf("Player Score: %d\n", playerScore);
         }
     }
     if (meleeCollision(brockX, brockY, 25.0f, enemies[2].x, enemies[2].size, enemies[2].y)) {
         if(lettuceHealth > 0) {
             lettuceHealth -= 1;
+            playerScore += 10;
             printf("Lettuce health: %d\n", lettuceHealth);
             printf("Melee collision detected!\n");
+            printf("Player Score: %d\n", playerScore);
         }
     }
     if (meleeCollision(brockX, brockY, 25.0f, enemies[3].x, enemies[3].size, enemies[3].y)) {
         if(eggplantHealth > 0) {
             eggplantHealth -= 1;
+            playerScore += 10;
             printf("Eggplant health: %d\n", eggplantHealth);
             printf("Melee collision detected!\n");
+            printf("Player Score: %d\n", playerScore);
         }
     }
 
@@ -459,7 +470,7 @@ void drawBrock(float playerX, float playerY)
         shootBullet(brockX, brockY, -playerX, -playerY);
         shootBullet(brockX, brockY, playerX, -playerY);
         shootBullet(brockX, brockY, -playerX, playerY);
-        timer = time(NULL) + 1;
+        timer = time(NULL) + 2;
     }
     updateBullets();
     for (int i = 0; i < bulletCount; ++i) {
@@ -557,8 +568,10 @@ void drawTomato(float playerX, float playerY)
 
     for (int i = 0; i < bulletCount; ++i) {
         if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX, tomatoY, collisionTomatoThreshold)) {
-            tomatoHealth -= 1; 
+            tomatoHealth -= 1;
+            playerScore += 10; 
             printf("Tomato health: %d\n", tomatoHealth);
+            printf("Player Score: %d\n", playerScore);
 
             removeBullet(i);
             break; 
@@ -646,7 +659,9 @@ void drawLettuce(float playerX, float playerY)
     for (int i = 0; i < bulletCount; ++i) {
         if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX, tomatoY, collisionLettuceThreshold)) {
             lettuceHealth -= 1;
+            playerScore += 10;
             printf("Lettuce health: %d\n", lettuceHealth);
+            printf("Player Score: %d\n", playerScore);
 
             removeBullet(i);
             break;
@@ -724,7 +739,9 @@ void drawEggplant(float playerX, float playerY)
     for (int i = 0; i < bulletCount; ++i) {
         if (checkCollision(projectiles[i].x, projectiles[i].y, eggplantX, eggplantY, collisionLettuceThreshold)) {
             eggplantHealth -= 1;
+            playerScore += 10;
             printf("Eggplant health: %d\n", eggplantHealth);
+            printf("Player Score: %d\n", playerScore);
             removeBullet(i);
             break;
         }
