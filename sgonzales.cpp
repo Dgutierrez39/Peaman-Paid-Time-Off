@@ -14,8 +14,9 @@
 #include "game.h"
 #define MAX_BULLETS 10000 
 #define MAX_ENEMIES 10 
+#define MAX_HEALTH 20
 const float shootInterval = 0.1f;
-int playerHealth = 20;
+int playerHealth = MAX_HEALTH;
 float collisionThreshold = 10.0f;
 float collisionCarrotThreshold = 35.0f;
 float collisionTomatoThreshold = 35.0f;

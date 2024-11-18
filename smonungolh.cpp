@@ -49,7 +49,7 @@ void isDead(int health)
     }
 }
 
-void healthBar(int xres, int yres, int health)
+void healthBar(int xres, int yres, int health, int max_health)
 {
     // printf("\ntest %f test\n", (GLfloat)health);
     // Show health bar
@@ -64,8 +64,8 @@ void healthBar(int xres, int yres, int health)
         glColor3f(0.0f, 1.0f, 0.0f); // Lime
 	    glVertex2f(0, -10);
 		glVertex2f(0,  10);
-		glVertex2f(300 * ((GLfloat)health / 20),  10);
-		glVertex2f(300 * ((GLfloat)health / 20), -10);
+		glVertex2f(300 * ((GLfloat)health / max_health),  10);
+		glVertex2f(300 * ((GLfloat)health / max_health), -10);
 	glEnd();
 	glPopMatrix();
     // Show health as text
@@ -74,8 +74,8 @@ void healthBar(int xres, int yres, int health)
     glEnable(GL_TEXTURE_2D);
     Rect r;
     r.bot = yres - 25;
-    r.left = (xres / 30) + 10;
+    r.left = (xres / 30) + 8;
     r.center = 1;
-    ggprint8b(&r, 32, 0xFF000000, (char*)char_health);
+    ggprint8b(&r, 32, 0xFF274E13, (char*)char_health);
     glDisable(GL_TEXTURE_2D);
 }
