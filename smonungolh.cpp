@@ -9,6 +9,9 @@
 
 #include "fonts.h"
 #include <cstdio>
+#include <stdio.h>
+#include <stdlib.h>
+#include <GL/gl.h>
 
 #endif
 
@@ -46,9 +49,33 @@ void isDead(int health)
     }
 }
 
-/*
-void healthBar(int health)
+void healthBar(int xres, int yres, int health)
 {
-    // Draw boxes here
+    // printf("\ntest %f test\n", (GLfloat)health);
+    // Show health bar
+    glPushMatrix();
+	glTranslatef(xres / 30, yres - 20, 0.0f);
+	glBegin(GL_QUADS);
+        glColor3f(0.663f, 0.663f, 0.663f); // Dark Gray
+        glVertex2f(0, -10);
+		glVertex2f(0,  10);
+		glVertex2f(300,  10);
+		glVertex2f(300, -10);
+        glColor3f(0.0f, 1.0f, 0.0f); // Lime
+	    glVertex2f(0, -10);
+		glVertex2f(0,  10);
+		glVertex2f(300 * ((GLfloat)health / 20),  10);
+		glVertex2f(300 * ((GLfloat)health / 20), -10);
+	glEnd();
+	glPopMatrix();
+    // Show health as text
+    char char_health[10];
+    sprintf(char_health, "%d", health);
+    glEnable(GL_TEXTURE_2D);
+    Rect r;
+    r.bot = yres - 25;
+    r.left = (xres / 30) + 10;
+    r.center = 1;
+    ggprint8b(&r, 32, 0xFF000000, (char*)char_health);
+    glDisable(GL_TEXTURE_2D);
 }
-*/

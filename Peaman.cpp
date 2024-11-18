@@ -57,8 +57,9 @@ extern int Door_Y(unsigned char map[3][31][30], int row, int col,
            float player[2], float offx, float offy,
            float tile[2], int way, int stage, int Xres);
 
+extern bool checkCollision(float,float,float,float,float);
 const char stages[][16] = {"level1.txt","level2.txt", "level3.txt"};
-
+extern void removeBullet(int);
 //sky added
 //defined types
 typedef double Flt;
@@ -77,10 +78,12 @@ extern void show_gun(int, int);
 //extern Gun* currentGun;
 
 // Sebastiann's functions
+extern int smonungolh_show;
 extern void show_my_featureSM(int, int);
 extern int playerHealth;
+extern int bulletCount;
 extern bool is_dead;
-//extern void healthBar(int);
+extern void healthBar(int, int, int);
 extern void isDead(int);
 
 //macros
@@ -170,11 +173,10 @@ Global::Global() {
     yres = 600;
     delay = 0.1;
     memset(keys, 0, 65536);
-    menu = 1;
+    menu = 0;
     silhouette = 0;
     mx = my = 0;
 }
-
 Ball::Ball() {
     pos[0] = g.xres / 2;
     pos[1] = g.yres / 2;
@@ -482,7 +484,6 @@ void X11_wrapper::check_mouse(XEvent *e)
 }
 
 extern int shane_show;
-extern int smonungolh_show;
 
 int X11_wrapper::check_keys(XEvent *e)
 {
@@ -719,7 +720,17 @@ void physics()
                                     bal.pos, lev.tx, lev.ty, lev.tilesize,0, lev.current_stage);   
     }
 
+/*
+    for (int i = 0; i < bulletCount; ++i) {
+        if (checkCollision(bullets[i].x, bullets[i].y, bal.pos[0], bal.pos[1], 40.0f)) {
+            playerHealth -= 1;  
+            printf("Player health: %d\n", playerHealth);
 
+            removeBullet(i);
+            break; 
+        }
+    }
+ */   
     struct timespec bt;
     clock_gettime(CLOCK_REALTIME, &bt);
     int i = 0;
@@ -753,10 +764,7 @@ void physics()
         }
         ++i;
     }
-
-
-update_bullets();
-
+    update_bullets();
 }
 
 /*
@@ -812,10 +820,12 @@ void render()
         extern void drawBrock(float,float);
         extern void drawTomato(float, float);
         extern void drawLettuce(float, float);
+        extern void drawEggplant(float, float);
         Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize, lev.current_stage);
         drawCarrot(bal.pos[0], bal.pos[1]);
         drawTomato(bal.pos[0], bal.pos[1]);
         drawLettuce(bal.pos[0], bal.pos[1]);
+        drawEggplant(bal.pos[0], bal.pos[1]);
         drawBrock(bal.pos[0], bal.pos[1]);
         if (shane_show == 1)
             show_my_featureSW(10, g.yres - 80);
@@ -854,12 +864,14 @@ void render()
             glEnd();
         }
 
+        // Draw health bar
+        healthBar(g.xres, g.yres, playerHealth);
+        
         // checks for death condition
         isDead(playerHealth);
         if (is_dead == true) {
             g.menu = 2;
-        }
-        
+        }  
     } else {
         // GAME OVER screen
         glEnable(GL_TEXTURE_2D);
