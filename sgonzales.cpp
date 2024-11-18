@@ -9,13 +9,16 @@
 #include <iostream>
 #include "sgonzales.h"
 #include <cmath>
-#include <GL/glut.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glx.h>
 #include <cstddef>
 #include "game.h"
 #define MAX_BULLETS 10000 
 #define MAX_ENEMIES 10 
+#define MAX_HEALTH 20
 const float shootInterval = 0.1f;
-int playerHealth = 20;
+int playerHealth = MAX_HEALTH;
 int maxHealth = playerHealth;
 float collisionThreshold = 10.0f;
 float collisionCarrotThreshold = 35.0f;

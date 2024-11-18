@@ -83,8 +83,10 @@ extern void show_my_featureSM(int, int);
 extern int playerHealth;
 extern int bulletCount;
 extern bool is_dead;
-extern void healthBar(int, int, int);
+extern void healthBar(int, int, int, int);
 extern void isDead(int);
+
+#define MAX_HEALTH 20
 
 //macros
 #define ALPHA 1
@@ -857,7 +859,7 @@ void render()
         }
 
         // Draw health bar
-        healthBar(g.xres, g.yres, playerHealth);
+        healthBar(g.xres, g.yres, playerHealth, MAX_HEALTH);
         
         // checks for death condition
         isDead(playerHealth);
