@@ -78,13 +78,13 @@ extern void show_gun(int, int);
 //extern Gun* currentGun;
 
 // Sebastiann's functions
+extern int smonungolh_show;
 extern void show_my_featureSM(int, int);
 extern int playerHealth;
 extern int bulletCount;
 extern bool is_dead;
-//extern void healthBar(int);
+extern void healthBar(int, int, int);
 extern void isDead(int);
-// test game over
 
 //macros
 #define ALPHA 1
@@ -484,7 +484,6 @@ void X11_wrapper::check_mouse(XEvent *e)
 }
 
 extern int shane_show;
-extern int smonungolh_show;
 
 int X11_wrapper::check_keys(XEvent *e)
 {
@@ -757,10 +756,7 @@ void physics()
         }
         ++i;
     }
-
-
-update_bullets();
-
+    update_bullets();
 }
 
 /*
@@ -860,12 +856,14 @@ void render()
             glEnd();
         }
 
+        // Draw health bar
+        healthBar(g.xres, g.yres, playerHealth);
+        
         // checks for death condition
         isDead(playerHealth);
         if (is_dead == true) {
             g.menu = 2;
-        }
-        
+        }  
     } else {
         // GAME OVER screen
         glEnable(GL_TEXTURE_2D);
