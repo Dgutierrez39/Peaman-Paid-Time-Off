@@ -52,10 +52,10 @@ extern float Player_Collision_y(unsigned char map[3][31][30], int row, int col,
 
 extern int Door_X(unsigned char map[3][31][30], int row, int col,
            float player[2], float offx, float offy,
-           float tile[2], int way, int stage);
+           float tile[2], int way, int stage, int Yres);
 extern int Door_Y(unsigned char map[3][31][30], int row, int col,
            float player[2], float offx, float offy,
-           float tile[2], int way, int stage);
+           float tile[2], int way, int stage, int Xres);
 
 const char stages[][16] = {"level1.txt","level2.txt", "level3.txt"};
 
@@ -515,6 +515,14 @@ int X11_wrapper::check_keys(XEvent *e)
             break;
         case XK_w:
             break;
+        case XK_r:
+            if (g.menu == 2) {
+                /*lev.current_stage = 0;
+                bal.pos[0] = g.xres/2;
+                bal.pos[1] = g.yres/2;
+                g.menu = 1; */
+            }
+            break;
         case XK_l:
             shane_show = !shane_show;
             smonungolh_show = !smonungolh_show;
@@ -672,7 +680,7 @@ void physics()
     if (g.keys[XK_Left]){
         bal.pos[0] -= bal.movement[0];
         lev.current_stage = Door_X(lev.arr, lev.nrows, lev.ncols,
-                            bal.pos, lev.tx, lev.ty, lev.tilesize,0, lev.current_stage);
+                            bal.pos, lev.tx, lev.ty, lev.tilesize,0, lev.current_stage, g.yres);
         if (temp_stage != lev.current_stage)
             bal.pos[0] = g.xres-(2*lev.tilesize[0]);
         else
@@ -682,7 +690,7 @@ void physics()
     if (g.keys[XK_Right]){
         bal.pos[0] += bal.movement[0];
         lev.current_stage = Door_X(lev.arr, lev.nrows, lev.ncols,
-                                    bal.pos, lev.tx, lev.ty, lev.tilesize,1, lev.current_stage);
+                                    bal.pos, lev.tx, lev.ty, lev.tilesize,1, lev.current_stage, g.yres);
         if (temp_stage != lev.current_stage)
             bal.pos[0] = 2*lev.tilesize[0];
         else
@@ -693,7 +701,7 @@ void physics()
     if (g.keys[XK_Up]) {            
         bal.pos[1] += bal.movement[1];
         lev.current_stage = Door_Y(lev.arr, lev.nrows, lev.ncols,
-                                    bal.pos, lev.tx, lev.ty, lev.tilesize,1, lev.current_stage);
+                                    bal.pos, lev.tx, lev.ty, lev.tilesize,1, lev.current_stage, g.xres);
         if (temp_stage != lev.current_stage)
             bal.pos[1] = 2*lev.tilesize[1];
         else
@@ -703,7 +711,7 @@ void physics()
     if (g.keys[XK_Down]){
         bal.pos[1] -= bal.movement[1];
         lev.current_stage = Door_Y(lev.arr, lev.nrows, lev.ncols,
-                                    bal.pos, lev.tx, lev.ty, lev.tilesize,0, lev.current_stage);
+                                    bal.pos, lev.tx, lev.ty, lev.tilesize,0, lev.current_stage, g.xres);
         if (temp_stage != lev.current_stage)
             bal.pos[1] = g.yres-(2*lev.tilesize[1]);
         else

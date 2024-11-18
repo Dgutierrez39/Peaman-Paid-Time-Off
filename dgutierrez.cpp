@@ -119,7 +119,7 @@ float Player_Collision_y(unsigned char map[3][31][30], int row, int col,
 
 int Door_X(unsigned char map[3][31][30], int row, int col,
            float player[2], float offx, float offy, 
-           float tile[2], int way, int stage)
+           float tile[2], int way, int stage, int Yres)
 { 
     int temp = stage;
     for (int i = 0; i<col; i++) {
@@ -128,7 +128,9 @@ int Door_X(unsigned char map[3][31][30], int row, int col,
                     (player[0] + offx) > (tile[0]*j) &&
                     (player[0] - offx) < ((2*offx)+(tile[0]*j)) &&
                     (player[1] - offy) < ((2*offy) + (tile[1]*i))  &&
-                    (player[1] + offy) > (tile[1]*i)) {
+                    (player[1] + offy) > (tile[1]*i) &&
+                    ((player[1] >= ((Yres/2) - 4*tile[1])) && (player[1] <= ((Yres/2) + 4*tile[1])))
+                    ) {
                 if (way == 0)
                     temp = 0;
                 if (way == 1)
@@ -141,7 +143,7 @@ int Door_X(unsigned char map[3][31][30], int row, int col,
 
 int Door_Y(unsigned char map[3][31][30], int row, int col,
            float player[2], float offx, float offy,
-           float tile[2], int way, int stage)
+           float tile[2], int way, int stage, int Xres)
 {
     int temp = stage;
     for (int i = 0; i<col; i++) {
@@ -150,7 +152,9 @@ int Door_Y(unsigned char map[3][31][30], int row, int col,
                     (player[0] + offx) > (tile[0]*j) &&
                     (player[0] - offx) < ((2*offx)+(tile[0]*j)) &&
                     (player[1] - offy) < ((2*offy) + (tile[1]*i))  &&
-                    (player[1] + offy) > (tile[1]*i)) {
+                    (player[1] + offy) > (tile[1]*i) &&
+                    (player[0] >= (Xres/2) - 4*tile[0] && player[0] <= (Xres/2) + 4*tile[0])
+                    ) {
                 if (way == 0)
                     temp = 1;
                 if (way == 1)
