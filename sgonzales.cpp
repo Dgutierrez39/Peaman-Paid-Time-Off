@@ -9,13 +9,17 @@
 #include <iostream>
 #include "sgonzales.h"
 #include <cmath>
-#include <GL/glut.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glx.h>
 #include <cstddef>
 #include "game.h"
 #define MAX_BULLETS 10000 
 #define MAX_ENEMIES 10 
+#define MAX_HEALTH 20
 const float shootInterval = 0.1f;
-int playerHealth = 20;
+int playerHealth = MAX_HEALTH;
+int maxHealth = playerHealth;
 float collisionThreshold = 10.0f;
 float collisionCarrotThreshold = 35.0f;
 float collisionTomatoThreshold = 35.0f;
@@ -34,6 +38,8 @@ int carrotHealth = 5;
 int lettuceHealth = 5;
 int eggplantHealth = 5;
 int playerScore = 0;
+extern int xres;
+extern int yres;
 struct Projectile {
     float x, y; 
     float dx, dy;  
@@ -221,8 +227,86 @@ void removeBullet(int index) {
     }
 
     // Shift all bullets after the specified index
-    for (int i = index; i < bulletCount - 1; ++i) {
+    for (int i = index; i < bulletCount - 1; i++) {
         projectiles[i] = projectiles[i + 1];
+    }
+
+    // Decrement the bullet count
+    --bulletCount;
+}
+void removeEnemyBullet(int index) {
+    if (index < 0 || index >= bulletCount) {
+        return; // Invalid index
+    }
+    for (int i = index; i < bulletCount - 1; i++) {
+    //Check for collision with window edges
+        if (enemyProjectiles[i].x < 0.0) {
+            enemyProjectiles[i].x += (float)g.xres;
+        }
+        else if (enemyProjectiles[i].x > (float)g.xres) {
+            enemyProjectiles[i].x -= (float)g.xres;
+        }
+        else if (enemyProjectiles[i].y < 0.0) {
+            enemyProjectiles[i].y += (float)g.yres;
+        }
+        else if (enemyProjectiles[i].y > (float)g.yres) {
+            enemyProjectiles[i].y -= (float)g.yres;
+        }
+        else if (enemyGreenProjectiles[i].x < 0.0) {
+            enemyGreenProjectiles[i].x += (float)g.xres;
+        }
+        else if (enemyGreenProjectiles[i].x > (float)g.xres) {
+            enemyGreenProjectiles[i].x -= (float)g.xres;
+        }
+        else if (enemyGreenProjectiles[i].y < 0.0) {
+            enemyGreenProjectiles[i].y += (float)g.yres;
+        }
+        else if (enemyGreenProjectiles[i].y > (float)g.yres) {
+            enemyGreenProjectiles[i].y -= (float)g.yres;
+        }
+        else if (enemyOrangeProjectiles[i].x < 0.0) {
+            enemyOrangeProjectiles[i].x += (float)g.xres;
+        }
+        else if (enemyOrangeProjectiles[i].x > (float)g.xres) {
+            enemyOrangeProjectiles[i].x -= (float)g.xres;
+        }
+        else if (enemyOrangeProjectiles[i].y < 0.0) {
+            enemyOrangeProjectiles[i].y += (float)g.yres;
+        }
+        else if (enemyOrangeProjectiles[i].y > (float)g.yres) {
+            enemyOrangeProjectiles[i].y -= (float)g.yres;
+        }
+        else if (enemyPurpleProjectiles[i].x < 0.0) {
+            enemyPurpleProjectiles[i].x += (float)g.xres;
+        }
+        else if (enemyPurpleProjectiles[i].x > (float)g.xres) {
+            enemyPurpleProjectiles[i].x -= (float)g.xres;
+        }
+        else if (enemyPurpleProjectiles[i].y < 0.0) {
+            enemyPurpleProjectiles[i].y += (float)g.yres;
+        }
+        else if (enemyPurpleProjectiles[i].y > (float)g.yres) {
+            enemyPurpleProjectiles[i].y -= (float)g.yres;
+        }
+
+
+
+}
+    
+  
+
+    // Shift all bullets after the specified index
+    for (int i = index; i < bulletCount - 1; i++) {
+        enemyProjectiles[i] = enemyProjectiles[i + 1];
+    }
+    for (int i = index; i < bulletCount - 1; i++) {
+        enemyGreenProjectiles[i] = enemyGreenProjectiles[i + 1];
+    }
+    for (int i = index; i < bulletCount - 1; i++) {
+        enemyOrangeProjectiles[i] = enemyOrangeProjectiles[i + 1];
+    }
+    for (int i = index; i < bulletCount - 1; i++) {
+        enemyPurpleProjectiles[i] = enemyPurpleProjectiles[i + 1];
     }
 
     // Decrement the bullet count
@@ -420,7 +504,7 @@ void drawBrock(float playerX, float playerY)
             playerHealth -= 1;
             printf("Player health: %d\n", playerHealth);
 
-            removeBullet(i);
+            removeEnemyBullet(i);
             break;
         }
 
@@ -684,7 +768,7 @@ void drawEggplant(float playerX, float playerY)
     enemies[3].x = eggplantX;
     enemies[3].y = eggplantY;
     enemies[3].size = 40.0f;
-    float speed = 1.5f;
+    float speed = 1.0f;
 
     float dx = playerX - eggplantX;
     float dy = playerY - eggplantY;
