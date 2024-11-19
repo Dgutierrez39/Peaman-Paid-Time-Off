@@ -74,7 +74,6 @@ void fire_bullet(void);
 void update_bullets(void);
 void display_gun_info(void);
 extern void show_gun(int, int);
-
 #define BULLET_LIFESPAN 1.0
 
 //extern Gun* currentGun;
@@ -551,7 +550,8 @@ int X11_wrapper::check_keys(XEvent *e)
             currentGunIndex = 1;
             break;
         case XK_r:
-            reload();
+                reload();
+            break;
     }
     return 0;
 }
@@ -752,21 +752,38 @@ void physics()
         b->pos[1] += b->vel[1];
         //Check for collision with window edges
         if (b->pos[0] < 0.0) {
-            b->pos[0] += (float)g.xres;
+           // b->pos[0] += (float)g.xres;
+           memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
+                sizeof(Bullet));
+            ga.nbullets--;
+
         }
         else if (b->pos[0] > (float)g.xres) {
-            b->pos[0] -= (float)g.xres;
+            //b->pos[0] -= (float)g.xres;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
+                sizeof(Bullet));
+            ga.nbullets--;
+
         }
         else if (b->pos[1] < 0.0) {
-            b->pos[1] += (float)g.yres;
+           // b->pos[1] += (float)g.yres;
+           memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
+                sizeof(Bullet));
+            ga.nbullets--;
+
         }
         else if (b->pos[1] > (float)g.yres) {
-            b->pos[1] -= (float)g.yres;
+           // b->pos[1] -= (float)g.yres;
+           memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
+                sizeof(Bullet));
+            ga.nbullets--;
+
         }
         ++i;
     }
     update_bullets();
     update_reload();
+//    bullet_collision(lev.arr, lev.nrows, lev.ncols, ga.barr, ga.nbullets, lev);
 }
 
 /*
