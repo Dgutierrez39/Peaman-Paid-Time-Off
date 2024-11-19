@@ -39,7 +39,8 @@ using namespace std;
 #include "log.h"
 #include "sgonzales.h"
 #include "game.h"
-
+#include <vector>
+#include <string>
 //David's functions
 extern void Tile_layer(unsigned char map[3][31][30],int row, int col, float offx,
         float offy, float tile[2], int stage);
@@ -71,6 +72,7 @@ typedef Flt Matrix[4][4];
 extern void show_my_featureSW(int, int);
 void fire_bullet(void);
 void update_bullets(void);
+void display_gun_info(void);
 extern void show_gun(int, int);
 
 #define BULLET_LIFESPAN 1.0
@@ -219,6 +221,10 @@ void Game::check_bullet_lifetime() {
     }
 }
 
+
+Gun::Gun(string gunName, float speed, double cd, int capacity, float size, int spread, float angle)
+    : name(gunName), bulletSpeed(speed), cooldown(cd), ammoCapacity(capacity), currentAmmo(capacity),
+      bulletSize(size), spreadCount(spread), spreadAngle(angle) {}
 
 class Level {
     public:
@@ -539,11 +545,13 @@ int X11_wrapper::check_keys(XEvent *e)
         case XK_Down:
             break;
         case XK_1:
-            currentGun = AR;
+            currentGunIndex = 0;
             break;
         case XK_2:
-            currentGun = SHOTGUN;
+            currentGunIndex = 1;
             break;
+        case XK_r:
+            reload();
     }
     return 0;
 }
@@ -758,6 +766,7 @@ void physics()
         ++i;
     }
     update_bullets();
+    update_reload();
 }
 
 /*
@@ -856,6 +865,8 @@ void render()
             glVertex2f(b->pos[0]+1.0f, b->pos[1]+1.0f);
             glEnd();
         }
+            
+        display_gun_info();
 
         // Draw health bar
         healthBar(g.xres, playerHealth, MAX_HEALTH);

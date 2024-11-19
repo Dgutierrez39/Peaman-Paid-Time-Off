@@ -18,6 +18,8 @@
 #include "log.h"
 #include "sgonzales.h"
 #include "game.h"
+#include <vector>
+#include <string>
 
 using namespace std;
 
@@ -26,109 +28,128 @@ struct timespec lastShotShotgun = {0, 0};  //Last shot time for Shotgun
 const double arCooldown = 0.2;  
 const double shotgunCooldown = 1.0;  
 
-int currentGun = AR;  
-const float shotgunSpread = 0.15;  //Shotgun spread
+int currentGunIndex = 0;
+vector<Gun> guns = {
+    Gun("AR", 9.5, 0.2, 30, 1.0f, 1, 0.0f),
+    Gun("Shotgun", 8.0, 1.0, 8, 1.5f, 3, 0.2f)
+};
 
-void fire_bullet(int mx, int my) {
+
+//Delay for guns
+bool Gun::canShoot(struct timespec &lastShotTime) {
     struct timespec currentTime;
     clock_gettime(CLOCK_REALTIME, &currentTime);
-
-    if (currentGun == AR) {
-        double timeDiff = (currentTime.tv_sec - lastShotAR.tv_sec) +
-                          (currentTime.tv_nsec - lastShotAR.tv_nsec) / 1000000000.0;
-
-        if (timeDiff >= arCooldown) {
-            if (ga.nbullets < MAX_BULLETS) {
-                Bullet new_bullet;
-                new_bullet.pos[0] = bal.pos[0];
-                new_bullet.pos[1] = bal.pos[1];
-                float dx = mx - new_bullet.pos[0];
-                float dy = new_bullet.pos[1] - my;
-                float magnitude = sqrt(dx * dx + dy * dy);
-                new_bullet.vel[0] = dx / magnitude * 9.5;
-                new_bullet.vel[1] = dy / magnitude * 9.5;
-                clock_gettime(CLOCK_REALTIME, &new_bullet.time);
-                ga.barr[ga.nbullets++] = new_bullet;
-                lastShotAR = currentTime;
-            }
-        }
-    }
-    else if (currentGun == SHOTGUN) {
-        double timeDiff = (currentTime.tv_sec - lastShotShotgun.tv_sec) +
-                          (currentTime.tv_nsec - lastShotShotgun.tv_nsec) / 1000000000.0;
-
-        if (timeDiff >= shotgunCooldown) {
-            if (ga.nbullets + 3 <= MAX_BULLETS) {
-                Bullet middle_bullet;
-                middle_bullet.pos[0] = bal.pos[0];
-                middle_bullet.pos[1] = bal.pos[1];
-                float dx = mx - middle_bullet.pos[0];
-                float dy = middle_bullet.pos[1] - my;
-                float magnitude = sqrt(dx * dx + dy * dy);
-                middle_bullet.vel[0] = dx / magnitude * 9.5;
-                middle_bullet.vel[1] = dy / magnitude * 9.5;
-                clock_gettime(CLOCK_REALTIME, &middle_bullet.time);
-                ga.barr[ga.nbullets++] = middle_bullet;
-
-                for (int i = -1; i <= 1; i += 2) {
-                    Bullet side_bullet;
-                    side_bullet.pos[0] = bal.pos[0];
-                    side_bullet.pos[1] = bal.pos[1];
-                    dx = mx - side_bullet.pos[0];
-                    dy = side_bullet.pos[1] - my;
-                    magnitude = sqrt(dx * dx + dy * dy);
-                    float angleOffset = 0.2f * i;
-                    float angle = atan2(dy, dx) + angleOffset;
-                    dx = cos(angle);
-                    dy = sin(angle);
-                    side_bullet.vel[0] = dx / magnitude * 9.5;
-                    side_bullet.vel[1] = dy / magnitude * 9.5;
-                    clock_gettime(CLOCK_REALTIME, &side_bullet.time);
-                    ga.barr[ga.nbullets++] = side_bullet;
-                }
-
-                lastShotShotgun = currentTime;
-            }
-        }
-    }
+    double timeDiff = (currentTime.tv_sec - lastShotTime.tv_sec) +
+                      (currentTime.tv_nsec - lastShotTime.tv_nsec) / 1e9;
+    return timeDiff >= cooldown;
 }
 
-/*
 void fire_bullet(int mx, int my) {
-    if (ga.nbullets < MAX_BULLETS) {
-        Bullet new_bullet;
+    Gun &currentGun = guns[currentGunIndex];
+    struct timespec &lastShotTime = (currentGunIndex == 0) ? lastShotAR : lastShotShotgun;
 
-        //Set the bullet's initial position to the player's position
+    if (currentGun.isReloading) {  //check to see if reloading
+        cout << "Reloading, cannot shoot!" << endl;
+        return;
+    }
+
+    if (!currentGun.canShoot(lastShotTime) || currentGun.currentAmmo <= 0) return;
+
+    for (int i = 0; i < currentGun.spreadCount; ++i) {
+        if (ga.nbullets >= MAX_BULLETS) break;
+
+        Bullet new_bullet;
+        new_bullet.size = currentGun.bulletSize;  
         new_bullet.pos[0] = bal.pos[0];
         new_bullet.pos[1] = bal.pos[1];
 
-        //Calculate the direction from player to mouse (g.mx, g.my)
         float dx = mx - new_bullet.pos[0];
         float dy = new_bullet.pos[1] - my;
-        float magnitude = sqrt(dx * dx + dy * dy);
+//        float magnitude = sqrt(dx * dx + dy * dy);
 
-        //set the bullet's velocity
-        new_bullet.vel[0] = dx / magnitude * 9.5;  //adjust speed here
-        new_bullet.vel[1] = dy / magnitude * 9.5;
+        float angleOffset = (i - currentGun.spreadCount / 2) * currentGun.spreadAngle;
+        float angle = atan2(dy, dx) + angleOffset;
 
-        //current time for the bullet's creation
+        new_bullet.vel[0] = cos(angle) * currentGun.bulletSpeed;
+        new_bullet.vel[1] = sin(angle) * currentGun.bulletSpeed;
+
         clock_gettime(CLOCK_REALTIME, &new_bullet.time);
-
-        //add the new bullet to the array
         ga.barr[ga.nbullets++] = new_bullet;
     }
+
+    struct timespec currentTime;
+    clock_gettime(CLOCK_REALTIME, &currentTime);
+    lastShotTime = currentTime;
+    currentGun.currentAmmo--;
 }
-*/
+
+//Bullet update logic
 void update_bullets() {
-    //move each bullet based on its velocity
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet &bullet = ga.barr[i];
-        bullet.pos[0] += bullet.vel[0];  //Update X position
-        bullet.pos[1] += bullet.vel[1];  //Update Y position
+        bullet.pos[0] += bullet.vel[0];
+        bullet.pos[1] += bullet.vel[1];
+    }
+    ga.check_bullet_lifetime();
+}
+
+void display_gun_info() {
+    Gun &currentGun = guns[currentGunIndex];
+
+    Rect r;
+    r.bot = 25;               
+    r.left = g.xres - 250;    
+    r.center = 0;             
+
+    
+    char gun_info[128]; 
+    if (currentGun.isReloading) {
+        //Show "Reloading" 
+        sprintf(gun_info, "%s: %d/%d - Reloading", currentGun.name.c_str(), currentGun.currentAmmo, currentGun.ammoCapacity);
+    } else {
+        
+        sprintf(gun_info, "%s: %d/%d", currentGun.name.c_str(), currentGun.currentAmmo, currentGun.ammoCapacity);
     }
 
-    //remove expired bullets
-    ga.check_bullet_lifetime();
+    unsigned int text_color = 0xFFFFFFFF;
+
+    glEnable(GL_TEXTURE_2D);
+    ggprint8b(&r, 16, text_color, gun_info);
+    glDisable(GL_TEXTURE_2D);
+}
+
+void reload() {
+Gun &currentGun = guns[currentGunIndex];
+
+    //Start reloading 
+    if (currentGun.isReloading) {
+        return;  
+    }
+
+    currentGun.isReloading = true;  
+    clock_gettime(CLOCK_REALTIME, &currentGun.reloadStartTime);  //Record reload start time
+    cout << "Reloading " << currentGun.name << "..." << endl;
+}
+
+void update_reload() {
+    Gun &currentGun = guns[currentGunIndex];
+
+    //If reloading, check time
+    if (currentGun.isReloading) {
+        struct timespec currentTime;
+        clock_gettime(CLOCK_REALTIME, &currentTime);  //Get time
+
+        //Calculate time since reload 
+        double timeDiff = (currentTime.tv_sec - currentGun.reloadStartTime.tv_sec) +
+                          (currentTime.tv_nsec - currentGun.reloadStartTime.tv_nsec) / 1e9;
+
+        //Reload after 2 sec
+        if (timeDiff >= 2.0) {
+            currentGun.currentAmmo = currentGun.ammoCapacity;  //Refill ammo
+            currentGun.isReloading = false;  //Set reloading to back to false
+            cout << "Reloaded " << currentGun.name << "!" << endl;
+        }
+    }
 }
 
 int shane_show = 0;
@@ -142,62 +163,6 @@ void show_gun(int x, int y)
     ggprint8b(&r, 16, 0x00ff0000, "AR");
 }
 
-/*
-enum GunType {
-    AR,       
-    Shotgun,  
-    Pistol    
-};
-
-class Gun {
-protected:
-    float bulletSpeed;
-    int numBullets;  
-    float spreadAngle;  
-    virtual void shoot() = 0;
-    virtual ~Gun() {}
-};
-
-class AR : public Gun {
-public:
-    AR() {
-        bulletSpeed = 10.0f;  
-        numBullets = 1;       
-        spreadAngle = 0.0f;   
-    }
-    void shoot() override {
-        cout << "AR shooting with bullet speed: " << bulletSpeed << ", spread: " << spreadAngle << endl;
-    }
-};
-
-class Shotgun : public Gun {
-public:
-    Shotgun() {
-        bulletSpeed = 6.0f;   
-        numBullets = 3;       
-        spreadAngle = 15.0f;  
-    }
-
-    void shoot() override {
-        cout << "Shotgun shooting with bullet speed: " << bulletSpeed << ", spread: " << spreadAngle << endl;
-    }
-};
-
-class Pistol : public Gun {
-public:
-    Pistol() {
-        bulletSpeed = 7.0f;   
-        numBullets = 1;       
-        spreadAngle = 0.0f;   
-    }
-
-    void shoot() override {
-        cout << "Pistol shooting with bullet speed: " << bulletSpeed << ", spread: " << spreadAngle << endl;
-    }
-};
-
-Gun* currentGun = nullptr;
-*/
 void show_my_featureSW(int x, int y)
 {
     //draw a rectangle
@@ -213,40 +178,3 @@ void show_my_featureSW(int x, int y)
 
 
 
-//Draw bullets -- will go in render function
-/*
-void drawbullets()
-{
-    for (int i=0; i<g.nbullets; i++) {
-        Bullet *b = &g.barr[i];
-        //Log("draw bullet...\n");
-        glColor3f(1.0, 1.0, 1.0);
-        glBegin(GL_POINTS);
-        glVertex2f(b->pos[0],      b->pos[1]);
-        glVertex2f(b->pos[0]-1.0f, b->pos[1]);
-        glVertex2f(b->pos[0]+1.0f, b->pos[1]);
-        glVertex2f(b->pos[0],      b->pos[1]-1.0f);
-        glVertex2f(b->pos[0],      b->pos[1]+1.0f);
-        glColor3f(0.8, 0.8, 0.8);
-        glVertex2f(b->pos[0]-1.0f, b->pos[1]-1.0f);
-        glVertex2f(b->pos[0]-1.0f, b->pos[1]+1.0f);
-        glVertex2f(b->pos[0]+1.0f, b->pos[1]-1.0f);
-        glVertex2f(b->pos[0]+1.0f, b->pos[1]+1.0f);
-        glEnd();
-    }
-
-}*/
-/*
-void show_my_feature(int x, int y)
-{
-    //draw a rectangle 
-    //show some text
-    Rect r;
-    r.bot = y;
-    r.left = x;
-    r.center = 0;
-    ggprint8b(&r, 16, 0x00ff0000, "Shane");
-
-
-}
-*/

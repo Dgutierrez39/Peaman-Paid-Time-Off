@@ -17,11 +17,16 @@
 #include <unistd.h>
 #include <string.h>
 #include <cstdlib>
+#include <vector>
+#include <string>
+
+using namespace std;
+
 
 #define AR 1
 #define SHOTGUN 2
 
-extern int currentGun;  
+
 extern const float shotgunSpread;  
 extern struct timespec lastShotAR; 
 extern struct timespec lastShotShotgun;  
@@ -40,6 +45,25 @@ extern void timeCopy(struct timespec *dest, struct timespec *source);
 
 const double BULLET_LIFESPAN = 3.0;
 const int MAX_BULLETS = 99;
+
+class Gun {
+public:
+    string name;        // Gun name (e.g., "AR", "Shotgun")
+    float bulletSpeed;  // Speed of bullets fired
+    double cooldown;    // Cooldown time between shots
+    int ammoCapacity;   // Maximum ammo capacity
+    int currentAmmo;    // Current ammo count
+    float bulletSize;   // Size of bullets
+    int spreadCount;    // Number of bullets in a spread
+    float spreadAngle;  // Angle between spread bullets
+    bool isReloading;
+    struct timespec reloadStartTime;
+
+    Gun(string gunName, float speed, double cd, int capacity, float size, int spread, float angle);
+
+    // Determines if the gun can shoot based on cooldown
+    bool canShoot(struct timespec &lastShotTime);
+};
 
 class Global {
 public:
@@ -79,6 +103,7 @@ public:
    Vec vel;
     float color[3];
     struct timespec time;
+    float size;
 public:
     Bullet();
 };
@@ -112,7 +137,11 @@ extern Game ga;
 
 void fire_bullet(int mx, int my);
 void update_bullets();
+void display_gun_info();
+void reload();
+void update_reload();
 
-
+extern int currentGunIndex;
+extern vector<Gun> guns;
 
 #endif // GAME_H
