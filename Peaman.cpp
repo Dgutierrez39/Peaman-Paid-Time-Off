@@ -482,8 +482,8 @@ void X11_wrapper::check_mouse(XEvent *e)
         if (savex != mx || savey != my) {
             savex = mx;
             savey = my;
-            g.mx = mx;  // Update mouse X position
-            g.my = my;  // Update mouse Y position
+            g.mx = mx;  //Update mouse X
+            g.my = my;  //Update mouse Y 
         }
 
     }
@@ -550,7 +550,7 @@ int X11_wrapper::check_keys(XEvent *e)
             currentGunIndex = 1;
             break;
         case XK_r:
-                reload();
+            reload();
             break;
     }
     return 0;
@@ -731,13 +731,14 @@ void physics()
             break; 
         }
     }
- */   
+ */   /*
     struct timespec bt;
     clock_gettime(CLOCK_REALTIME, &bt);
     int i = 0;
     while (i < ga.nbullets) {
-        Bullet *b = &ga.barr[i];
+        Bullet *b = &ga.barr[i];*/
         //How long has bullet been alive?
+        /*
         double ts = timeDiff(&b->time, &bt);
         if (ts > 2.5) {
             //time to delete the bullet.
@@ -750,7 +751,9 @@ void physics()
         //move the bullet
         b->pos[0] += b->vel[0];
         b->pos[1] += b->vel[1];
+        */
         //Check for collision with window edges
+        /*
         if (b->pos[0] < 0.0) {
            // b->pos[0] += (float)g.xres;
            memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
@@ -780,7 +783,7 @@ void physics()
 
         }
         ++i;
-    }
+    }*/
     update_bullets();
     update_reload();
 //    bullet_collision(lev.arr, lev.nrows, lev.ncols, ga.barr, ga.nbullets, lev);
