@@ -42,24 +42,29 @@ using namespace std;
 #include <vector>
 #include <string>
 //David's functions
-extern void Tile_layer(unsigned char map[3][31][30],int row, int col, float offx,
+extern void Tile_layer(unsigned char map[16][31][30],int row, int col, float offx,
         float offy, float tile[2], int stage);
 
-extern float Player_Collision_x(unsigned char map[3][31][30], int row, int col,
+extern float Player_Collision_x(unsigned char map[16][31][30], int row, int col,
         float player[2], float offx, float offy, float tile[2], int way, int stage);
 
-extern float Player_Collision_y(unsigned char map[3][31][30], int row, int col,
+extern float Player_Collision_y(unsigned char map[16][31][30], int row, int col,
         float player[2], float offx, float offy, float tile[2], int way, int stage);
 
-extern int Door_X(unsigned char map[3][31][30], int row, int col,
+extern int Door_X(unsigned char map[16][31][30], int row, int col,
            float player[2], float offx, float offy,
            float tile[2], int way, int stage, int Yres);
-extern int Door_Y(unsigned char map[3][31][30], int row, int col,
+extern int Door_Y(unsigned char map[16][31][30], int row, int col,
            float player[2], float offx, float offy,
            float tile[2], int way, int stage, int Xres);
 
 extern bool checkCollision(float,float,float,float,float);
-const char stages[][16] = {"level1.txt","level2.txt", "level3.txt"};
+const char stages[][25] = {"./levels/r1.txt","./levels/h1.txt",
+    "./levels/r2.txt", "./levels/r3.txt", "./levels/h2.txt",
+    "./levels/h3.txt", "./levels/r4.txt", "./levels/h4.txt",
+    "./levels/r5.txt", "./levels/r6.txt", "./levels/r7.txt",
+    "./levels/h5.txt", "./levels/r8.txt", "./levels/h6.txt",
+    "./levels/key.txt", "./levels/r9.txt",};
 extern void removeBullet(int);
 //sky added
 //defined types
@@ -228,7 +233,7 @@ Gun::Gun(string gunName, float speed, double cd, int capacity, float size, int s
 
 class Level {
     public:
-        unsigned char arr[3][31][30];
+        unsigned char arr[16][31][30];
         int nrows, ncols;
         float tilesize[2];
         float ftsz[2];
@@ -248,7 +253,7 @@ class Level {
             tx = tilesize[0]/2;
             ty = tilesize[1]/2;
             //read level
-            for (int c = 0; c < 3; c++){
+            for (int c = 0; c < 15; c++){
                 FILE *fpi = fopen(stages[c],"r");
                 if (fpi) {
                     nrows=0;
@@ -523,14 +528,6 @@ int X11_wrapper::check_keys(XEvent *e)
             break;
         case XK_w:
             break;
-        case XK_r:
-            if (g.menu == 2) {
-                /*lev.current_stage = 0;
-                bal.pos[0] = g.xres/2;
-                bal.pos[1] = g.yres/2;
-                g.menu = 1; */
-            }
-            break;
         case XK_l:
             shane_show = !shane_show;
             smonungolh_show = !smonungolh_show;
@@ -689,8 +686,10 @@ void physics()
 
     if (g.keys[XK_Left]){
         bal.pos[0] -= bal.movement[0];
-        lev.current_stage = Door_X(lev.arr, lev.nrows, lev.ncols,
+        if ((bal.pos[1] >= ((g.yres/2) - 5*lev.tilesize[1])) && (bal.pos[1] <= ((g.yres/2) + 5*lev.tilesize[1])))
+            lev.current_stage = Door_X(lev.arr, lev.nrows, lev.ncols,
                             bal.pos, lev.tx, lev.ty, lev.tilesize,0, lev.current_stage, g.yres);
+        
         if (temp_stage != lev.current_stage)
             bal.pos[0] = g.xres-(2*lev.tilesize[0]);
         else
@@ -699,18 +698,20 @@ void physics()
     }
     if (g.keys[XK_Right]){
         bal.pos[0] += bal.movement[0];
-        lev.current_stage = Door_X(lev.arr, lev.nrows, lev.ncols,
+        if ((bal.pos[1] >= ((g.yres/2) - 5*lev.tilesize[1])) && (bal.pos[1] <= ((g.yres/2) + 5*lev.tilesize[1])))
+            lev.current_stage = Door_X(lev.arr, lev.nrows, lev.ncols,
                                     bal.pos, lev.tx, lev.ty, lev.tilesize,1, lev.current_stage, g.yres);
         if (temp_stage != lev.current_stage)
             bal.pos[0] = 2*lev.tilesize[0];
         else
             bal.pos[0] = Player_Collision_x(lev.arr, lev.nrows, lev.ncols,
                                     bal.pos, lev.tx, lev.ty, lev.tilesize,1, lev.current_stage);
-
     }
+
     if (g.keys[XK_Up]) {            
         bal.pos[1] += bal.movement[1];
-        lev.current_stage = Door_Y(lev.arr, lev.nrows, lev.ncols,
+        if ((bal.pos[0] >= ((g.xres/2) - 2*lev.tilesize[0])) && (bal.pos[0] <= ((g.xres/2) + 2*lev.tilesize[0])))     
+            lev.current_stage = Door_Y(lev.arr, lev.nrows, lev.ncols,
                                     bal.pos, lev.tx, lev.ty, lev.tilesize,1, lev.current_stage, g.xres);
         if (temp_stage != lev.current_stage)
             bal.pos[1] = 2*lev.tilesize[1];
@@ -720,7 +721,8 @@ void physics()
     }
     if (g.keys[XK_Down]){
         bal.pos[1] -= bal.movement[1];
-        lev.current_stage = Door_Y(lev.arr, lev.nrows, lev.ncols,
+        if ((bal.pos[0] >= ((g.xres/2) - 2*lev.tilesize[0])) && (bal.pos[0] <= ((g.xres/2) + 2*lev.tilesize[0])))
+            lev.current_stage = Door_Y(lev.arr, lev.nrows, lev.ncols,
                                     bal.pos, lev.tx, lev.ty, lev.tilesize,0, lev.current_stage, g.xres);
         if (temp_stage != lev.current_stage)
             bal.pos[1] = g.yres-(2*lev.tilesize[1]);

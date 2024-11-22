@@ -1,0 +1,51 @@
+           [Room 1[0]] -------- [Hall 1[1]] ------- [Room 2[2]]
+                                |                 |
+                              [Room 3[3]]        [Hall 2[4]]
+                                |                 |
+                              [Hall 3[5]] ----- [Room 4[6]] -------- [Hall 4[7]] -------- [Room 5[8]]
+                                |                                   |
+                              [Room 6[9]]                         [Room 7[10]]
+                                |                                   |
+                              [Hall 5[11]] ------- [Room 8[12]] ---- [Hall 6[13]] -------- [Boss Room]
+                                |                                   |
+                              [Key room[14]]                         [Room 9[15]]
+
+Array order
+0 - [Room 1]
+1 - [Hall 1]
+2 - [Room 2]
+3 - [Room 3]
+4 - [Hall 2]
+5 - [Hall 3]
+6 - [Room 4]
+7 - [Hall 4]
+8 - [Room 5]
+9 - [Room 6]
+10- [Room 7]
+11- [Hall 5]
+12- [Room 8]
+13- [Hall 6]
+14- [Key]
+15- [Room 9]]
+
+rooms
+0 - [Room 1]
+2 - [Room 2]
+3 - [Room 3]
+6 - [Room 4]  
+8 - [Room 5]                  
+9 - [Room 6]                         
+10- [Room 7]                 
+12- [Room 8]  
+14- [Key]                         
+15- [Room 9]]
+
+hallways -
+1 - [Hall 1]
+4 - [Hall 2]
+5 - [Hall 3]
+7 - [Hall 4]
+11- [Hall 5]
+13- [Hall 6]
+
+boss room will be not stored in map arr
