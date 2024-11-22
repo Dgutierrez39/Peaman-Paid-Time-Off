@@ -99,7 +99,7 @@ float Player_Collision_y(unsigned char map[16][31][30], int row, int col,
 
 int Door_X(unsigned char map[16][31][30], int row, int col,
            float player[2], float offx, float offy, 
-           float tile[2], int way, int stage, int Yres)
+           float tile[2], int way, int stage)
 { 
     for (int i = 0; i<col; i++) {
         for (int j = 0; j<row; j++) {
@@ -155,7 +155,7 @@ int Door_X(unsigned char map[16][31][30], int row, int col,
 
 int Door_Y(unsigned char map[16][31][30], int row, int col,
            float player[2], float offx, float offy,
-           float tile[2], int way, int stage, int Xres)
+           float tile[2], int way, int stage)
 {
     for (int i = 0; i<col; i++) {
         for (int j = 0; j<row; j++) {
