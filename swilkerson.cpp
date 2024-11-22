@@ -46,9 +46,9 @@ bool Gun::canShoot(struct timespec &lastShotTime) {
 
 void fire_bullet(int mx, int my) {
     Gun &currentGun = guns[currentGunIndex];
-    struct timespec &lastShotTime = (currentGunIndex == 0) ? lastShotAR : lastShotShotgun;
+    struct timespec &lastShotTime = (currentGunIndex == 0) ? lastShotAR : lastShotShotgun; //checks last time shot for any weapon
 
-    if (currentGun.isReloading) {  //check to see if reloading
+    if (currentGun.isReloading) {  //Check to see if reloading
         cout << "Reloading, cannot shoot!" << endl;
         return;
     }
@@ -70,9 +70,10 @@ void fire_bullet(int mx, int my) {
         float angleOffset = (i - currentGun.spreadCount / 2) * currentGun.spreadAngle;
         float angle = atan2(dy, dx) + angleOffset;
 
+        cout << angle << endl;
+
         new_bullet.vel[0] = cos(angle) * currentGun.bulletSpeed;
         new_bullet.vel[1] = sin(angle) * currentGun.bulletSpeed;
-
         clock_gettime(CLOCK_REALTIME, &new_bullet.time);
         ga.barr[ga.nbullets++] = new_bullet;
     }
@@ -83,14 +84,54 @@ void fire_bullet(int mx, int my) {
     currentGun.currentAmmo--;
 }
 
-//Bullet update logic
+//Bullet update 
 void update_bullets() {
+
+    int i = 0;
+    while (i < ga.nbullets) {
+        Bullet *b = &ga.barr[i];
+
+        b->pos[0] += b->vel[0];
+        b->pos[1] += b->vel[1];
+
+        if (b->pos[0] < 0.0) {
+           memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
+                sizeof(Bullet));
+            ga.nbullets--;
+
+        }
+        else if (b->pos[0] > (float)g.xres) {
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
+                sizeof(Bullet));
+            ga.nbullets--;
+
+        }
+        else if (b->pos[1] < 0.0) {
+           memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
+                sizeof(Bullet));
+            ga.nbullets--;
+
+        }
+        else if (b->pos[1] > (float)g.yres) {
+           memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
+                sizeof(Bullet));
+            ga.nbullets--;
+
+        }
+        ++i;
+
+
+            
+    }
+/*
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet &bullet = ga.barr[i];
         bullet.pos[0] += bullet.vel[0];
         bullet.pos[1] += bullet.vel[1];
-    }
-    ga.check_bullet_lifetime();
+        } */
+
+
+    ga.check_bullet_lifetime(); 
 }
 
 void display_gun_info() {
@@ -104,7 +145,7 @@ void display_gun_info() {
     
     char gun_info[128]; 
     if (currentGun.isReloading) {
-        //Show "Reloading" 
+        //Print reloading 
         sprintf(gun_info, "%s: %d/%d - Reloading", currentGun.name.c_str(), currentGun.currentAmmo, currentGun.ammoCapacity);
     } else {
         
