@@ -239,7 +239,7 @@ void removeEnemyBullet(int index) {
         return; // Invalid index
     }
     for (int i = index; i < bulletCount - 1; i++) {
-    //Check for collision with window edges
+        //Check for collision with window edges
         if (enemyProjectiles[i].x < 0.0) {
             enemyProjectiles[i].x += (float)g.xres;
         }
@@ -291,9 +291,9 @@ void removeEnemyBullet(int index) {
 
 
 
-}
-    
-  
+    }
+
+
 
     // Shift all bullets after the specified index
     for (int i = index; i < bulletCount - 1; i++) {
@@ -496,11 +496,11 @@ void drawBrock(float playerX, float playerY)
     // Collision
     for (int i = 0; i < bulletCount; ++i) {
         if (checkCollision(enemyOrangeProjectiles[i].x, enemyOrangeProjectiles[i].y,
-            bal.pos[0], bal.pos[1], 20.0f) || checkCollision(enemyGreenProjectiles[i].x,
-            enemyGreenProjectiles[i].y,bal.pos[0], bal.pos[1], 20.0f) ||
-            checkCollision(enemyProjectiles[i].x, enemyProjectiles[i].y,
-            bal.pos[0], bal.pos[1], 20.0f) || checkCollision(enemyPurpleProjectiles[i].x, 
-            enemyPurpleProjectiles[i].y, bal.pos[0], bal.pos[1], 20.0f)) {
+                    bal.pos[0], bal.pos[1], 20.0f) || checkCollision(enemyGreenProjectiles[i].x,
+                        enemyGreenProjectiles[i].y,bal.pos[0], bal.pos[1], 20.0f) ||
+                checkCollision(enemyProjectiles[i].x, enemyProjectiles[i].y,
+                    bal.pos[0], bal.pos[1], 20.0f) || checkCollision(enemyPurpleProjectiles[i].x, 
+                        enemyPurpleProjectiles[i].y, bal.pos[0], bal.pos[1], 20.0f)) {
             playerHealth -= 1;
             printf("Player health: %d\n", playerHealth);
 
@@ -792,7 +792,7 @@ void drawEggplant(float playerX, float playerY)
 
 
     glTranslatef(eggplantX, eggplantY, 0.0f);
-    
+
     //draw eggplant
     glColor3f(0.5f, 0.0f, 0.5f); 
     float size = 25.0f;
@@ -802,7 +802,7 @@ void drawEggplant(float playerX, float playerY)
         glVertex2f(size * cos(theta), size * sin(theta));
     }
     glEnd();
-    
+
     glColor3f(0.0f, 0.5f, 0.0f); 
     glBegin(GL_TRIANGLES);
     glVertex2f(-radius / 2, radius);
@@ -828,6 +828,97 @@ void drawEggplant(float playerX, float playerY)
             printf("Player Score: %d\n", playerScore);
             removeBullet(i);
             break;
+        }
+    }
+}
+void drawEggplant1(float playerX, float playerY,int stage)
+{
+    
+    if(stage == 5) {
+        static int hp = 5;
+        static int timer = time(NULL) + 2;
+        if (hp <= 0) {
+            return;
+        }
+
+        glPushMatrix();
+        static float eggplantX = playerX + 200.0f; 
+        static float eggplantY = playerY + 200.0f;
+        static float radius = 15.0f;
+        enemies[4].x = eggplantX;
+        enemies[4].y = eggplantY;
+        enemies[4].size = 40.0f;
+        float speed = 1.0f;
+
+        float dx = playerX - eggplantX;
+        float dy = playerY - eggplantY;
+        float distance = sqrt(dx * dx + dy * dy);
+
+
+        if (distance > speed) {
+            dx /= distance;
+            dy /= distance;
+            eggplantX += dx * speed;
+            eggplantY += dy * speed;
+        } else {
+            eggplantX = playerX;
+            eggplantY = playerY;
+            if (distance <= collisionThreshold && playerHealth > 0) {
+                playerHealth -= 1;
+                printf("Player health: %d\n", playerHealth);
+            }
+
+        }
+
+
+        glTranslatef(eggplantX, eggplantY, 0.0f);
+
+        //draw eggplant
+        glColor3f(0.5f, 0.0f, 0.5f); 
+        float size = 25.0f;
+        glBegin(GL_POLYGON);
+        for (int i = 0; i < 360; i += 10) {
+            float theta = i * M_PI / 180.0f;
+            glVertex2f(size * cos(theta), size * sin(theta));
+        }
+        glEnd();
+
+        glColor3f(0.0f, 0.5f, 0.0f); 
+        glBegin(GL_TRIANGLES);
+        glVertex2f(-radius / 2, radius);
+        glVertex2f(0.0f, radius + 15.0f);
+        glVertex2f(radius / 2, radius);
+        glEnd();
+
+        glPopMatrix();
+
+        if (time(NULL) > timer) {
+            shootPurpleEnemyBullet(eggplantX, eggplantY, playerX, playerY);
+            timer = time(NULL) + 1.5;
+        }
+        updatePurpleEnemyBullets();
+        for (int i = 0; i < bulletCount; ++i) {
+            drawPurpleEnemyBullet(enemyPurpleProjectiles[i]);
+        }
+
+        for (int i = 0; i < bulletCount; ++i) {
+            if (checkCollision(projectiles[i].x, projectiles[i].y, eggplantX, eggplantY, collisionLettuceThreshold)) {
+                hp -= 1;
+                playerScore += 10;
+                printf("Eggplant health: %d\n", enemies[4].health);
+                printf("Player Score: %d\n", playerScore);
+                removeBullet(i);
+                break;
+            }
+        }
+        if (meleeCollision(eggplantX, eggplantY, 25.0f, brockX, 40.0f, brockY)) {
+            if(hp > 0) {
+                hp -= 1;
+                playerScore += 10;
+                printf("Eggplant health: %d\n", hp);
+                printf("Melee collision detected!\n");
+                printf("Player Score: %d\n", playerScore);
+            }
         }
     }
 }
