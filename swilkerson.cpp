@@ -103,7 +103,7 @@ void fire_bullet(int mx, int my) {
     currentGun.currentAmmo--;
 }
 
-void update_bullets(unsigned char map[16][31][30], int row, int col, float tile[2], int stage) {
+void update_bullets(unsigned char map[16][31][30], int row, int col, float offx, float offy, float tile[2], int stage) {
     int i = 0;
     while (i < ga.nbullets) {
         Bullet *b = &ga.barr[i];
@@ -136,32 +136,33 @@ void update_bullets(unsigned char map[16][31][30], int row, int col, float tile[
             ga.nbullets--;
 
         }
-        ++i;
-/*
-        bool collision = false;
-        for (int i = 0; i < row; ++i) { 
-            for (int j = 0; j < col; ++j) { 
+       // ++i;
+
+        //bool collision = false;
+        for (int z = 0; z < col; ++z) { 
+            for (int j = 0; j < row; ++j) { 
                 //Check tile 
-                if ((map[stage][i][j] == 'w' || map[stage][i][j] == 'b') &&
+                if ((map[stage][z][j] == 'w' || map[stage][z][j] == 'b') &&
                 b->pos[0] > tile[0] * j &&
-                b->pos[0] < tile[0] * (j + 1) &&
-                b->pos[1] > tile[1] * i &&
-                b->pos[1] < tile[1] * (i + 1)) {
+                b->pos[0] < ((2*offx)+(tile[0]*j)) &&
+                b->pos[1] > ((2*offy) + (tile[1]*z)) &&
+                b->pos[1] < tile[1] * z) {
                 //Delete bullet
                 memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
                 --ga.nbullets;
-                collision = true;
+             //   collision = true;
                 cout << "Bullet hit restricted tile at " << b->pos[0] << ", " << b->pos[1] << "\n";
-                break;
+                //eak;
             }
         }
-        if (collision) break;
+       // if (collision) break;
         }
+        i++;
 
         //Increment bullet if no collision occurred
-        if (!collision) {
-            ++i;
-        }*/
+       // if (!collision) {
+       //     ++i;
+      //  }
     }
 
     

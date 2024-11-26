@@ -77,7 +77,7 @@ typedef Flt Matrix[4][4];
 extern void show_my_featureSW(int, int);
 void fire_bullet(void);
 //void update_bullets(void);
-void update_bullets(unsigned char map[16][31][30], int row, int col, float tile[2], int stage);
+void update_bullets(unsigned char map[16][31][30], int row, int col, float offx, float offy, float tile[2], int stage);
 void display_gun_info(void);
 void render_bullets(void);
 extern void show_gun(int, int);
@@ -523,10 +523,6 @@ int X11_wrapper::check_keys(XEvent *e)
     switch (key) {
         case XK_a:
             //the 'a' key was pressed
-            if (lev.current_stage != 0)
-                lev.current_stage = 0;
-            else
-                lev.current_stage = 1;
             break;
         case XK_w:
             break;
@@ -543,9 +539,9 @@ int X11_wrapper::check_keys(XEvent *e)
         case XK_Escape:
             //Escape key was pressed
             return 1;
-        case XK_Left:
+        case XK_d:
             break;
-        case XK_Right:
+        case XK_s:
             break;
         case XK_Up:
             break;
@@ -681,13 +677,13 @@ void physics()
     int a = (int)(bal.pos[0]/lev.ftsz[0]);
     a = a % lev.nrows;
 
-    if (g.keys[XK_w]) {
+   /* if (g.keys[XK_w]) {
         printf("row is: %i\n", a);
         printf("Column is: %i\n", b);
         printf("The stage number is: %i\n", lev.current_stage);
         printf("The slot has a : '%c'\n", lev.arr[lev.current_stage][a][b]);}
-
-    if (g.keys[XK_Left]){
+*/
+    if (g.keys[XK_a]){
         bal.pos[0] -= bal.movement[0];
         if ((bal.pos[1] >= ((g.yres/2) - 5*lev.tilesize[1])) && (bal.pos[1] <= ((g.yres/2) + 5*lev.tilesize[1])))
             lev.current_stage = Door_X(lev.arr, lev.nrows, lev.ncols,
@@ -699,7 +695,7 @@ void physics()
             bal.pos[0] = Player_Collision_x(lev.arr, lev.nrows, lev.ncols,
                                     bal.pos, lev.tx, lev.ty, lev.tilesize,0,  lev.current_stage);
     }
-    if (g.keys[XK_Right]){
+    if (g.keys[XK_d]){
         bal.pos[0] += bal.movement[0];
         if ((bal.pos[1] >= ((g.yres/2) - 5*lev.tilesize[1])) && (bal.pos[1] <= ((g.yres/2) + 5*lev.tilesize[1])))
             lev.current_stage = Door_X(lev.arr, lev.nrows, lev.ncols,
@@ -711,7 +707,7 @@ void physics()
                                     bal.pos, lev.tx, lev.ty, lev.tilesize,1, lev.current_stage);
     }
 
-    if (g.keys[XK_Up]) {            
+    if (g.keys[XK_w]) {            
         bal.pos[1] += bal.movement[1];
         if ((bal.pos[0] >= ((g.xres/2) - 2*lev.tilesize[0])) && (bal.pos[0] <= ((g.xres/2) + 2*lev.tilesize[0])))     
             lev.current_stage = Door_Y(lev.arr, lev.nrows, lev.ncols,
@@ -722,7 +718,7 @@ void physics()
             bal.pos[1] = Player_Collision_y(lev.arr, lev.nrows, lev.ncols,
                                     bal.pos, lev.tx, lev.ty, lev.tilesize,1, lev.current_stage);
     }
-    if (g.keys[XK_Down]){
+    if (g.keys[XK_s]){
         bal.pos[1] -= bal.movement[1];
         if ((bal.pos[0] >= ((g.xres/2) - 2*lev.tilesize[0])) && (bal.pos[0] <= ((g.xres/2) + 2*lev.tilesize[0])))
             lev.current_stage = Door_Y(lev.arr, lev.nrows, lev.ncols,
@@ -798,7 +794,7 @@ void physics()
         ++i;
     }*/
    // update_bullets();
-   update_bullets(lev.arr, lev.nrows, lev.ncols, lev.tilesize, lev.current_stage);
+   update_bullets(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize, lev.current_stage);
     update_reload();
 //    bullet_collision(lev.arr, lev.nrows, lev.ncols, ga.barr, ga.nbullets, lev);
 }

@@ -136,7 +136,7 @@ extern Ball bal;
 extern Game ga;
 
 void fire_bullet(int mx, int my);
-void update_bullets(unsigned char map[16][31][30], int row, int col, float tile[2], int stage);
+void update_bullets(unsigned char map[16][31][30], int row, int col, float offx, float offy, float tile[2], int stage);
 //void update_bullets();
 void display_gun_info();
 void reload();
