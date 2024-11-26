@@ -30,6 +30,12 @@ float tomatoX = 0.0f;
 float tomatoY = 0.0f;
 float brockX = 0.0f;
 float brockY = 0.0f;
+float eggplantX = 100.0f; 
+float eggplantY = 200.0f;
+float eggplantX1 = 100.0f; 
+float eggplantY1 = 150.0f;
+float lettuceX = 150.0f; 
+float lettuceY = 100.0f;
 float slowdown = 0.05f;
 float lastShotTime = 0.0f;
 extern Ball bal;
@@ -37,6 +43,7 @@ int tomatoHealth = 5;
 int carrotHealth = 5;
 int lettuceHealth = 5;
 int eggplantHealth = 5;
+int eggplantHealth1 = 5;
 int playerScore = 0;
 extern int xres;
 extern int yres;
@@ -674,10 +681,10 @@ void drawLettuce(float playerX, float playerY)
     }
 
     glPushMatrix();
-    static float lettuceX = playerX + 150.0f; 
-    static float lettuceY = playerY + 150.0f;
-    enemies[2].x = lettuceX;
+    //lettuceX = playerX + 150.0f; 
+    //lettuceY = playerY + 150.0f;
     enemies[2].y = lettuceY;
+    enemies[2].x = lettuceX;
     enemies[2].size = 40.0f;
     float speed = 1.5f;
 
@@ -752,7 +759,8 @@ void drawLettuce(float playerX, float playerY)
         }
     }
 }
-
+/*
+*/
 void drawEggplant(float playerX, float playerY)
 {
     static int timer = time(NULL) + 2;
@@ -762,8 +770,6 @@ void drawEggplant(float playerX, float playerY)
     }
 
     glPushMatrix();
-    static float eggplantX = playerX + 200.0f; 
-    static float eggplantY = playerY + 200.0f;
     static float radius = 15.0f;
     enemies[3].x = eggplantX;
     enemies[3].y = eggplantY;
@@ -831,94 +837,90 @@ void drawEggplant(float playerX, float playerY)
         }
     }
 }
-void drawEggplant1(float playerX, float playerY,int stage)
+void drawEggplant1(float playerX, float playerY)
 {
-    
-    if(stage == 5) {
-        static int hp = 5;
-        static int timer = time(NULL) + 2;
-        if (hp <= 0) {
-            return;
+    //if (stage == 5) {
+    static int timer = time(NULL) + 2;
+    if (eggplantHealth1 <= 0) {
+        enemies[4].active = false;
+        return;
+    }
+
+    glPushMatrix();
+    static float radius = 15.0f;
+    enemies[4].x = eggplantX;
+    enemies[4].y = eggplantY;
+    enemies[4].size = 40.0f;
+    float speed = 1.0f;
+
+    float dx = playerX - eggplantX1;
+    float dy = playerY - eggplantY1;
+    float distance = sqrt(dx * dx + dy * dy);
+
+
+    if (distance > speed) {
+        dx /= distance;
+        dy /= distance;
+        eggplantX1 += dx * speed;
+        eggplantY1 += dy * speed;
+    } else {
+        eggplantX1 = playerX;
+        eggplantY1 = playerY;
+        if (distance <= collisionThreshold && playerHealth > 0) {
+            playerHealth -= 1;
+            printf("Player health: %d\n", playerHealth);
         }
 
-        glPushMatrix();
-        static float eggplantX = playerX + 200.0f; 
-        static float eggplantY = playerY + 200.0f;
-        static float radius = 15.0f;
-        enemies[4].x = eggplantX;
-        enemies[4].y = eggplantY;
-        enemies[4].size = 40.0f;
-        float speed = 1.0f;
-
-        float dx = playerX - eggplantX;
-        float dy = playerY - eggplantY;
-        float distance = sqrt(dx * dx + dy * dy);
+    }
 
 
-        if (distance > speed) {
-            dx /= distance;
-            dy /= distance;
-            eggplantX += dx * speed;
-            eggplantY += dy * speed;
-        } else {
-            eggplantX = playerX;
-            eggplantY = playerY;
-            if (distance <= collisionThreshold && playerHealth > 0) {
-                playerHealth -= 1;
-                printf("Player health: %d\n", playerHealth);
-            }
+    glTranslatef(eggplantX1, eggplantY1, 0.0f);
 
+    //draw eggplant
+    glColor3f(0.5f, 0.0f, 0.5f); 
+    float size = 25.0f;
+    glBegin(GL_POLYGON);
+    for (int i = 0; i < 360; i += 10) {
+        float theta = i * M_PI / 180.0f;
+        glVertex2f(size * cos(theta), size * sin(theta));
+    }
+    glEnd();
+
+    glColor3f(0.0f, 0.5f, 0.0f); 
+    glBegin(GL_TRIANGLES);
+    glVertex2f(-radius / 2, radius);
+    glVertex2f(0.0f, radius + 15.0f);
+    glVertex2f(radius / 2, radius);
+    glEnd();
+
+    glPopMatrix();
+
+    if (time(NULL) > timer) {
+        shootPurpleEnemyBullet(eggplantX1, eggplantY1, playerX, playerY);
+        timer = time(NULL) + 1.5;
+    }
+    updatePurpleEnemyBullets();
+    for (int i = 0; i < bulletCount; ++i) {
+        drawPurpleEnemyBullet(enemyPurpleProjectiles[i]);
+    }
+    for (int i = 0; i < bulletCount; ++i) {
+        if (checkCollision(projectiles[i].x, projectiles[i].y, eggplantX1, eggplantY1, collisionLettuceThreshold)) {
+            eggplantHealth1 -= 1;
+            playerScore += 10;
+            printf("Eggplant health: %d\n", eggplantHealth1);
+            printf("Player Score: %d\n", playerScore);
+            removeBullet(i);
+            break;
         }
-
-
-        glTranslatef(eggplantX, eggplantY, 0.0f);
-
-        //draw eggplant
-        glColor3f(0.5f, 0.0f, 0.5f); 
-        float size = 25.0f;
-        glBegin(GL_POLYGON);
-        for (int i = 0; i < 360; i += 10) {
-            float theta = i * M_PI / 180.0f;
-            glVertex2f(size * cos(theta), size * sin(theta));
-        }
-        glEnd();
-
-        glColor3f(0.0f, 0.5f, 0.0f); 
-        glBegin(GL_TRIANGLES);
-        glVertex2f(-radius / 2, radius);
-        glVertex2f(0.0f, radius + 15.0f);
-        glVertex2f(radius / 2, radius);
-        glEnd();
-
-        glPopMatrix();
-
-        if (time(NULL) > timer) {
-            shootPurpleEnemyBullet(eggplantX, eggplantY, playerX, playerY);
-            timer = time(NULL) + 1.5;
-        }
-        updatePurpleEnemyBullets();
-        for (int i = 0; i < bulletCount; ++i) {
-            drawPurpleEnemyBullet(enemyPurpleProjectiles[i]);
-        }
-
-        for (int i = 0; i < bulletCount; ++i) {
-            if (checkCollision(projectiles[i].x, projectiles[i].y, eggplantX, eggplantY, collisionLettuceThreshold)) {
-                hp -= 1;
+    if (meleeCollision(eggplantX1, eggplantY1, 25.0f, brockX, 40.0f, brockY)) {
+        if(eggplantHealth1 > 0) {
+                eggplantHealth1 -= 1;
                 playerScore += 10;
-                printf("Eggplant health: %d\n", enemies[4].health);
-                printf("Player Score: %d\n", playerScore);
-                removeBullet(i);
-                break;
-            }
-        }
-        if (meleeCollision(eggplantX, eggplantY, 25.0f, brockX, 40.0f, brockY)) {
-            if(hp > 0) {
-                hp -= 1;
-                playerScore += 10;
-                printf("Eggplant health: %d\n", hp);
+                printf("Eggplant health: %d\n", eggplantHealth1);
                 printf("Melee collision detected!\n");
                 printf("Player Score: %d\n", playerScore);
             }
         }
     }
+   // }
 }
