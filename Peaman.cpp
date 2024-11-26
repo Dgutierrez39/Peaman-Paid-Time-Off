@@ -76,9 +76,12 @@ typedef Flt Matrix[4][4];
 //const int MAX_BULLETS = 11;
 extern void show_my_featureSW(int, int);
 void fire_bullet(void);
-void update_bullets(void);
+//void update_bullets(void);
+void update_bullets(unsigned char map[16][31][30], int row, int col, float tile[2], int stage);
 void display_gun_info(void);
+void render_bullets(void);
 extern void show_gun(int, int);
+extern void CarrotCollision(Game &ga);
 #define BULLET_LIFESPAN 1.0
 
 //extern Gun* currentGun;
@@ -794,7 +797,8 @@ void physics()
         }
         ++i;
     }*/
-    update_bullets();
+   // update_bullets();
+   update_bullets(lev.arr, lev.nrows, lev.ncols, lev.tilesize, lev.current_stage);
     update_reload();
 //    bullet_collision(lev.arr, lev.nrows, lev.ncols, ga.barr, ga.nbullets, lev);
 }
@@ -878,7 +882,7 @@ void render()
         glPopMatrix();
 
         //Draw the bullets
-        for (int i=0; i<ga.nbullets; i++) {
+       /* for (int i=0; i<ga.nbullets; i++) {
             Bullet *b = &ga.barr[i];
             //Log("draw bullet...\n");
             glColor3f(1.0, 1.0, 1.0);
@@ -894,9 +898,13 @@ void render()
             glVertex2f(b->pos[0]+1.0f, b->pos[1]-1.0f);
             glVertex2f(b->pos[0]+1.0f, b->pos[1]+1.0f);
             glEnd();
-        }
+        }*/
+
+        render_bullets();
             
         display_gun_info();
+
+        CarrotCollision(ga);
 
         // Draw health bar
         healthBar(g.xres, playerHealth, MAX_HEALTH);

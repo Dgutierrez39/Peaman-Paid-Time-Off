@@ -21,6 +21,21 @@
 #include <vector>
 #include <string>
 
+#define PI 3.141592653589793
+
+//From Sky's source file
+extern float eggplantX;
+extern float eggplantY;
+extern float carrotX;  
+extern float carrotY;
+extern int eggplantHealth;
+extern float collisionThreshold;         
+extern float collisionCarrotThreshold;   
+extern float collisionTomatoThreshold;   
+extern float collisionLettuceThreshold;  
+extern int carrotHealth, tomatoHealth, lettuceHealth;
+extern int playerScore;
+
 using namespace std;
 
 struct timespec lastShotAR = {0, 0};  //Last shot time for AR
@@ -30,7 +45,7 @@ const double shotgunCooldown = 1.0;
 
 int currentGunIndex = 0;
 vector<Gun> guns = {
-    Gun("AR", 9.5, 0.2, 30, 1.0f, 1, 0.0f),
+    Gun("AR", 9.5, 0.2, 30, 30.0f, 1, 0.0f),
     Gun("Shotgun", 8.0, 1.0, 8, 1.5f, 3, 0.2f)
 };
 
@@ -63,12 +78,16 @@ void fire_bullet(int mx, int my) {
         new_bullet.pos[0] = bal.pos[0];
         new_bullet.pos[1] = bal.pos[1];
 
+        //cout << new_bullet.pos[0] << " " <<  
+        //cout << new_bullet.pos[1] << " " >> 
+
         float dx = mx - new_bullet.pos[0];
         float dy = new_bullet.pos[1] - my;
 //        float magnitude = sqrt(dx * dx + dy * dy);
 
-        float angleOffset = (i - currentGun.spreadCount / 2) * currentGun.spreadAngle;
+         float angleOffset = (i - currentGun.spreadCount / 2) * currentGun.spreadAngle;
         float angle = atan2(dy, dx) + angleOffset;
+        //float angle = atan2(dy, dx);
 
         cout << angle << endl;
 
@@ -84,8 +103,73 @@ void fire_bullet(int mx, int my) {
     currentGun.currentAmmo--;
 }
 
+void update_bullets(unsigned char map[16][31][30], int row, int col, float tile[2], int stage) {
+    int i = 0;
+    while (i < ga.nbullets) {
+        Bullet *b = &ga.barr[i];
+
+        // Move bullet
+        b->pos[0] += b->vel[0];
+        b->pos[1] += b->vel[1];
+
+        if (b->pos[0] < 0.0) {
+           memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
+                sizeof(Bullet));
+            ga.nbullets--;
+
+        }
+        else if (b->pos[0] > (float)g.xres) {
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
+                sizeof(Bullet));
+            ga.nbullets--;
+
+        }
+        else if (b->pos[1] < 0.0) {
+           memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
+                sizeof(Bullet));
+            ga.nbullets--;
+
+        }
+        else if (b->pos[1] > (float)g.yres) {
+           memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
+                sizeof(Bullet));
+            ga.nbullets--;
+
+        }
+        ++i;
+/*
+        bool collision = false;
+        for (int i = 0; i < row; ++i) { 
+            for (int j = 0; j < col; ++j) { 
+                //Check tile 
+                if ((map[stage][i][j] == 'w' || map[stage][i][j] == 'b') &&
+                b->pos[0] > tile[0] * j &&
+                b->pos[0] < tile[0] * (j + 1) &&
+                b->pos[1] > tile[1] * i &&
+                b->pos[1] < tile[1] * (i + 1)) {
+                //Delete bullet
+                memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+                --ga.nbullets;
+                collision = true;
+                cout << "Bullet hit restricted tile at " << b->pos[0] << ", " << b->pos[1] << "\n";
+                break;
+            }
+        }
+        if (collision) break;
+        }
+
+        //Increment bullet if no collision occurred
+        if (!collision) {
+            ++i;
+        }*/
+    }
+
+    
+    ga.check_bullet_lifetime();
+}
+
 //Bullet update 
-void update_bullets() {
+/*void update_bullets() {
 
     int i = 0;
     while (i < ga.nbullets) {
@@ -123,16 +207,108 @@ void update_bullets() {
 
             
     }
-/*
-    for (int i = 0; i < ga.nbullets; ++i) {
-        Bullet &bullet = ga.barr[i];
-        bullet.pos[0] += bullet.vel[0];
-        bullet.pos[1] += bullet.vel[1];
-        } */
+
+    //for (int i = 0; i < ga.nbullets; ++i) {
+    //    Bullet &bullet = ga.barr[i];
+    //    bullet.pos[0] += bullet.vel[0];
+    //    bullet.pos[1] += bullet.vel[1];
+    //    } 
 
 
     ga.check_bullet_lifetime(); 
+}*/
+
+void render_bullets() {
+    for (int i=0; i<ga.nbullets; i++) {
+            Bullet *b = &ga.barr[i];
+            //Log("draw bullet...\n");
+            glColor3f(1.0, 1.0, 1.0);
+            glBegin(GL_POINTS);
+            glVertex2f(b->pos[0],      b->pos[1]);
+            glVertex2f(b->pos[0]-1.0f, b->pos[1]);
+            glVertex2f(b->pos[0]+1.0f, b->pos[1]);
+            glVertex2f(b->pos[0],      b->pos[1]-1.0f);
+            glVertex2f(b->pos[0],      b->pos[1]+1.0f);
+            glColor3f(0.8, 0.8, 0.8);
+            glVertex2f(b->pos[0]-1.0f, b->pos[1]-1.0f);
+            glVertex2f(b->pos[0]-1.0f, b->pos[1]+1.0f);
+            glVertex2f(b->pos[0]+1.0f, b->pos[1]-1.0f);
+            glVertex2f(b->pos[0]+1.0f, b->pos[1]+1.0f);
+            glEnd();
+        }
+    /*
+    for (int i = 0; i < ga.nbullets; i++) {
+        Bullet *b = &ga.barr[i];
+        // Use the bullet's color
+        glColor3f(b->color[0], b->color[1], b->color[2]);
+        glBegin(GL_POINTS);
+        glVertex2f(b->pos[0], b->pos[1]);
+        glVertex2f(b->pos[0] - 1.0f, b->pos[1]);
+        glVertex2f(b->pos[0] + 1.0f, b->pos[1]);
+        glVertex2f(b->pos[0], b->pos[1] - 1.0f);
+        glVertex2f(b->pos[0], b->pos[1] + 1.0f);
+        glColor3f(0.8, 0.8, 0.8);
+        glVertex2f(b->pos[0] - 1.0f, b->pos[1] - 1.0f);
+        glVertex2f(b->pos[0] - 1.0f, b->pos[1] + 1.0f);
+        glVertex2f(b->pos[0] + 1.0f, b->pos[1] - 1.0f);
+        glVertex2f(b->pos[0] + 1.0f, b->pos[1] + 1.0f);
+        glEnd();
+    }*/
 }
+
+bool checkCollisionCarrot(float bulletX, float bulletY, float carrotX, float carrotY, float threshold) {
+    float dx = bulletX - carrotX;
+    float dy = bulletY - carrotY;
+    float distance = sqrt(dx * dx + dy * dy);
+    return distance <= threshold;
+}
+
+void CarrotCollision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];  
+
+        if (checkCollisionCarrot(b->pos[0], b->pos[1], carrotX, carrotY, collisionCarrotThreshold)) {
+            carrotHealth -= 1;  
+            playerScore += 10;  
+           // printf("Carrot health: %d\n", carrotHealth);
+           // printf("Player Score: %d\n", playerScore);
+            cout << "Bullet hit the carrot!" << endl;
+
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;  
+
+            break;  
+        }
+    }
+}
+
+
+/*
+bool checkCollisionEggplant(float bulletX, float bulletY, float eggplantX, float eggplantY, float threshold) {
+    float dx = bulletX - eggplantX;
+    float dy = bulletY - eggplantY;
+    float distance = sqrt(dx * dx + dy * dy);
+    return distance <= threshold;
+}
+
+void CollisionEggplant(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];  
+
+        if (checkCollisionEggplant(b->pos[0], b->pos[1], eggplantX, eggplantY, collisionThreshold)) {
+            //Bullet hit eggplant
+            eggplantHealth -= 1;  
+            //playerScore += 10;    
+            printf("Eggplant health: %d\n", eggplantHealth);
+            //printf("Player Score: %d\n", playerScore);
+
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;  
+
+            break;  
+        }
+    }
+}*/
 
 void display_gun_info() {
     Gun &currentGun = guns[currentGunIndex];
