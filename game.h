@@ -22,7 +22,7 @@
 
 using namespace std;
 
-
+#define MAX_ENEMIES 100 
 #define AR 1
 #define SHOTGUN 2
 
@@ -45,6 +45,13 @@ extern void timeCopy(struct timespec *dest, struct timespec *source);
 
 const double BULLET_LIFESPAN = 3.0;
 const int MAX_BULLETS = 99;
+
+struct Enemy {
+    float x, y;
+    float size;
+    int health;
+    bool active; 
+};
 
 class Gun {
 public:

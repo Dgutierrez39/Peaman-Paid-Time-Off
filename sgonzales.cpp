@@ -15,7 +15,7 @@
 #include <cstddef>
 #include "game.h"
 #define MAX_BULLETS 10000 
-#define MAX_ENEMIES 10 
+//#define MAX_ENEMIES 100 
 #define MAX_HEALTH 20
 const float shootInterval = 0.1f;
 int playerHealth = MAX_HEALTH;
@@ -53,13 +53,8 @@ struct Projectile {
     float speed;  
 };
 
-struct Enemy {
-    float x, y;
-    float size;
-    int health;
-    bool active; 
-};
 Enemy enemies[MAX_ENEMIES]; 
+
 int enemyCount = 0;
 
 Projectile projectiles[MAX_BULLETS];  
@@ -369,7 +364,7 @@ void drawPurpleEnemyBullet(const Projectile& projectile)
     glColor3f(0.5f, 0.0f, 0.5f);
     glPushMatrix();
     glTranslatef(projectile.x, projectile.y, 0.0f);
-    float size = 7.0f;
+    float size = 18.0f;
     glBegin(GL_QUADS);
     glVertex2f(-size / 2, -size / 2);
     glVertex2f(size / 2, -size / 2);
@@ -506,17 +501,20 @@ void drawBrock(float playerX, float playerY)
                     bal.pos[0], bal.pos[1], 20.0f) || checkCollision(enemyGreenProjectiles[i].x,
                         enemyGreenProjectiles[i].y,bal.pos[0], bal.pos[1], 20.0f) ||
                 checkCollision(enemyProjectiles[i].x, enemyProjectiles[i].y,
-                    bal.pos[0], bal.pos[1], 20.0f) || checkCollision(enemyPurpleProjectiles[i].x, 
-                        enemyPurpleProjectiles[i].y, bal.pos[0], bal.pos[1], 20.0f)) {
+                    bal.pos[0], bal.pos[1], 20.0f)){
             playerHealth -= 1;
             printf("Player health: %d\n", playerHealth);
-
             removeEnemyBullet(i);
             break;
         }
-
-
-
+    }
+    for (int i = 0; i < bulletCount; ++i) {
+            if (checkCollision(enemyPurpleProjectiles[i].x, enemyPurpleProjectiles[i].y,bal.pos[0], bal.pos[1], 20.0f)) {
+                playerHealth -= 5;
+                printf("Player health: %d\n", playerHealth);
+                removeEnemyBullet(i);
+                break;
+                }
     }
 
     if (meleeCollision(brockX, brockY, 25.0f, enemies[0].x, enemies[0].size, enemies[0].y)) {
@@ -867,7 +865,7 @@ void drawEggplant1(float playerX, float playerY)
         eggplantX1 = playerX;
         eggplantY1 = playerY;
         if (distance <= collisionThreshold && playerHealth > 0) {
-            playerHealth -= 1;
+            playerHealth -= 5;
             printf("Player health: %d\n", playerHealth);
         }
 
