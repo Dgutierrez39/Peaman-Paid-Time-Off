@@ -28,7 +28,7 @@ void show_my_featureSM(int x, int y)
     glEnable(GL_TEXTURE_2D);
     r.bot = y;
     r.left = x;
-    r.center = 0;
+    r.center = 1;
     ggprint8b(&r, 16, 0x00ff0000, "text test");
     ggprint8b(&r, 16, 0x00ff0000, "Peaman");
     glDisable(GL_TEXTURE_2D);
@@ -89,8 +89,8 @@ void healthBar(int xres, int health, int max_health)
 	glPopMatrix();
 
     // Show health as text
-    char char_health[10];
-    sprintf(char_health, "%d", health);
+    char char_health[32];
+    sprintf(char_health, "HP: %d/%d", health, max_health);
     // Starts as black, turns to white
     unsigned int health_text_color;
     // unsigned int health_text_a = 0xFF;
@@ -117,7 +117,57 @@ void healthBar(int xres, int health, int max_health)
     Rect r;
     r.bot = 5;
     r.left = (xres / 30) + 8;
-    r.center = 1;
+    r.center = 0;
     ggprint8b(&r, 32, health_text_color, (char*)char_health);
+    glDisable(GL_TEXTURE_2D);
+}
+
+void displayScore(int xres, int yres, int score)
+{
+     // Convert int to GLfloat for drawing bar
+    GLfloat score_float = score;
+    GLfloat score_limit = 5000;
+    // Normalize health to range [0,1]
+    GLfloat score_norm = score_float / score_limit;
+    if (score_float > score_limit) {
+        score_norm = 1.000f;
+    }
+
+    // Set constraint for score bar
+    GLfloat score_length = xres * score_norm;
+    if (score_length > xres - (xres / 15)) {
+        score_length = xres - (xres / 15);
+    }
+
+    // Interpolate colors from white to gold for score bar
+    GLfloat score_r = 1.000f;
+    GLfloat score_g = 1.000f + (0.843f - 1.000f) * score_norm;
+    GLfloat score_b = 1.000f + (0.000f - 1.000f) * score_norm;
+
+
+    // Draw bar
+    glPushMatrix();
+	glTranslatef(xres / 30, yres - 10, 0.0f);
+	glBegin(GL_QUADS);
+        glColor3f(score_r, score_g, score_b);
+        glVertex2f(0, -10);
+		glVertex2f(0,  10);
+		glVertex2f(score_length,  10);
+		glVertex2f(score_length, -10);
+	glEnd();
+	glPopMatrix();
+
+    // Show player score as text
+    char char_score[32];
+    sprintf(char_score, "Score: %d", score);
+    unsigned int score_color;
+    score_color = 0xFFD2691E;
+
+    glEnable(GL_TEXTURE_2D);
+    Rect r;
+    r.bot = yres - 15;
+    r.left = (xres / 30) + 8;
+    r.center = 0;
+    ggprint8b(&r, 32, score_color, (char*)char_score);
     glDisable(GL_TEXTURE_2D);
 }
