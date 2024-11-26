@@ -58,28 +58,23 @@ void isDead(int health)
 
 void healthBar(int xres, int health, int max_health)
 {
-    // printf("\ntest %f test\n", (GLfloat)health);
-    // Convert int to GLfloat for drawing bar
+    // Convert int to GLfloat for drawing bar and normalize
     GLfloat health_float = health;
-    // normalize health to range [0,1]
     GLfloat health_norm = health_float / max_health;
     GLfloat health_red = 1.0f - health_norm;
     GLfloat health_green = health_norm;
-    // health bar length
     GLfloat bar_length = 300;
 
-    // Draw bar
+    // Draw bar - outline is dark gray
     glPushMatrix();
 	glTranslatef(xres / 30, 10, 0.0f);
 	glBegin(GL_QUADS);
-        // Outline of health bar - dark gray
         glColor3f(0.663f, 0.663f, 0.663f);
         glVertex2f(0, -10);
 		glVertex2f(0,  10);
 		glVertex2f(bar_length,  10);
 		glVertex2f(bar_length, -10);
-        // Health bar itself
-        // goes from lime to red
+        // Health bar itself - goes from lime to red
         glColor3f(health_red, health_green, 0.0f);
 	    glVertex2f(0, -10);
 		glVertex2f(0,  10);
@@ -98,20 +93,12 @@ void healthBar(int xres, int health, int max_health)
     unsigned int health_text_g = 0xFF - (0xFF * health_norm);
     unsigned int health_text_b = 0xFF - (0xFF * health_norm);
     if ((health_text_r + health_text_g + health_text_b) / 3 >= 128) {
-        /* If average of RGB is >= 128 */
-        /* Set contrast color to black */
+        /* If average of RGB is >= 128, set contrast color to black */
         health_text_color = 0xFFFFFFFF;
     } else {
         /* If <= 128, set contrast color to white */
         health_text_color = 0xFF000000;
     }
-
-    /*
-    unsigned int health_text_color = (health_text_a << 24) |
-                                     (health_text_r << 16) |
-                                     (health_text_g << 8)  |
-                                      health_text_b;
-    */
 
     glEnable(GL_TEXTURE_2D);
     Rect r;
