@@ -94,6 +94,9 @@ extern int bulletCount;
 extern bool is_dead;
 extern void healthBar(int, int, int);
 extern void isDead(int);
+extern int playerScore;
+extern void displayScore(int, int, int);
+
 
 //macros
 #define MAX_HEALTH 20
@@ -909,6 +912,9 @@ void render()
         // Draw health bar
         healthBar(g.xres, playerHealth, MAX_HEALTH);
         
+        // Displays score
+        displayScore(g.xres, g.yres, playerScore);
+
         // Checks for death condition, game over if true
         isDead(playerHealth);
         if (is_dead == true) {
