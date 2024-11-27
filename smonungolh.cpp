@@ -170,12 +170,28 @@ void gameOverScreen(int xres, int yres, GLuint MenuTexture)
         glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
     glEnd();
     Rect gameOver;
-    gameOver.bot = 35;
-    gameOver.left = 75;
+    gameOver.bot = 3 * yres / 30;
+    gameOver.left = xres / 40;
     gameOver.center = 0;
-    ggprint8b(&gameOver, 32, 0xFFF44336, "GAME OVER");
-    gameOver.bot = 20;
-    gameOver.left = 75;
-    ggprint8b(&gameOver, 32, 0xFFF44336, "Press Esc to close");
+    ggprint16(&gameOver, 32, 0xFFF44336, "GAME OVER");
+    gameOver.bot = yres / 30;
+    gameOver.left = xres / 40;
+    ggprint16(&gameOver, 32, 0xFFF44336, "Press 'Esc' to close");
     glDisable(GL_TEXTURE_2D);
+}
+
+void menuScreen(int xres, int yres, GLuint MenuTexture)
+{
+    glBindTexture(GL_TEXTURE_2D, MenuTexture);
+    glBegin(GL_QUADS);
+        glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+        glTexCoord2f(0.0f, 0.12f); glVertex2i(0, yres);
+        glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
+    glEnd();
+    Rect menu;
+    menu.bot = yres / 30;
+    menu.left = xres / 40;
+    menu.center = 0;
+    ggprint16(&menu, 32, 0xFF87CEEB, "Press 'P' to play");
 }

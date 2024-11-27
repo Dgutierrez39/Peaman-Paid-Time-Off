@@ -97,6 +97,7 @@ extern void isDead(int);
 extern int playerScore;
 extern void displayScore(int, int, int);
 extern void gameOverScreen(int, int, GLuint);
+extern void menuScreen(int, int, GLuint);
 
 
 //macros
@@ -834,20 +835,10 @@ void render()
     glClear(GL_COLOR_BUFFER_BIT);
     //draw a quad with texture
     glColor3f(1.0, 1.0, 1.0);
-    Rect r;
+    // Rect r;
     if (g.menu == 0) {
-        // On the menu screen
-        glBindTexture(GL_TEXTURE_2D, g.MenuTexture);
-        glBegin(GL_QUADS);
-            glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-            glTexCoord2f(0.0f, 0.12f); glVertex2i(0, g.yres);
-            glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
-            glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
-        glEnd();
-        r.bot = 25;
-        r.left = 75;
-        r.center = 0;
-        ggprint8b(&r, 32, 0xFF87CEEB, "Press p to play");
+        // Print start screen
+        menuScreen(g.xres, g.yres, g.MenuTexture);
     } 
     else if (g.menu == 1) {
         // Game loop
@@ -916,6 +907,9 @@ void render()
         // Displays score
         displayScore(g.xres, g.yres, playerScore);
 
+        // Shows gun stats
+        show_gun(50, g.yres - 100);
+
         // Checks for death condition, game over if true
         isDead(playerHealth);
         if (is_dead == true) {
@@ -925,7 +919,6 @@ void render()
         // Print game over screen
         gameOverScreen(g.xres, g.yres, g.MenuTexture);
     }       
-    show_gun(50, g.yres - 100);
 }
 
 
