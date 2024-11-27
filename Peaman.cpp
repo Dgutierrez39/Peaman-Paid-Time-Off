@@ -96,6 +96,7 @@ extern void healthBar(int, int, int);
 extern void isDead(int);
 extern int playerScore;
 extern void displayScore(int, int, int);
+extern void gameOverScreen(int, int, GLuint);
 
 
 //macros
@@ -921,22 +922,8 @@ void render()
             g.menu = 2;
         }  
     } else {
-        // GAME OVER screen
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, g.MenuTexture);
-        glBegin(GL_QUADS);
-            glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-            glTexCoord2f(0.0f, 0.12f); glVertex2i(0, g.yres);
-            glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
-            glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
-        glEnd();
-        r.bot = 35;
-        r.left = 75;
-        r.center = 0;
-        ggprint8b(&r, 32, 0xFFF44336, "GAME OVER");
-        r.bot = 20;
-        r.left = 75;
-        ggprint8b(&r, 32, 0xFFF44336, "Press Esc to close");
+        // Print game over screen
+        gameOverScreen(g.xres, g.yres, g.MenuTexture);
     }       
     show_gun(50, g.yres - 100);
 }

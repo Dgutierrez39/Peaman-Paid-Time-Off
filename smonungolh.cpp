@@ -101,11 +101,11 @@ void healthBar(int xres, int health, int max_health)
     }
 
     glEnable(GL_TEXTURE_2D);
-    Rect r;
-    r.bot = 5;
-    r.left = (xres / 30) + 8;
-    r.center = 0;
-    ggprint8b(&r, 32, health_text_color, (char*)char_health);
+    Rect health_bar;
+    health_bar.bot = 5;
+    health_bar.left = (xres / 30) + 8;
+    health_bar.center = 0;
+    ggprint8b(&health_bar, 32, health_text_color, (char*)char_health);
     glDisable(GL_TEXTURE_2D);
 }
 
@@ -151,10 +151,31 @@ void displayScore(int xres, int yres, int score)
     score_color = 0xFFD2691E;
 
     glEnable(GL_TEXTURE_2D);
-    Rect r;
-    r.bot = yres - 15;
-    r.left = (xres / 30) + 8;
-    r.center = 0;
-    ggprint8b(&r, 32, score_color, (char*)char_score);
+    Rect score_bar;
+    score_bar.bot = yres - 15;
+    score_bar.left = (xres / 30) + 8;
+    score_bar.center = 0;
+    ggprint8b(&score_bar, 32, score_color, (char*)char_score);
+    glDisable(GL_TEXTURE_2D);
+}
+
+void gameOverScreen(int xres, int yres, GLuint MenuTexture)
+{
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, MenuTexture);
+    glBegin(GL_QUADS);
+        glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+        glTexCoord2f(0.0f, 0.12f); glVertex2i(0, yres);
+        glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
+    glEnd();
+    Rect gameOver;
+    gameOver.bot = 35;
+    gameOver.left = 75;
+    gameOver.center = 0;
+    ggprint8b(&gameOver, 32, 0xFFF44336, "GAME OVER");
+    gameOver.bot = 20;
+    gameOver.left = 75;
+    ggprint8b(&gameOver, 32, 0xFFF44336, "Press Esc to close");
     glDisable(GL_TEXTURE_2D);
 }
