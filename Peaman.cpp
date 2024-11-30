@@ -42,14 +42,18 @@ using namespace std;
 #include <vector>
 #include <string>
 //David's functions
-extern void Tile_layer(unsigned char map[16][31][30],int row, int col, float offx,
-        float offy, float tile[2], int stage);
+extern void Tile_layer(unsigned char map[16][31][30],int row, int col,
+        float offx, float offy, float tile[2], int stage);
+extern void Boss_layer(unsigned char map[40][46],int row, int col,
+        float offx, float offy, float tile[2]);
 
-extern float Player_Collision_x(unsigned char map[16][31][30], int row, int col,
-        float player[2], float offx, float offy, float tile[2], int way, int stage);
+extern float Player_Collision_x(unsigned char map[16][31][30], int row,
+        int col, float player[2], float offx, float offy, float tile[2],
+        int way, int stage);
 
-extern float Player_Collision_y(unsigned char map[16][31][30], int row, int col,
-        float player[2], float offx, float offy, float tile[2], int way, int stage);
+extern float Player_Collision_y(unsigned char map[16][31][30], int row,
+        int col, float player[2], float offx, float offy, float tile[2],
+        int way, int stage);
 
 extern int Door_X(unsigned char map[16][31][30], int row, int col,
            float player[2], float offx, float offy,
@@ -271,12 +275,6 @@ class Level {
                     //printf("nrows of background data: %i\n", nrows);
                 }
             
-            for (int i=0; i<nrows; i++) {
-                for (int j=0; j<ncols; j++) {
-                    printf("%c", arr[c][i][j]);
-                }
-                printf("\n");
-            }
             }
         }
         void removeCrLf(char *str) {
@@ -291,6 +289,43 @@ class Level {
             }
         }
 } lev;
+
+class Boss {
+    public:
+        unsigned char arr[40][46];
+
+        int nrows, ncols;
+        Boss() {
+            FILE *fpi = fopen("./levels/boss.txt","r");
+            if (fpi) {
+                nrows=0;
+                char line[100];
+                while (fgets(line, 100, fpi) != NULL) {
+                    removeCrLf(line);
+                    int slen = strlen(line);
+                    ncols = slen;
+                    for (int j=0; j<slen; j++) {
+                        arr[nrows][j] = line[j];
+                    }
+                    ++nrows;
+                }
+                fclose(fpi);
+            }
+        }
+        void removeCrLf(char *str) {
+            //remove carriage return and linefeed from a Cstring
+            char *p = str;
+            while (*p) {
+                if (*p == 10 || *p == 13) {
+                    *p = '\0';
+                    break;
+                }
+                ++p;
+            }
+        }
+} boss;
+
+
 
 
 int n= 0;
@@ -388,7 +423,6 @@ void X11_wrapper::set_title()
     XMapWindow(dpy, win);
     XStoreName(dpy, win, "3350 Lab-1");
 }
-
 bool X11_wrapper::getXPending()
 {
     //See if there are pending events.
@@ -411,14 +445,22 @@ void X11_wrapper::swapBuffers()
 void X11_wrapper::reshape_window(int width, int height)
 {
     //Window has been resized.
-    g.xres = width;
-    g.yres = height;
-    bal.pos[0] = width/2;
-    bal.pos[1] = height/2;
-    lev.tilesize[0] =  width / 30;
-    lev.tilesize[1] =  height / 30;
-    lev.tx = lev.tilesize[0]/2;
-    lev.ty = lev.tilesize[1]/2;
+    if (lev.current_stage != 16) {
+        g.xres = width;
+        g.yres = height;
+        lev.tilesize[0] =  width / 30;
+        lev.tilesize[1] =  height / 30;
+        lev.tx = lev.tilesize[0]/2;
+        lev.ty = lev.tilesize[1]/2;
+    }
+    else {
+        g.xres = width;
+        g.yres = height;
+        lev.tilesize[0] =  width / 60;
+        lev.tilesize[1] =  height / 60;
+        lev.tx = lev.tilesize[0]/2;
+        lev.ty = lev.tilesize[1]/2;
+    }
     //
     glViewport(0, 0, (GLint)width, (GLint)height);
     glMatrixMode(GL_PROJECTION); glLoadIdentity();
@@ -556,6 +598,13 @@ int X11_wrapper::check_keys(XEvent *e)
             break;
         case XK_r:
             reload();
+            break;
+        case XK_b:
+            lev.current_stage = 16;
+            lev.tilesize[0] =  g.xres / 40;
+            lev.tilesize[1] =  g.yres / 40;
+            lev.tx = lev.tilesize[0]/2;
+            lev.ty = lev.tilesize[1]/2;
             break;
     }
     return 0;
@@ -706,7 +755,17 @@ void physics()
         else
             bal.pos[0] = Player_Collision_x(lev.arr, lev.nrows, lev.ncols,
                                     bal.pos, lev.tx, lev.ty, lev.tilesize,1, lev.current_stage);
+        if(lev.current_stage == 16) {
+        lev.tilesize[0] =  g.xres / 30;
+        lev.tilesize[1] =  g.yres / 30;
+        lev.tx = lev.tilesize[0]/4;
+        lev.ty = lev.tilesize[1]/4;
+
+        }
     }
+
+
+
 
     if (g.keys[XK_Up]) {            
         bal.pos[1] += bal.movement[1];
@@ -853,7 +912,11 @@ void render()
         extern void drawTomato(float, float);
         extern void drawLettuce(float, float);
         extern void drawEggplant(float, float);
-        Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize, lev.current_stage);
+        if (lev.current_stage != 16) 
+            Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize, lev.current_stage);
+        else
+            Boss_layer(boss.arr, boss.nrows, boss.ncols, lev.tx, lev.ty, lev.tilesize);
+            
         drawCarrot(bal.pos[0], bal.pos[1]);
         drawTomato(bal.pos[0], bal.pos[1]);
         drawLettuce(bal.pos[0], bal.pos[1]);
