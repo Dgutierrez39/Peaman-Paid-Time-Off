@@ -1,23 +1,23 @@
-         wwwwddddwwww         
-         w          w                                             
-         w          w          
-         w          w         
-         w          w                             
-         w          w         
-         w          w         
-         w          w         
-         w          w         
-         w          w         
-         w          w                                       
-wwwwwwwwww          wwwwwwwwww                                  
+         wwwwddddwwwww         
+         w           w                                             
+         w           w          
+         w           w         
+         w           w                             
+         w           w         
+         w           w         
+         w           w         
+         w           w         
+         w           w         
+wwwwwwwwwwbbb  b  bbbwwwwwwww                                       
+w                            w                        
 w                            w                                    
-d                            d                                 
-d                            d
-d                            d        
-d                            d
+d       b               b    d                                 
+d             bbbb           d
+d             bbbb           d        
+d       b               b    d
 w                            w
 w                            w
-wwwwwwwwww          wwwwwwwwww
+wwwwwwwwwwbb      bbwwwwwwwwww
          w          w         
          w          w         
          w          w         
@@ -26,6 +26,6 @@ wwwwwwwwww          wwwwwwwwww
          w          w         
          w          w         
          w          w         
-         w          w         
-         w          w          
+         w   bkkb   w         
+         w  b    b  w          
          wwwwddddwwww         

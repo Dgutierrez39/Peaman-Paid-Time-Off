@@ -8,23 +8,23 @@
                              
                              
                              
-                                                           
+
 wwwwwwwwwwwwwwwwwwwwwwwwwwwwww                                  
-w                            w                                    
-d                            d                                 
-d                            d
+w        b           b       w                                    
+d        b           b       d                                 
+d        b                   d
 d                            d        
-d                            d
-w                            w
-w                            w
+d                    b       d
+w        b           b       w
+w        b           b       w
 wwwwwwwwww          wwwwwwwwww
          w          w         
          w          w         
+         wbbb       w         
          w          w         
          w          w         
          w          w         
-         w          w         
-         w          w         
+         w       bbbw         
          w          w         
          w          w         
          w          w          

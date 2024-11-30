@@ -726,6 +726,7 @@ void physics()
 {
 
     int temp_stage = lev.current_stage;
+    int door_lock = 0;
     int b = (int)(bal.pos[1]/lev.ftsz[1]);
     b = b % lev.ncols;
     int a = (int)(bal.pos[0]/lev.ftsz[0]);
@@ -739,26 +740,36 @@ void physics()
 */
     if (g.keys[XK_a]){
         bal.pos[0] -= bal.movement[0];
-        if ((bal.pos[1] >= ((g.yres/2) - 5*lev.tilesize[1])) && (bal.pos[1] <= ((g.yres/2) + 5*lev.tilesize[1])))
+        if ((bal.pos[1] >= ((g.yres/2) - 5*lev.tilesize[1])) && 
+            (bal.pos[1] <= ((g.yres/2) + 5*lev.tilesize[1]))) {
+            door_lock = 1;
             lev.current_stage = Door_X(lev.arr, lev.nrows, lev.ncols,
-                            bal.pos, lev.tx, lev.ty, lev.tilesize,0, lev.current_stage);
-        
+                                       bal.pos, lev.tx, lev.ty,
+                                       lev.tilesize,0, lev.current_stage);
+        }     
         if (temp_stage != lev.current_stage)
             bal.pos[0] = g.xres-(2*lev.tilesize[0]);
         else
             bal.pos[0] = Player_Collision_x(lev.arr, lev.nrows, lev.ncols,
-                                    bal.pos, lev.tx, lev.ty, lev.tilesize,0,  lev.current_stage);
+                                            bal.pos, lev.tx, lev.ty, 
+                                            lev.tilesize,0, lev.current_stage);
     }
     if (g.keys[XK_d]){
         bal.pos[0] += bal.movement[0];
-        if ((bal.pos[1] >= ((g.yres/2) - 5*lev.tilesize[1])) && (bal.pos[1] <= ((g.yres/2) + 5*lev.tilesize[1])))
+        if ((bal.pos[1] >= ((g.yres/2) - 5*lev.tilesize[1])) &&
+               (bal.pos[1] <= ((g.yres/2) + 5*lev.tilesize[1]))) {
+            door_lock = 1;
             lev.current_stage = Door_X(lev.arr, lev.nrows, lev.ncols,
-                                    bal.pos, lev.tx, lev.ty, lev.tilesize,1, lev.current_stage);
+                                       bal.pos, lev.tx, lev.ty, lev.tilesize,
+                                       1, lev.current_stage);
+        }
+
         if (temp_stage != lev.current_stage)
             bal.pos[0] = 2*lev.tilesize[0];
         else
             bal.pos[0] = Player_Collision_x(lev.arr, lev.nrows, lev.ncols,
-                                    bal.pos, lev.tx, lev.ty, lev.tilesize,1, lev.current_stage);
+                                            bal.pos, lev.tx, lev.ty, 
+                                            lev.tilesize,1,lev.current_stage);
         if(lev.current_stage == 16) {
         lev.tilesize[0] =  g.xres / 30;
         lev.tilesize[1] =  g.yres / 30;
@@ -767,35 +778,33 @@ void physics()
 
         }
     }
-
-<<<<<<< HEAD
-
-
-
-    if (g.keys[XK_Up]) {            
-=======
     if (g.keys[XK_w]) {            
->>>>>>> cb2475d32c34ac8b8c2b75970c794533ded37db2
         bal.pos[1] += bal.movement[1];
-        if ((bal.pos[0] >= ((g.xres/2) - 2*lev.tilesize[0])) && (bal.pos[0] <= ((g.xres/2) + 2*lev.tilesize[0])))     
+        if ((bal.pos[0] >= ((g.xres/2) - 5*lev.tilesize[0])) &&
+            (bal.pos[0] <= ((g.xres/2) + 5*lev.tilesize[0])))     
             lev.current_stage = Door_Y(lev.arr, lev.nrows, lev.ncols,
-                                    bal.pos, lev.tx, lev.ty, lev.tilesize,1, lev.current_stage);
-        if (temp_stage != lev.current_stage)
+                                       bal.pos, lev.tx, lev.ty, lev.tilesize,1,
+                                       lev.current_stage);
+        if (temp_stage != lev.current_stage && door_lock == 0)
             bal.pos[1] = 2*lev.tilesize[1];
         else
             bal.pos[1] = Player_Collision_y(lev.arr, lev.nrows, lev.ncols,
-                                    bal.pos, lev.tx, lev.ty, lev.tilesize,1, lev.current_stage);
+                                            bal.pos, lev.tx, lev.ty,
+                                            lev.tilesize,1, lev.current_stage);
     }
     if (g.keys[XK_s]){
         bal.pos[1] -= bal.movement[1];
-        if ((bal.pos[0] >= ((g.xres/2) - 2*lev.tilesize[0])) && (bal.pos[0] <= ((g.xres/2) + 2*lev.tilesize[0])))
+        if ((bal.pos[0] >= ((g.xres/2) - 2*lev.tilesize[0]))
+                && (bal.pos[0] <= ((g.xres/2) + 2*lev.tilesize[0])))
             lev.current_stage = Door_Y(lev.arr, lev.nrows, lev.ncols,
-                                    bal.pos, lev.tx, lev.ty, lev.tilesize,0, lev.current_stage);
-        if (temp_stage != lev.current_stage)
+                                       bal.pos, lev.tx, lev.ty,
+                                       lev.tilesize,0,lev.current_stage);
+        if (temp_stage != lev.current_stage && door_lock == 0)
             bal.pos[1] = g.yres-(2*lev.tilesize[1]);
         else
             bal.pos[1] = Player_Collision_y(lev.arr, lev.nrows, lev.ncols,
-                                    bal.pos, lev.tx, lev.ty, lev.tilesize,0, lev.current_stage);   
+                                            bal.pos, lev.tx, lev.ty, 
+                                            lev.tilesize,0, lev.current_stage);
     }
 
 /*
@@ -808,61 +817,9 @@ void physics()
             break; 
         }
     }
- */   /*
-    struct timespec bt;
-    clock_gettime(CLOCK_REALTIME, &bt);
-    int i = 0;
-    while (i < ga.nbullets) {
-        Bullet *b = &ga.barr[i];*/
-        //How long has bullet been alive?
-        /*
-        double ts = timeDiff(&b->time, &bt);
-        if (ts > 2.5) {
-            //time to delete the bullet.
-            memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
-                sizeof(Bullet));
-            ga.nbullets--;
-            //do not increment i.
-            continue;
-        }
-        //move the bullet
-        b->pos[0] += b->vel[0];
-        b->pos[1] += b->vel[1];
-        */
-        //Check for collision with window edges
-        /*
-        if (b->pos[0] < 0.0) {
-           // b->pos[0] += (float)g.xres;
-           memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
-                sizeof(Bullet));
-            ga.nbullets--;
-
-        }
-        else if (b->pos[0] > (float)g.xres) {
-            //b->pos[0] -= (float)g.xres;
-            memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
-                sizeof(Bullet));
-            ga.nbullets--;
-
-        }
-        else if (b->pos[1] < 0.0) {
-           // b->pos[1] += (float)g.yres;
-           memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
-                sizeof(Bullet));
-            ga.nbullets--;
-
-        }
-        else if (b->pos[1] > (float)g.yres) {
-           // b->pos[1] -= (float)g.yres;
-           memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
-                sizeof(Bullet));
-            ga.nbullets--;
-
-        }
-        ++i;
-    }*/
-   // update_bullets();
-   update_bullets(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize, lev.current_stage);
+ */  
+  //  update_bullets();
+    update_bullets(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize, lev.current_stage);
     update_reload();
 //    bullet_collision(lev.arr, lev.nrows, lev.ncols, ga.barr, ga.nbullets, lev);
 }
@@ -911,16 +868,11 @@ void render()
         extern void drawTomato(float, float);
         extern void drawLettuce(float, float);
         extern void drawEggplant(float, float);
-<<<<<<< HEAD
-        if (lev.current_stage != 16) 
+        extern void drawEggplant1(float, float);
+        if (lev.current_stage != 16)
             Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize, lev.current_stage);
         else
             Boss_layer(boss.arr, boss.nrows, boss.ncols, lev.tx, lev.ty, lev.tilesize);
-            
-=======
-        extern void drawEggplant1(float, float);
-        Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize, lev.current_stage);
->>>>>>> cb2475d32c34ac8b8c2b75970c794533ded37db2
         drawCarrot(bal.pos[0], bal.pos[1]);
         drawTomato(bal.pos[0], bal.pos[1]);
         drawLettuce(bal.pos[0], bal.pos[1]);

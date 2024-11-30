@@ -53,7 +53,8 @@ void Boss_layer(unsigned char map[40][46],int row, int col, float offx,
              glTranslatef(offx+(tile[0]*j),
                           offy+(tile[1]*i), 0.0);
              glBegin(GL_QUADS);
-                glVertex2f(-offx, -offy);                                                        glVertex2f(-offx,  offy);
+                glVertex2f(-offx, -offy);
+                glVertex2f(-offx,  offy);
                 glVertex2f( offx,  offy);
                 glVertex2f( offx, -offy);
              glEnd();
@@ -67,7 +68,8 @@ void Boss_layer(unsigned char map[40][46],int row, int col, float offx,
 
 
 float Player_Collision_x(unsigned char map[16][31][30], int row, int col,
-                      float player[2], float offx, float offy, float tile[2], int way, int stage)
+                      float player[2], float offx, float offy, float tile[2],
+                      int way, int stage)
 {
     for (int i = 0; i<col; i++) {
         //int row_count = row-1;
@@ -98,7 +100,8 @@ float Player_Collision_x(unsigned char map[16][31][30], int row, int col,
 
 
 float Player_Collision_y(unsigned char map[16][31][30], int row, int col,
-                      float player[2], float offx, float offy, float tile[2], int way, int stage)
+                      float player[2], float offx, float offy, float tile[2],
+                      int way, int stage)
 {
     for (int i = 0; i<col; i++) {
         for (int j = 0; j<row; j++) {

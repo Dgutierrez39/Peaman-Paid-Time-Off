@@ -2,29 +2,29 @@
          w          w                                             
          w          w          
          w          w         
-         w          w                             
+         w         bw                             
+         w         bw         
          w          w         
-         w          w         
-         w          w         
-         w          w         
+         wb         w         
+         wb         w         
          w          w         
          w          w                                       
-wwwwwwwwww          w                                           
-w                   w                                             
+wwwwwwwwwwbb      bbw                                           
+w     bb            w                                             
 d                   w                                          
-d                   w         
-d                   w                 
-d                   w         
+d              b    w         
+d              b    w                 
+d              b    w         
 w                   w         
-w                   w         
-wwwwwwwwww          w          
+w     bb            w         
+wwwwwwwwwwbb      bbw          
          w          w         
          w          w         
+         wb         w         
+         wb         w         
          w          w         
-         w          w         
-         w          w         
-         w          w         
-         w          w         
+         w         bw         
+         w         bw         
          w          w         
          w          w         
          w          w          
