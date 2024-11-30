@@ -22,7 +22,7 @@
 
 using namespace std;
 
-
+#define MAX_ENEMIES 100 
 #define AR 1
 #define SHOTGUN 2
 
@@ -46,22 +46,29 @@ extern void timeCopy(struct timespec *dest, struct timespec *source);
 const double BULLET_LIFESPAN = 3.0;
 const int MAX_BULLETS = 99;
 
+struct Enemy {
+    float x, y;
+    float size;
+    int health;
+    bool active; 
+};
+
 class Gun {
 public:
-    string name;        // Gun name (e.g., "AR", "Shotgun")
-    float bulletSpeed;  // Speed of bullets fired
-    double cooldown;    // Cooldown time between shots
-    int ammoCapacity;   // Maximum ammo capacity
-    int currentAmmo;    // Current ammo count
-    float bulletSize;   // Size of bullets
-    int spreadCount;    // Number of bullets in a spread
-    float spreadAngle;  // Angle between spread bullets
+    string name;        //Gun name (e.g., "AR", "Shotgun")
+    float bulletSpeed;  //Speed of bullets fired
+    double cooldown;    //Cooldown time between shots
+    int ammoCapacity;   //Maximum ammo capacity
+    int currentAmmo;    //Current ammo count
+    float bulletSize;   //Size of bullets
+    int spreadCount;    //Number of bullets in a spread
+    float spreadAngle;  //Angle between spread bullets
     bool isReloading;
     struct timespec reloadStartTime;
 
     Gun(string gunName, float speed, double cd, int capacity, float size, int spread, float angle);
 
-    // Determines if the gun can shoot based on cooldown
+    //Determines if the gun can shoot based on cooldown
     bool canShoot(struct timespec &lastShotTime);
 };
 
@@ -136,10 +143,13 @@ extern Ball bal;
 extern Game ga;
 
 void fire_bullet(int mx, int my);
-void update_bullets();
+void update_bullets(unsigned char map[16][31][30], int row, int col, float offx, float offy, float tile[2], int stage);
+//void update_bullets();
 void display_gun_info();
 void reload();
 void update_reload();
+void render_bullets();
+void CarrotCollision(Game &ga);
 
 extern int currentGunIndex;
 extern vector<Gun> guns;

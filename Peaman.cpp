@@ -80,9 +80,12 @@ typedef Flt Matrix[4][4];
 //const int MAX_BULLETS = 11;
 extern void show_my_featureSW(int, int);
 void fire_bullet(void);
-void update_bullets(void);
+//void update_bullets(void);
+void update_bullets(unsigned char map[16][31][30], int row, int col, float offx, float offy, float tile[2], int stage);
 void display_gun_info(void);
+void render_bullets(void);
 extern void show_gun(int, int);
+extern void CarrotCollision(Game &ga);
 #define BULLET_LIFESPAN 1.0
 
 //extern Gun* currentGun;
@@ -95,6 +98,11 @@ extern int bulletCount;
 extern bool is_dead;
 extern void healthBar(int, int, int);
 extern void isDead(int);
+extern int playerScore;
+extern void displayScore(int, int, int);
+extern void gameOverScreen(int, int, GLuint);
+extern void menuScreen(int, int, GLuint);
+
 
 //macros
 #define MAX_HEALTH 20
@@ -562,10 +570,6 @@ int X11_wrapper::check_keys(XEvent *e)
     switch (key) {
         case XK_a:
             //the 'a' key was pressed
-            if (lev.current_stage != 0)
-                lev.current_stage = 0;
-            else
-                lev.current_stage = 1;
             break;
         case XK_w:
             break;
@@ -582,9 +586,9 @@ int X11_wrapper::check_keys(XEvent *e)
         case XK_Escape:
             //Escape key was pressed
             return 1;
-        case XK_Left:
+        case XK_d:
             break;
-        case XK_Right:
+        case XK_s:
             break;
         case XK_Up:
             break;
@@ -727,13 +731,13 @@ void physics()
     int a = (int)(bal.pos[0]/lev.ftsz[0]);
     a = a % lev.nrows;
 
-    if (g.keys[XK_w]) {
+   /* if (g.keys[XK_w]) {
         printf("row is: %i\n", a);
         printf("Column is: %i\n", b);
         printf("The stage number is: %i\n", lev.current_stage);
         printf("The slot has a : '%c'\n", lev.arr[lev.current_stage][a][b]);}
-
-    if (g.keys[XK_Left]){
+*/
+    if (g.keys[XK_a]){
         bal.pos[0] -= bal.movement[0];
         if ((bal.pos[1] >= ((g.yres/2) - 5*lev.tilesize[1])) && (bal.pos[1] <= ((g.yres/2) + 5*lev.tilesize[1])))
             lev.current_stage = Door_X(lev.arr, lev.nrows, lev.ncols,
@@ -745,7 +749,7 @@ void physics()
             bal.pos[0] = Player_Collision_x(lev.arr, lev.nrows, lev.ncols,
                                     bal.pos, lev.tx, lev.ty, lev.tilesize,0,  lev.current_stage);
     }
-    if (g.keys[XK_Right]){
+    if (g.keys[XK_d]){
         bal.pos[0] += bal.movement[0];
         if ((bal.pos[1] >= ((g.yres/2) - 5*lev.tilesize[1])) && (bal.pos[1] <= ((g.yres/2) + 5*lev.tilesize[1])))
             lev.current_stage = Door_X(lev.arr, lev.nrows, lev.ncols,
@@ -764,10 +768,14 @@ void physics()
         }
     }
 
+<<<<<<< HEAD
 
 
 
     if (g.keys[XK_Up]) {            
+=======
+    if (g.keys[XK_w]) {            
+>>>>>>> cb2475d32c34ac8b8c2b75970c794533ded37db2
         bal.pos[1] += bal.movement[1];
         if ((bal.pos[0] >= ((g.xres/2) - 2*lev.tilesize[0])) && (bal.pos[0] <= ((g.xres/2) + 2*lev.tilesize[0])))     
             lev.current_stage = Door_Y(lev.arr, lev.nrows, lev.ncols,
@@ -778,7 +786,7 @@ void physics()
             bal.pos[1] = Player_Collision_y(lev.arr, lev.nrows, lev.ncols,
                                     bal.pos, lev.tx, lev.ty, lev.tilesize,1, lev.current_stage);
     }
-    if (g.keys[XK_Down]){
+    if (g.keys[XK_s]){
         bal.pos[1] -= bal.movement[1];
         if ((bal.pos[0] >= ((g.xres/2) - 2*lev.tilesize[0])) && (bal.pos[0] <= ((g.xres/2) + 2*lev.tilesize[0])))
             lev.current_stage = Door_Y(lev.arr, lev.nrows, lev.ncols,
@@ -853,7 +861,8 @@ void physics()
         }
         ++i;
     }*/
-    update_bullets();
+   // update_bullets();
+   update_bullets(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize, lev.current_stage);
     update_reload();
 //    bullet_collision(lev.arr, lev.nrows, lev.ncols, ga.barr, ga.nbullets, lev);
 }
@@ -889,20 +898,10 @@ void render()
     glClear(GL_COLOR_BUFFER_BIT);
     //draw a quad with texture
     glColor3f(1.0, 1.0, 1.0);
-    Rect r;
+    // Rect r;
     if (g.menu == 0) {
-        // On the menu screen
-        glBindTexture(GL_TEXTURE_2D, g.MenuTexture);
-        glBegin(GL_QUADS);
-            glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-            glTexCoord2f(0.0f, 0.12f); glVertex2i(0, g.yres);
-            glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
-            glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
-        glEnd();
-        r.bot = 25;
-        r.left = 75;
-        r.center = 0;
-        ggprint8b(&r, 32, 0xFF87CEEB, "Press p to play");
+        // Print start screen
+        menuScreen(g.xres, g.yres, g.MenuTexture);
     } 
     else if (g.menu == 1) {
         // Game loop
@@ -912,15 +911,23 @@ void render()
         extern void drawTomato(float, float);
         extern void drawLettuce(float, float);
         extern void drawEggplant(float, float);
+<<<<<<< HEAD
         if (lev.current_stage != 16) 
             Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize, lev.current_stage);
         else
             Boss_layer(boss.arr, boss.nrows, boss.ncols, lev.tx, lev.ty, lev.tilesize);
             
+=======
+        extern void drawEggplant1(float, float);
+        Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize, lev.current_stage);
+>>>>>>> cb2475d32c34ac8b8c2b75970c794533ded37db2
         drawCarrot(bal.pos[0], bal.pos[1]);
         drawTomato(bal.pos[0], bal.pos[1]);
         drawLettuce(bal.pos[0], bal.pos[1]);
         drawEggplant(bal.pos[0], bal.pos[1]);
+        if (lev.current_stage == 5) {
+            drawEggplant1(bal.pos[0], bal.pos[1]);
+        }
         drawBrock(bal.pos[0], bal.pos[1]);
         if (shane_show == 1)
             show_my_featureSW(10, g.yres - 80);
@@ -941,7 +948,7 @@ void render()
         glPopMatrix();
 
         //Draw the bullets
-        for (int i=0; i<ga.nbullets; i++) {
+       /* for (int i=0; i<ga.nbullets; i++) {
             Bullet *b = &ga.barr[i];
             //Log("draw bullet...\n");
             glColor3f(1.0, 1.0, 1.0);
@@ -957,37 +964,32 @@ void render()
             glVertex2f(b->pos[0]+1.0f, b->pos[1]-1.0f);
             glVertex2f(b->pos[0]+1.0f, b->pos[1]+1.0f);
             glEnd();
-        }
+        }*/
+
+        render_bullets();
             
         display_gun_info();
+
+        CarrotCollision(ga);
 
         // Draw health bar
         healthBar(g.xres, playerHealth, MAX_HEALTH);
         
+        // Displays score
+        displayScore(g.xres, g.yres, playerScore);
+
+        // Shows gun stats
+        show_gun(50, g.yres - 100);
+
         // Checks for death condition, game over if true
         isDead(playerHealth);
         if (is_dead == true) {
             g.menu = 2;
         }  
     } else {
-        // GAME OVER screen
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, g.MenuTexture);
-        glBegin(GL_QUADS);
-            glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-            glTexCoord2f(0.0f, 0.12f); glVertex2i(0, g.yres);
-            glTexCoord2f(1.0f, 0.0f); glVertex2i(g.xres, g.yres);
-            glTexCoord2f(1.0f, 1.0f); glVertex2i(g.xres, 0);
-        glEnd();
-        r.bot = 35;
-        r.left = 75;
-        r.center = 0;
-        ggprint8b(&r, 32, 0xFFF44336, "GAME OVER");
-        r.bot = 20;
-        r.left = 75;
-        ggprint8b(&r, 32, 0xFFF44336, "Press Esc to close");
+        // Print game over screen
+        gameOverScreen(g.xres, g.yres, g.MenuTexture);
     }       
-    show_gun(50, g.yres - 100);
 }
 
 

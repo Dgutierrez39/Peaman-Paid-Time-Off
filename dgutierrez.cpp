@@ -35,6 +35,37 @@ void Tile_layer(unsigned char map[16][31][30],int row, int col, float offx,
        
     }
 }
+void Boss_layer(unsigned char map[40][46],int row, int col, float offx,
+        float offy, float tile[2])
+{
+    glClearColor(0.1, 0.1, 0.1, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+    for (int i = 0; i<col; i++) {
+        for (int j = 0; j<row; j++) {
+            if (map[j][i] != ' ') {
+                if (map[j][i] == 'w') {
+                    glColor3f(0.8, 0.8, 0.6);}
+             else if (map[j][i] == 'b') {
+                glColor3f(0.9, 0.2, 0.2);}
+             else if (map[j][i] == 'd'){
+                glColor3f(0, 0, 1);}
+             glPushMatrix();
+             glTranslatef(offx+(tile[0]*j),
+                          offy+(tile[1]*i), 0.0);
+             glBegin(GL_QUADS);
+                glVertex2f(-offx, -offy);                                                        glVertex2f(-offx,  offy);
+                glVertex2f( offx,  offy);
+                glVertex2f( offx, -offy);
+             glEnd();
+             glPopMatrix();
+
+            }
+        }
+
+    }
+}
+
+
 float Player_Collision_x(unsigned char map[16][31][30], int row, int col,
                       float player[2], float offx, float offy, float tile[2], int way, int stage)
 {
@@ -125,8 +156,6 @@ int Door_X(unsigned char map[16][31][30], int row, int col,
                         return 11;
                     if (stage == 13)
                         return 12;
-                    //BOSS if (stage == #)
-                    //    return #;
                 }
                 //right
                 if (way == 1) {
@@ -144,8 +173,8 @@ int Door_X(unsigned char map[16][31][30], int row, int col,
                         return 12;
                     if (stage == 12)
                         return 13;
-                    //Boss if (stage ==#)
-                    //  return #;
+                    if (stage ==13)
+                        return 16;
                 }
             }
         }
