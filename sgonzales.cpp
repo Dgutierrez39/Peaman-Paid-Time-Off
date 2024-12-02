@@ -865,6 +865,11 @@ void drawBrock(float playerX, float playerY)
             printf("Player health: %d\n", playerHealth);
             removeEnemyBullet(i);
             break;
+            if (playerHealth -= 1) {
+                printf("Player health: %d\n", playerHealth);
+                removeEnemyBullet(i);
+                break;
+            }
         }
     }
 
@@ -2676,11 +2681,11 @@ void drawBoss(float playerX, float playerY)
         bossY += moveSpeed * ((rand() % 2 == 0) ? 1 : -1); 
         if (bossX < 0) 
             bossX = 300;
-        if (bossX > 600) 
+        if (bossX > 400) 
             bossX = 300;
         if (bossY < 0) 
             bossY = 200;
-        if (bossY > 400) 
+        if (bossY > 300) 
             bossY = 200;         
         movementTimer = time(NULL) + 2;
     } 
