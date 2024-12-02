@@ -899,14 +899,53 @@ void render()
         //drawTomato(bal.pos[0], bal.pos[1]);
         //drawLettuce(bal.pos[0], bal.pos[1]);
         //drawEggplant(bal.pos[0], bal.pos[1]);
-        drawBoss(bal.pos[0], bal.pos[1]);
+        //drawBoss(bal.pos[0], bal.pos[1]);
         drawBrock(bal.pos[0], bal.pos[1]);
         if (lev.current_stage == 5) {
             drawEggplant1(bal.pos[0], bal.pos[1]);
         }
-        if (lev.current_stage == 5) {
-            drawEggplant1(bal.pos[0], bal.pos[1]);
+        if (lev.current_stage == 6) {
+            drawEggplant2(bal.pos[0], bal.pos[1]);
         }
+        if (lev.current_stage == 6) {
+            drawEggplant3(bal.pos[0], bal.pos[1]);
+        }
+        if (lev.current_stage == 7) {
+            drawEggplant4(bal.pos[0], bal.pos[1]);
+            drawLettuce(bal.pos[0], bal.pos[1]);
+            drawLettuce1(bal.pos[0], bal.pos[1]);
+        }
+        if (lev.current_stage == 2) {
+            drawCarrot(bal.pos[0], bal.pos[1]);
+            drawCarrot1(bal.pos[0], bal.pos[1]);
+            drawCarrot2(bal.pos[0], bal.pos[1]);
+            drawCarrot3(bal.pos[0], bal.pos[1]);
+        }
+
+        if (lev.current_stage == 8) {
+            drawEggplant4(bal.pos[0], bal.pos[1]);
+            drawLettuce2(bal.pos[0], bal.pos[1]);
+            drawLettuce3(bal.pos[0], bal.pos[1]);
+        }
+        if (lev.current_stage == 9) {
+            drawCarrot4(bal.pos[0], bal.pos[1]);
+        }
+        if (lev.current_stage == 10) {
+            drawTomato(bal.pos[0], bal.pos[1]);
+            drawTomato1(bal.pos[0], bal.pos[1]);
+            drawTomato2(bal.pos[0], bal.pos[1]);
+        }
+        if (lev.current_stage == 11) {
+            drawTomato3(bal.pos[0], bal.pos[1]);
+            drawTomato4(bal.pos[0], bal.pos[1]);
+            drawTomato5(bal.pos[0], bal.pos[1]);
+            drawCarrot5(bal.pos[0], bal.pos[1]);
+        }
+        if (lev.current_stage == 12) {
+            drawTomato6(bal.pos[0], bal.pos[1]);
+            drawCarrot4(bal.pos[0], bal.pos[1]);
+        }
+
         /*
         if (lev.current_stage == 5 || lev.current_stage == 6 || lev.current_stage == 7 ||
             lev.current_stage == 8 ) {
@@ -914,7 +953,8 @@ void render()
         }
 
         */
-        if (lev.current_stage == 16) {
+
+        if (lev.current_stage == 13) {
             drawBoss(bal.pos[0], bal.pos[1]);
         }
         if (shane_show == 1)
