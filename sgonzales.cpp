@@ -27,32 +27,32 @@ float collisionLettuceThreshold = 50.0f;
 //CARROTS
 float carrotX = 100.0f;
 float carrotY = 100.0f;
-float carrotX1 = 100.0f;
-float carrotY1 = 100.0f;
+float carrotX1 = 120.0f;
+float carrotY1 = 120.0f;
 float carrotX2 = 100.0f;
 float carrotY2 = 100.0f;
-float carrotX3 = 100.0f;
-float carrotY3 = 100.0f;
-float carrotX4 = 100.0f;
-float carrotY4 = 100.0f;
-float carrotX5 = 100.0f;
+float carrotX3 = 170.0f;
+float carrotY3 = 170.0f;
+float carrotX4 = 200.0f;
+float carrotY4 = 300.0f;
+float carrotX5 = 200.0f;
 float carrotY5 = 100.0f;
 //////////////////////
 //TOMATO
-float tomatoX = 0.0f;
-float tomatoY = 0.0f;
-float tomatoX1 = 0.0f;
-float tomatoY1 = 0.0f;
-float tomatoX2 = 0.0f;
-float tomatoY2 = 0.0f;
-float tomatoX3 = 0.0f;
-float tomatoY3 = 0.0f;
-float tomatoX4 = 0.0f;
-float tomatoY4 = 0.0f;
-float tomatoX5 = 0.0f;
-float tomatoY5 = 0.0f;
-float tomatoX6 = 0.0f;
-float tomatoY6 = 0.0f;
+float tomatoX = 100.0f;
+float tomatoY = 100.0f;
+float tomatoX1 = 150.0f;
+float tomatoY1 = 150.0f;
+float tomatoX2 = 200.0f;
+float tomatoY2 = 100.0f;
+float tomatoX3 = 200.0f;
+float tomatoY3 = 150.0f;
+float tomatoX4 = 175.0f;
+float tomatoY4 = 225.0f;
+float tomatoX5 = 300.0f;
+float tomatoY5 = 200.0f;
+float tomatoX6 = 300.0f;
+float tomatoY6 = 100.0f;
 /////////////////////
 float brockX = 0.0f;
 float brockY = 0.0f;
@@ -61,21 +61,21 @@ float eggplantX = 100.0f;
 float eggplantY = 200.0f;
 float eggplantX1 = 100.0f; 
 float eggplantY1 = 150.0f;
-float eggplantX2 = 100.0f; 
+float eggplantX2 = 200.0f; 
 float eggplantY2 = 150.0f;
-float eggplantX3 = 100.0f; 
+float eggplantX3 = 300.0f; 
 float eggplantY3 = 150.0f;
-float eggplantX4 = 100.0f; 
-float eggplantY4 = 150.0f;
+float eggplantX4 = 200.0f; 
+float eggplantY4 = 100.0f;
 
 float lettuceX = 150.0f; 
 float lettuceY = 100.0f;
-float lettuceX1 = 150.0f; 
-float lettuceY1 = 100.0f;
-float lettuceX2 = 150.0f; 
+float lettuceX1 = 100.0f; 
+float lettuceY1 = 150.0f;
+float lettuceX2 = 200.0f; 
 float lettuceY2 = 100.0f;
-float lettuceX3 = 150.0f; 
-float lettuceY3 = 100.0f;
+float lettuceX3 = 250.0f; 
+float lettuceY3 = 300.0f;
 //////////////////////////
 float bossX = 500.0f;
 float bossY = 200.0f;
@@ -1393,8 +1393,8 @@ void drawTomato2(float playerX, float playerY)
 void drawTomato3(float playerX, float playerY)
 {
     static int timer = time(NULL) + 2;
-    enemies[11].x = tomatoX;
-    enemies[11].y = tomatoY;
+    enemies[11].x = tomatoX3;
+    enemies[11].y = tomatoY3;
     enemies[11].size = 35.0f;
 
     if (tomatoHealth3 <= 0) {
