@@ -948,9 +948,7 @@ void render()
         if (lev.current_stage == 5) {
             drawEggplant1(bal.pos[0], bal.pos[1]);
         }
-<<<<<<< HEAD
         drawBrock(bal.pos[0], bal.pos[1]);
-=======
         if (lev.current_stage == 6) {
             drawEggplant2(bal.pos[0], bal.pos[1]);
         }
@@ -1004,9 +1002,10 @@ void render()
         if (lev.current_stage == 13) {
             drawBoss(bal.pos[0], bal.pos[1]);
         }
+        /*
         if (shane_show == 1)
             show_my_featureSW(10, g.yres - 80);
->>>>>>> 90b979c7735c379050d5b29e6a661c8079bd29fa
+        */
         if (smonungolh_show == 1)
             show_my_featureSM(35, g.yres - 80);
 
