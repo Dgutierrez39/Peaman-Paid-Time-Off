@@ -50,7 +50,7 @@ void show_if_thrust(int x, int y)
 void isDead(int health)
 {
     // Checks for death condition
-    if (health == 0 && !is_dead) {
+    if (health <= 0 && !is_dead) {
         printf("Peaman is Dead! Long live Peaman!\n\n");
         is_dead = true;
     }
