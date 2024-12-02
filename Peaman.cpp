@@ -863,24 +863,60 @@ void render()
     else if (g.menu == 1) {
         // Game loop
         glDisable(GL_TEXTURE_2D);
-        extern void drawCarrot(float,float);
+        extern void drawCarrot(float,float);        
+        extern void drawCarrot1(float,float);
+        extern void drawCarrot2(float,float);
+        extern void drawCarrot3(float,float);
+        extern void drawCarrot4(float,float);
+        extern void drawCarrot5(float,float);
+        //
         extern void drawBrock(float,float);
+        //
         extern void drawTomato(float, float);
+        extern void drawTomato1(float, float);
+        extern void drawTomato2(float, float);
+        extern void drawTomato3(float, float);
+        extern void drawTomato4(float, float);
+        extern void drawTomato5(float, float);
+        extern void drawTomato6(float, float);
+        //
         extern void drawLettuce(float, float);
+        extern void drawLettuce1(float, float);
+        extern void drawLettuce2(float, float);
+        extern void drawLettuce3(float, float);
+        //
         extern void drawEggplant(float, float);
         extern void drawEggplant1(float, float);
+        extern void drawEggplant2(float, float);
+        extern void drawEggplant3(float, float);
+        extern void drawEggplant4(float, float);
+        extern void drawBoss(float, float);
         if (lev.current_stage != 16)
             Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize, lev.current_stage);
         else
             Boss_layer(boss.arr, boss.nrows, boss.ncols, lev.tx, lev.ty, lev.tilesize);
-        drawCarrot(bal.pos[0], bal.pos[1]);
-        drawTomato(bal.pos[0], bal.pos[1]);
-        drawLettuce(bal.pos[0], bal.pos[1]);
-        drawEggplant(bal.pos[0], bal.pos[1]);
+        //drawCarrot(bal.pos[0], bal.pos[1]);
+        //drawTomato(bal.pos[0], bal.pos[1]);
+        //drawLettuce(bal.pos[0], bal.pos[1]);
+        //drawEggplant(bal.pos[0], bal.pos[1]);
+        drawBoss(bal.pos[0], bal.pos[1]);
+        drawBrock(bal.pos[0], bal.pos[1]);
         if (lev.current_stage == 5) {
             drawEggplant1(bal.pos[0], bal.pos[1]);
         }
-        drawBrock(bal.pos[0], bal.pos[1]);
+        if (lev.current_stage == 5) {
+            drawEggplant1(bal.pos[0], bal.pos[1]);
+        }
+        /*
+        if (lev.current_stage == 5 || lev.current_stage == 6 || lev.current_stage == 7 ||
+            lev.current_stage == 8 ) {
+            drawBrock(bal.pos[0], bal.pos[1]);
+        }
+
+        */
+        if (lev.current_stage == 16) {
+            drawBoss(bal.pos[0], bal.pos[1]);
+        }
         if (shane_show == 1)
             show_my_featureSW(10, g.yres - 80);
         if (smonungolh_show == 1)
