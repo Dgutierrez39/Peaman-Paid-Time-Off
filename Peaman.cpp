@@ -999,7 +999,7 @@ void render()
 
         */
 
-        if (lev.current_stage == 13) {
+        if (lev.current_stage == 9) {
             drawBoss(bal.pos[0], bal.pos[1]);
         }
         /*

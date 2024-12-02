@@ -2226,8 +2226,8 @@ void drawEggplant1(float playerX, float playerY)
 
     glPushMatrix();
     static float radius = 15.0f;
-    enemies[4].x = eggplantX;
-    enemies[4].y = eggplantY;
+    enemies[4].x = eggplantX1;
+    enemies[4].y = eggplantY1;
     enemies[4].size = 40.0f;
     float speed = 1.0f;
 
@@ -2500,8 +2500,8 @@ void drawEggplant4(float playerX, float playerY)
     if (distance > speed) {
         dx /= distance;
         dy /= distance;
-        eggplantX1 += dx * speed;
-        eggplantY1 += dy * speed;
+        eggplantX4 += dx * speed;
+        eggplantY4 += dy * speed;
     } else {
         eggplantX4 = playerX;
         eggplantY4 = playerY;
