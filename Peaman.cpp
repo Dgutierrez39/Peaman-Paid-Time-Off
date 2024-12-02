@@ -78,15 +78,23 @@ typedef Flt Matrix[4][4];
 
 //Shane added
 //const int MAX_BULLETS = 11;
-extern void show_my_featureSW(int, int);
 void fire_bullet(void);
 //void update_bullets(void);
 void update_bullets(unsigned char map[16][31][30], int row, int col, float offx, float offy, float tile[2], int stage);
 void display_gun_info(void);
 void render_bullets(void);
-extern void show_gun(int, int);
 extern void CarrotCollision(Game &ga);
-#define BULLET_LIFESPAN 1.0
+#define BULLET_LIFESPAN 10.0
+bool openShop = false;
+void renderShop(int, int, vector<Gun>& guns);
+void shopGuns(unsigned char key, int &playerScore);
+//float collisionThreshold = 5.0f;
+vector<Enemy> enemyList = {
+    {eggplantX, eggplantY, 2.0f, eggplantHealth, true},
+    {carrotX, carrotY, 2.0f, carrotHealth, true},
+    {tomatoX, tomatoY, 2.0f, tomatoHealth, true},
+    {lettuceX, lettuceY, 2.5f, lettuceHealth, true}
+};
 
 //extern Gun* currentGun;
 
@@ -206,6 +214,7 @@ Ball::Ball() {
 }
 
 Bullet::Bullet() {
+    size = 1.0f;
 }
 
 Game::Game() {
@@ -240,7 +249,7 @@ void Game::check_bullet_lifetime() {
 
 Gun::Gun(string gunName, float speed, double cd, int capacity, float size, int spread, float angle)
     : name(gunName), bulletSpeed(speed), cooldown(cd), ammoCapacity(capacity), currentAmmo(capacity),
-      bulletSize(size), spreadCount(spread), spreadAngle(angle) {}
+      bulletSize(size), spreadCount(spread), spreadAngle(angle), purchased(false) {}
 
 class Level {
     public:
@@ -544,7 +553,6 @@ void X11_wrapper::check_mouse(XEvent *e)
     }
 }
 
-extern int shane_show;
 
 int X11_wrapper::check_keys(XEvent *e)
 {
@@ -574,7 +582,6 @@ int X11_wrapper::check_keys(XEvent *e)
         case XK_w:
             break;
         case XK_l:
-            shane_show = !shane_show;
             smonungolh_show = !smonungolh_show;
             break;
         case XK_p:
@@ -598,7 +605,37 @@ int X11_wrapper::check_keys(XEvent *e)
             currentGunIndex = 0;
             break;
         case XK_2:
-            currentGunIndex = 1;
+            if (guns[1].purchased) {  
+                currentGunIndex = 1;
+            }
+            break;
+        case XK_3:
+            if (guns[2].purchased) {  
+                currentGunIndex = 2;
+            }
+            break;
+        case XK_4:
+            if (guns[3].purchased) {  
+                currentGunIndex = 3;
+            }
+            break;
+        case XK_5:
+            if (guns[4].purchased) {  
+                currentGunIndex = 4;
+            }
+            break;
+        case XK_6:
+            if (guns[5].purchased) {  
+                currentGunIndex = 5;
+            }
+            break;
+        case XK_7:
+            if (guns[6].purchased) {  
+                currentGunIndex = 6;
+            }
+            break;
+        case XK_o:
+            openShop = !openShop;
             break;
         case XK_r:
             reload();
@@ -609,6 +646,13 @@ int X11_wrapper::check_keys(XEvent *e)
             lev.tilesize[1] =  g.yres / 40;
             lev.tx = lev.tilesize[0]/2;
             lev.ty = lev.tilesize[1]/2;
+            break;
+
+         default:
+            //Opens shop
+            if (openShop) {
+                shopGuns(key, playerScore);
+            }
             break;
     }
     return 0;
@@ -904,6 +948,9 @@ void render()
         if (lev.current_stage == 5) {
             drawEggplant1(bal.pos[0], bal.pos[1]);
         }
+<<<<<<< HEAD
+        drawBrock(bal.pos[0], bal.pos[1]);
+=======
         if (lev.current_stage == 6) {
             drawEggplant2(bal.pos[0], bal.pos[1]);
         }
@@ -959,6 +1006,7 @@ void render()
         }
         if (shane_show == 1)
             show_my_featureSW(10, g.yres - 80);
+>>>>>>> 90b979c7735c379050d5b29e6a661c8079bd29fa
         if (smonungolh_show == 1)
             show_my_featureSM(35, g.yres - 80);
 
@@ -998,7 +1046,8 @@ void render()
             
         display_gun_info();
 
-        CarrotCollision(ga);
+        //CarrotCollision(ga);
+        EnemyCollision(ga, enemyList, 5.0f);
 
         // Draw health bar
         healthBar(g.xres, playerHealth, MAX_HEALTH);
@@ -1006,8 +1055,10 @@ void render()
         // Displays score
         displayScore(g.xres, g.yres, playerScore);
 
-        // Shows gun stats
-        show_gun(50, g.yres - 100);
+
+        if (openShop) {
+        renderShop(g.xres, g.yres, guns);
+    }
 
         // Checks for death condition, game over if true
         isDead(playerHealth);
