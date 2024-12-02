@@ -23,8 +23,8 @@
 using namespace std;
 
 #define MAX_ENEMIES 100 
-#define AR 1
-#define SHOTGUN 2
+//#define AR 1
+//#define SHOTGUN 2
 
 
 extern const float shotgunSpread;  
@@ -43,8 +43,23 @@ extern double timeSpan;
 extern double timeDiff(struct timespec *start, struct timespec *end);
 extern void timeCopy(struct timespec *dest, struct timespec *source);
 
-const double BULLET_LIFESPAN = 3.0;
+const double BULLET_LIFESPAN = 5.0;
 const int MAX_BULLETS = 99;
+
+extern float collisionThreshold;
+extern float collisionCarrotThreshold;
+extern float collisionTomatoThreshold;
+extern float collisionLettuceThreshold;
+extern float carrotX, carrotY;
+extern float tomatoX, tomatoY;
+extern float brockX, brockY;
+extern float eggplantX, eggplantY;
+extern float eggplantX1, eggplantY1;
+extern float lettuceX, lettuceY;
+extern float slowdown;
+extern float lastShotTime;
+extern int tomatoHealth, carrotHealth, lettuceHealth;
+extern int eggplantHealth, eggplantHealth1;
 
 struct Enemy {
     float x, y;
@@ -55,21 +70,25 @@ struct Enemy {
 
 class Gun {
 public:
-    string name;        //Gun name (e.g., "AR", "Shotgun")
-    float bulletSpeed;  //Speed of bullets fired
-    double cooldown;    //Cooldown time between shots
-    int ammoCapacity;   //Maximum ammo capacity
+    string name;        //Gun name 
+    float bulletSpeed;  //Velocity
+    double cooldown;    //Time in between shots
+    int ammoCapacity;   //Max ammo 
     int currentAmmo;    //Current ammo count
     float bulletSize;   //Size of bullets
-    int spreadCount;    //Number of bullets in a spread
+    int spreadCount;    //Number of bullets in spread
     float spreadAngle;  //Angle between spread bullets
     bool isReloading;
     struct timespec reloadStartTime;
+    bool purchased; //Flag to see if gun has been purchased
 
     Gun(string gunName, float speed, double cd, int capacity, float size, int spread, float angle);
 
     //Determines if the gun can shoot based on cooldown
     bool canShoot(struct timespec &lastShotTime);
+
+    //To purchase a gun
+    bool purchase(int &playerScore, int cost);
 };
 
 class Global {
@@ -142,6 +161,9 @@ extern Global g;
 extern Ball bal;
 extern Game ga;
 
+void shopGuns(unsigned char key, int &playerScore);
+//void renderShop(int xres, int yres);
+void renderShop(int xres, int yres, vector<Gun>& guns);
 void fire_bullet(int mx, int my);
 void update_bullets(unsigned char map[16][31][30], int row, int col, float offx, float offy, float tile[2], int stage);
 //void update_bullets();
@@ -150,6 +172,15 @@ void reload();
 void update_reload();
 void render_bullets();
 void CarrotCollision(Game &ga);
+extern int playerScore;
+extern bool openShop;
+
+
+extern vector<Enemy> enemyList;
+void EnemyCollision(Game &ga, vector<Enemy> &enemies, 
+        float collisionThreshold);
+bool checkCollision(float bulletX, float bulletY, float enemyX, float enemyY, 
+        float threshold);
 
 extern int currentGunIndex;
 extern vector<Gun> guns;
