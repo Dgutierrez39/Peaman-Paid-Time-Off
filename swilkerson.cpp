@@ -24,17 +24,102 @@
 #define PI 3.141592653589793
 
 //From Sky's source file
-extern float eggplantX;
-extern float eggplantY;
-extern float carrotX;  
-extern float carrotY;
-extern int eggplantHealth;
+//extern float eggplantX;
+//extern float eggplantY;
+//extern float carrotX;  
+//extern float carrotY;
+//extern int eggplantHealth;
 extern float collisionThreshold;         
 extern float collisionCarrotThreshold;   
 extern float collisionTomatoThreshold;   
 extern float collisionLettuceThreshold;  
-extern int carrotHealth, tomatoHealth, lettuceHealth;
+//extern int carrotHealth, tomatoHealth, lettuceHealth;
 extern int playerScore;
+
+extern float carrotX;
+extern float carrotY;
+extern float carrotX1;
+extern float carrotY1;
+extern float carrotX2;
+extern float carrotY2;
+extern float carrotX3;
+extern float carrotY3;
+extern float carrotX4;
+extern float carrotY4;
+extern float carrotX5;
+extern float carrotY5;
+
+extern float tomatoX;
+extern float tomatoY;
+extern float tomatoX1;
+extern float tomatoY1;
+extern float tomatoX2;
+extern float tomatoY2;
+extern float tomatoX3;
+extern float tomatoY3;
+extern float tomatoX4;
+extern float tomatoY4;
+extern float tomatoX5;
+extern float tomatoY5;
+extern float tomatoX6;
+extern float tomatoY6;
+
+extern float brockX;
+extern float brockY;
+
+extern float eggplantX;
+extern float eggplantY;
+extern float eggplantX1;
+extern float eggplantY1;
+extern float eggplantX2;
+extern float eggplantY2;
+extern float eggplantX3;
+extern float eggplantY3;
+extern float eggplantX4;
+extern float eggplantY4;
+
+extern float lettuceX;
+extern float lettuceY;
+extern float lettuceX1;
+extern float lettuceY1;
+extern float lettuceX2;
+extern float lettuceY2;
+extern float lettuceX3;
+extern float lettuceY3;
+
+extern float bossX;
+extern float bossY;
+extern int bossHealth;
+
+// TOMATOES
+extern int tomatoHealth;
+extern int tomatoHealth1;
+extern int tomatoHealth2;
+extern int tomatoHealth3;
+extern int tomatoHealth4;
+extern int tomatoHealth5;
+extern int tomatoHealth6;
+
+// CARROTS
+extern int carrotHealth;
+extern int carrotHealth1;
+extern int carrotHealth2;
+extern int carrotHealth3;
+extern int carrotHealth4;
+extern int carrotHealth5;
+
+// LETTUCE
+extern int lettuceHealth;
+extern int lettuceHealth1;
+extern int lettuceHealth2;
+extern int lettuceHealth3;
+
+// EGGPLANTS
+extern int eggplantHealth;
+extern int eggplantHealth1;
+extern int eggplantHealth2;
+extern int eggplantHealth3;
+extern int eggplantHealth4;
 
 using namespace std;
 
@@ -109,6 +194,9 @@ void fire_bullet(int mx, int my) {
          float angleOffset = (i - currentGun.spreadCount / 2) * 
              currentGun.spreadAngle;
         float angle = atan2(dy, dx) + angleOffset;
+       // float angle = atan2(dy, dx);
+
+        // + angleOffset;
         //float angle = atan2(dy, dx);
 
         cout << angle << endl;
@@ -280,7 +368,7 @@ void render_bullets() {
     
       
 }
-
+/*
 bool checkCollisionWithEnemy(float bulletX, float bulletY, const Enemy &enemy, float threshold) {
     float dx = bulletX - enemy.x;
     float dy = bulletY - enemy.y;
@@ -288,36 +376,36 @@ bool checkCollisionWithEnemy(float bulletX, float bulletY, const Enemy &enemy, f
     return distance <= threshold;
 }
 
-void EnemyCollision(Game &ga, vector<Enemy> &enemies, float collisionThreshold) {
+void EnemyCollision(Game &ga, vector<Enemy> &enemyList, float collisionThreshold) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet *b = &ga.barr[i];
-        for (Enemy &enemy : enemies) {
+        for (Enemy &enemy : enemyList) {
             if (enemy.active) {
                 float dx = b->pos[0] - enemy.x;
                 float dy = b->pos[1] - enemy.y;
                 float distance = sqrt(dx * dx + dy * dy);
 
                 if (distance <= collisionThreshold) {
-                    // Bullet hit the enemy
+                    //Bullet hit the enemy
                     enemy.health -= 1;
                     if (enemy.health <= 0) {
-                        enemy.active = false; // Mark as inactive
+                        enemy.active = false; 
                         cout << "Enemy eliminated!" << endl;
                     }
-                    // Update player score
+                    
                     playerScore += 10;
 
-                    // Remove the bullet
+                    
                     memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
                     --ga.nbullets;
-                    --i; // Adjust index to avoid skipping the next bullet
-                    break; // Exit the loop after processing the bullet
+                    --i; 
+                    break; //Exit the loop 
                 }
             }
         }
     }
 }
-
+*/
 /*
 void EnemyCollision(Game &ga, vector<Enemy> &enemies, float threshold) {
     for (int i = 0; i < ga.nbullets; ++i) {
@@ -346,6 +434,336 @@ void EnemyCollision(Game &ga, vector<Enemy> &enemies, float threshold) {
     }
 }
 */
+
+bool checkCollisionB(float bulletX, float bulletY, float enemyX, float enemyY, float threshold) {
+    float dx = bulletX - enemyX;
+    float dy = bulletY - enemyY;
+    float distance = sqrt(dx * dx + dy * dy);
+    return distance <= threshold;
+}
+
+void CarrotCollision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];
+        if (checkCollisionB(b->pos[0], b->pos[1], carrotX, carrotY, collisionCarrotThreshold)) {
+            carrotHealth -= 1;
+            playerScore += 10;
+            cout << "Bullet hit the enemy!" << endl;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;
+            break;
+        }
+    }
+}
+
+void Carrot1Collision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];
+        if (checkCollisionB(b->pos[0], b->pos[1], carrotX1, carrotY1, collisionCarrotThreshold)) {
+            carrotHealth1 -= 1;
+            playerScore += 10;
+            cout << "Bullet hit the enemy!" << endl;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;
+            break;
+        }
+    }
+}
+
+void Carrot2Collision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];
+        if (checkCollisionB(b->pos[0], b->pos[1], carrotX2, carrotY2, collisionCarrotThreshold)) {
+            carrotHealth2 -= 1;
+            playerScore += 10;
+            cout << "Bullet hit the enemy!" << endl;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;
+            break;
+        }
+    }
+}
+
+void Carrot3Collision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];
+        if (checkCollisionB(b->pos[0], b->pos[1], carrotX3, carrotY3, collisionCarrotThreshold)) {
+            carrotHealth3 -= 1;
+            playerScore += 10;
+            cout << "Bullet hit the enemy!" << endl;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;
+            break;
+        }
+    }
+}
+
+void Carrot4Collision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];
+        if (checkCollisionB(b->pos[0], b->pos[1], carrotX4, carrotY4, collisionCarrotThreshold)) {
+            carrotHealth4 -= 1;
+            playerScore += 10;
+            cout << "Bullet hit the enemy!" << endl;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;
+            break;
+        }
+    }
+}
+
+void Carrot5Collision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];
+        if (checkCollisionB(b->pos[0], b->pos[1], carrotX5, carrotY5, collisionCarrotThreshold)) {
+            carrotHealth5 -= 1;
+            playerScore += 10;
+            cout << "Bullet hit the enemy!" << endl;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;
+            break;
+        }
+    }
+}
+
+void LettuceCollision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];
+        if (checkCollisionB(b->pos[0], b->pos[1], lettuceX, lettuceY, collisionLettuceThreshold)) {
+            lettuceHealth -= 1;
+            playerScore += 10;
+            cout << "Bullet hit the enemy!" << endl;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;
+            break;
+        }
+    }
+}
+
+void Lettuce1Collision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];
+        if (checkCollisionB(b->pos[0], b->pos[1], lettuceX1, lettuceY1, collisionLettuceThreshold)) {
+            lettuceHealth1 -= 1;
+            playerScore += 10;
+            cout << "Bullet hit the enemy!" << endl;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;
+            break;
+        }
+    }
+}
+
+void Lettuce2Collision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];
+        if (checkCollisionB(b->pos[0], b->pos[1], lettuceX2, lettuceY2, collisionLettuceThreshold)) {
+            lettuceHealth2 -= 1;
+            playerScore += 10;
+            cout << "Bullet hit the enemy!" << endl;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;
+            break;
+        }
+    }
+}
+
+void Lettuce3Collision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];
+        if (checkCollisionB(b->pos[0], b->pos[1], lettuceX3, lettuceY3, collisionLettuceThreshold)) {
+            lettuceHealth3 -= 1;
+            playerScore += 10;
+            cout << "Bullet hit the enemy!" << endl;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;
+            break;
+        }
+    }
+}
+
+void TomatoCollision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];
+        if (checkCollisionB(b->pos[0], b->pos[1], tomatoX, tomatoY, collisionTomatoThreshold)) {
+            tomatoHealth -= 1;
+            playerScore += 10;
+            cout << "Bullet hit the tomatoe!" << endl;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;
+            break;
+        }
+    }
+}
+
+void Tomato1Collision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];
+        if (checkCollisionB(b->pos[0], b->pos[1], tomatoX1, tomatoY1, collisionTomatoThreshold)) {
+            tomatoHealth1 -= 1;
+            playerScore += 10;
+            cout << "Bullet hit the tomatoe!" << endl;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;
+            break;
+        }
+    }
+}
+
+void Tomato2Collision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];
+        if (checkCollisionB(b->pos[0], b->pos[1], tomatoX2, tomatoY2, collisionTomatoThreshold)) {
+            tomatoHealth2 -= 1;
+            playerScore += 10;
+            cout << "Bullet hit the tomatoe!" << endl;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;
+            break;
+        }
+    }
+}
+
+void Tomato3Collision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];
+        if (checkCollisionB(b->pos[0], b->pos[1], tomatoX3, tomatoY3, collisionTomatoThreshold)) {
+            tomatoHealth3 -= 1;
+            playerScore += 10;
+            cout << "Bullet hit the tomatoe!" << endl;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;
+            break;
+        }
+    }
+}
+
+void Tomato4Collision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];
+        if (checkCollisionB(b->pos[0], b->pos[1], tomatoX4, tomatoY4, collisionTomatoThreshold)) {
+            tomatoHealth4 -= 1;
+            playerScore += 10;
+            cout << "Bullet hit the tomatoe!" << endl;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;
+            break;
+        }
+    }
+}
+
+void Tomato5Collision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];
+        if (checkCollisionB(b->pos[0], b->pos[1], tomatoX5, tomatoY5, collisionTomatoThreshold)) {
+            tomatoHealth5 -= 1;
+            playerScore += 10;
+            cout << "Bullet hit the tomatoe!" << endl;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;
+            break;
+        }
+    }
+}
+
+void Tomato6Collision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];
+        if (checkCollisionB(b->pos[0], b->pos[1], tomatoX6, tomatoY6, collisionTomatoThreshold)) {
+            tomatoHealth6 -= 1;
+            playerScore += 10;
+            cout << "Bullet hit the tomatoe!" << endl;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;
+            break;
+        }
+    }
+}
+
+void EggplantCollision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];
+        if (checkCollisionB(b->pos[0], b->pos[1], eggplantX, eggplantY, collisionThreshold)) {
+            eggplantHealth -= 1;
+            playerScore += 10;
+            cout << "Bullet hit the enemy!" << endl;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;
+            break;
+        }
+    }
+}
+
+void Eggplant1Collision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];
+        if (checkCollisionB(b->pos[0], b->pos[1], eggplantX1, eggplantY1, collisionThreshold)) {
+            eggplantHealth1 -= 1;
+            playerScore += 10;
+            cout << "Bullet hit the enemy!" << endl;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;
+            break;
+        }
+    }
+}
+
+void Eggplant2Collision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];
+        if (checkCollisionB(b->pos[0], b->pos[1], eggplantX2, eggplantY2, collisionThreshold)) {
+            eggplantHealth2 -= 1;
+            playerScore += 10;
+            cout << "Bullet hit the enemy!" << endl;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;
+            break;
+        }
+    }
+}
+
+void Eggplant3Collision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];
+        if (checkCollisionB(b->pos[0], b->pos[1], eggplantX3, eggplantY3, collisionThreshold)) {
+            eggplantHealth3 -= 1;
+            playerScore += 10;
+            cout << "Bullet hit the enemy!" << endl;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;
+            break;
+        }
+    }
+}
+
+void Eggplant4Collision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];
+        if (checkCollisionB(b->pos[0], b->pos[1], eggplantX4, eggplantY4, collisionThreshold)) {
+            eggplantHealth4 -= 1;
+            playerScore += 10;
+            cout << "Bullet hit the enemy!" << endl;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;
+            break;
+        }
+    }
+}
+
+void BossCollision(Game &ga) {
+    for (int i = 0; i < ga.nbullets; ++i) {
+        Bullet* b = &ga.barr[i];
+        if (checkCollisionB(b->pos[0], b->pos[1], bossX, bossY, collisionThreshold)) {
+            bossHealth -= 1;
+            playerScore += 20;
+            cout << "Bullet hit the enemy!" << endl;
+            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
+            --ga.nbullets;
+            break;
+        }
+    }
+}
+
 /*
 bool checkCollisionCarrot(float bulletX, float bulletY, float carrotX, 
         float carrotY, float threshold) {

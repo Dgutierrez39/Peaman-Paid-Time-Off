@@ -77,24 +77,50 @@ typedef double Vec[3];
 typedef Flt Matrix[4][4];
 
 //Shane added
-//const int MAX_BULLETS = 11;
 void fire_bullet(void);
 //void update_bullets(void);
 void update_bullets(unsigned char map[16][31][30], int row, int col, float offx, float offy, float tile[2], int stage);
 void display_gun_info(void);
 void render_bullets(void);
 extern void CarrotCollision(Game &ga);
+extern void Carrot1Collision(Game &ga);
+extern void Carrot2Collision(Game &ga);
+extern void Carrot3Collision(Game &ga);
+extern void Carrot4Collision(Game &ga);
+extern void Carrot5Collision(Game &ga);
+
+extern void LettuceCollision(Game &ga);
+extern void Lettuce1Collision(Game &ga);
+extern void Lettuce2Collision(Game &ga);
+extern void Lettuce3Collision(Game &ga);
+
+extern void TomatoCollision(Game &ga);
+extern void Tomato1Collision(Game &ga);
+extern void Tomato2Collision(Game &ga);
+extern void Tomato3Collision(Game &ga);
+extern void Tomato4Collision(Game &ga);
+extern void Tomato5Collision(Game &ga);
+extern void Tomato6Collision(Game &ga);
+
+extern void EggplantCollision(Game &ga);
+extern void Eggplant1Collision(Game &ga);
+extern void Eggplant2Collision(Game &ga);
+extern void Eggplant3Collision(Game &ga);
+extern void Eggplant4Collision(Game &ga);
+
+extern void BossCollision(Game &ga);
+
 #define BULLET_LIFESPAN 10.0
 bool openShop = false;
 void renderShop(int, int, vector<Gun>& guns);
 void shopGuns(unsigned char key, int &playerScore);
 //float collisionThreshold = 5.0f;
-vector<Enemy> enemyList = {
+/*vector<Enemy> enemyList = {
     {eggplantX, eggplantY, 2.0f, eggplantHealth, true},
     {carrotX, carrotY, 2.0f, carrotHealth, true},
     {tomatoX, tomatoY, 2.0f, tomatoHealth, true},
     {lettuceX, lettuceY, 2.5f, lettuceHealth, true}
-};
+};*/
 
 //extern Gun* currentGun;
 
@@ -948,9 +974,7 @@ void render()
         if (lev.current_stage == 5) {
             drawEggplant1(bal.pos[0], bal.pos[1]);
         }
-<<<<<<< HEAD
         drawBrock(bal.pos[0], bal.pos[1]);
-=======
         if (lev.current_stage == 6) {
             drawEggplant2(bal.pos[0], bal.pos[1]);
         }
@@ -1004,9 +1028,8 @@ void render()
         if (lev.current_stage == 13) {
             drawBoss(bal.pos[0], bal.pos[1]);
         }
-        if (shane_show == 1)
-            show_my_featureSW(10, g.yres - 80);
->>>>>>> 90b979c7735c379050d5b29e6a661c8079bd29fa
+        //if (shane_show == 1)
+          //  show_my_featureSW(10, g.yres - 80);
         if (smonungolh_show == 1)
             show_my_featureSM(35, g.yres - 80);
 
@@ -1046,8 +1069,35 @@ void render()
             
         display_gun_info();
 
-        //CarrotCollision(ga);
-        EnemyCollision(ga, enemyList, 5.0f);
+        CarrotCollision(ga);
+        Carrot1Collision(ga);
+        Carrot2Collision(ga);
+        Carrot3Collision(ga);
+        Carrot4Collision(ga);
+        Carrot5Collision(ga);
+
+        LettuceCollision(ga);
+        Lettuce1Collision(ga);
+        Lettuce2Collision(ga);
+        Lettuce3Collision(ga);
+
+        TomatoCollision(ga);
+        Tomato1Collision(ga);
+        Tomato2Collision(ga);
+        Tomato3Collision(ga);
+        Tomato4Collision(ga);
+        Tomato5Collision(ga);
+        Tomato6Collision(ga);
+
+        EggplantCollision(ga);
+        Eggplant1Collision(ga);
+        Eggplant2Collision(ga);
+        Eggplant3Collision(ga);
+        Eggplant4Collision(ga);
+
+        BossCollision(ga);
+
+    //    EnemyCollision(ga, enemyList, 5.0f);
 
         // Draw health bar
         healthBar(g.xres, playerHealth, MAX_HEALTH);
