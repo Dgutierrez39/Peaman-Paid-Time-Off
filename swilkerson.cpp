@@ -299,6 +299,14 @@ void display_gun_info() {
 
     glEnable(GL_TEXTURE_2D);
     ggprint8b(&r, 16, text_color, gun_info);
+
+     Rect r2;
+    r2.bot = r.bot;                 
+    r2.left = r.left + 250;         
+    r2.center = 0;
+
+    ggprint8b(&r2, 16, text_color, "Press 'O' to shop");
+
     glDisable(GL_TEXTURE_2D);
 }
 
@@ -362,12 +370,12 @@ void renderShop(int xres, int yres, vector<Gun>& guns) {
 
     //Gun list
     const char* gunNames[] = {
-        "Shotgun - $20 - press 'z' to purchase",
-        "AR - $30 - press 'x' to purchase",
-        "LMG - $40 - press 'c' to purchase",
-        "Sniper - $50 - press 'v' to purchase",
-        "Rocket Launcher - $1000000 - press 'n' to purchase",
-        "Ray Gun - $1000000 - press 'm' to purchase"
+        "Shotgun(2) - $20 - press 'z' to purchase",
+        "AR(3) - $30 - press 'x' to purchase",
+        "LMG(4) - $40 - press 'c' to purchase",
+        "Sniper(5) - $50 - press 'v' to purchase",
+        "Rocket Launcher(6) - $1000000 - press 'n' to purchase",
+        "Ray Gun(7) - $1000000 - press 'm' to purchase"
     };
 
     Rect item;
