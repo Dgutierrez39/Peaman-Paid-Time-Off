@@ -171,6 +171,7 @@ void displayScore(int xres, int yres, int score)
 
 void gameOverScreen(int xres, int yres, GLuint MenuTexture)
 {
+    // Draws GAME OVER screen
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, MenuTexture);
     glBegin(GL_QUADS);
@@ -192,6 +193,7 @@ void gameOverScreen(int xres, int yres, GLuint MenuTexture)
 
 void menuScreen(int xres, int yres, GLuint MenuTexture)
 {
+    // Draws initial menu screen
     glBindTexture(GL_TEXTURE_2D, MenuTexture);
     glBegin(GL_QUADS);
         glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
@@ -212,6 +214,8 @@ void backgroundAlarm(int xres, int yres, float elapsed_time)
     glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);
     glEnable(GL_BLEND);
     glEnable(GL_COLOR_MATERIAL);
+
+    // Draw flashing red alarm light background
     glPushMatrix();
 	glTranslatef(0.0f, 0.0f, 0.0f);
 	glBegin(GL_QUADS);
@@ -222,13 +226,34 @@ void backgroundAlarm(int xres, int yres, float elapsed_time)
 		glVertex2f(xres, 0);
 	glEnd();
 	glPopMatrix();
+
+    // Draw sweeping alarm light rays
+    int num_rays = 3;
+    float alarm_ray_x = xres / 2.0f;
+    float alarm_ray_y = yres + 50;
+    float alarm_ray_base = 150.0f;
+    float alarm_ray_height = yres * 1.5f;
+    float rotate_angle = fmodf(elapsed_time * 180.0f / M_PI, 360.0f);
+    for (int i = 0; i < num_rays; i++) {
+        float current_angle = rotate_angle + (i * (360.0f / num_rays));
+        glPushMatrix();
+        glTranslatef(alarm_ray_x, alarm_ray_y, 0.0f);
+        glRotatef(current_angle, 0.0f, 0.0f, 1.0f);
+        glBegin(GL_TRIANGLES);
+            glColor4f(1.0f, 0.848f, 0.0f, 0.90f);
+            glVertex2f(0.0f, 0.0f);
+            glVertex2f(-alarm_ray_base, -alarm_ray_height);
+            glVertex2f(alarm_ray_base, -alarm_ray_height);
+        glEnd();
+        glPopMatrix();
+    }
     glDisable(GL_BLEND);
     glDisable(GL_COLOR_MATERIAL);
 }
 
 void bossIsDead(int bossHealth)
 {
-    // Checks for death condition
+    // Checks for boss death condition
     if (bossHealth <= 0 && !boss_is_dead) {
         printf("You defeated the boss!!!\n\n");
         boss_is_dead = true;
@@ -237,6 +262,7 @@ void bossIsDead(int bossHealth)
 
 void bossDefeat(int xres, int yres, GLuint MenuTexture)
 {
+    // Draws boss death game over screen
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, MenuTexture);
     glBegin(GL_QUADS);
@@ -253,5 +279,58 @@ void bossDefeat(int xres, int yres, GLuint MenuTexture)
     boss_over.bot = yres / 30;
     boss_over.left = xres / 40;
     ggprint16(&boss_over, 32, 0xFF00FF00, "Press 'Esc' to close");
+    glDisable(GL_TEXTURE_2D);
+}
+
+void bossHealthBar(int xres, int yres, int bossHealth, int max_bossHealth)
+{
+    // Convert int to GLfloat for drawing bar and normalize
+    GLfloat boss_health_float = bossHealth;
+    GLfloat boss_health_norm = boss_health_float / max_bossHealth;
+    GLfloat boss_health_red = 1.0f - boss_health_norm;
+    GLfloat boss_health_green = boss_health_norm;
+    GLfloat boss_bar_length = 600;
+
+    // Draw bar - outline is dark gray
+    glPushMatrix();
+	glTranslatef(xres / 30, yres - (yres / 20), 0.0f);
+	glBegin(GL_QUADS);
+        glColor3f(0.663f, 0.663f, 0.663f);
+        glVertex2f(0, -10);
+		glVertex2f(0,  10);
+		glVertex2f(boss_bar_length,  10);
+		glVertex2f(boss_bar_length, -10);
+        // Boss health bar itself - goes from lime to red
+        glColor3f(boss_health_red, boss_health_green, 0.0f);
+	    glVertex2f(0, -10);
+		glVertex2f(0,  10);
+		glVertex2f(boss_bar_length * boss_health_norm,  10);
+		glVertex2f(boss_bar_length * boss_health_norm, -10);
+	glEnd();
+	glPopMatrix();
+
+    // Show health as text
+    char c_boss_health[32];
+    sprintf(c_boss_health, "BOSS HP: %d/%d", bossHealth, max_bossHealth);
+    // Starts as black, turns to white
+    unsigned int b_health_text_col;
+    // unsigned int health_text_a = 0xFF;
+    unsigned int b_health_txt_r = 0xFF - (0xFF * boss_health_norm);
+    unsigned int b_health_txt_g = 0xFF - (0xFF * boss_health_norm);
+    unsigned int b_health_txt_b = 0xFF - (0xFF * boss_health_norm);
+    if ((b_health_txt_r + b_health_txt_g + b_health_txt_b) / 3 >= 128) {
+        /* If average of RGB is >= 128, set contrast color to black */
+        b_health_text_col = 0xFFFFFFFF;
+    } else {
+        /* If <= 128, set contrast color to white */
+        b_health_text_col = 0xFF000000;
+    }
+
+    glEnable(GL_TEXTURE_2D);
+    Rect b_health_bar;
+    b_health_bar.bot = yres - (yres / 20) - 5;
+    b_health_bar.left = (xres / 30) + 8;
+    b_health_bar.center = 0;
+    ggprint8b(&b_health_bar, 32, b_health_text_col, (char*)c_boss_health);
     glDisable(GL_TEXTURE_2D);
 }

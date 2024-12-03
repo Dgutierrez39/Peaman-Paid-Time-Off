@@ -17,6 +17,7 @@
 #define MAX_BULLETS 10000 
 //#define MAX_ENEMIES 100 
 #define MAX_HEALTH 20
+#define MAX_BOSS_HEALTH 350
 const float shootInterval = 0.1f;
 int playerHealth = MAX_HEALTH;
 int maxHealth = playerHealth;
@@ -113,7 +114,7 @@ int eggplantHealth3 = 40;
 int eggplantHealth4 = 40;
 ///////////////////////
 int playerScore = 0;
-int bossHealth = 350;
+int bossHealth = MAX_BOSS_HEALTH;
 extern int xres;
 extern int yres;
 struct Projectile {
