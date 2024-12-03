@@ -132,9 +132,11 @@ extern void menuScreen(int, int, GLuint);
 extern void backgroundAlarm(int, int, float);
 extern void bossIsDead(int);
 extern void bossDefeat(int, int, GLuint);
+extern void bossHealthBar(int, int, int, int);
 
 //macros
 #define MAX_HEALTH 20
+#define MAX_BOSS_HEALTH 350
 #define ALPHA 1
 #define rnd() (((double)rand())/(double)RAND_MAX)
 #define random(a) (rand()%a)
@@ -945,7 +947,7 @@ void render()
         } else {
             Boss_layer(boss.arr, boss.nrows, boss.ncols, lev.tx, lev.ty, lev.tilesize);
         }
-        backgroundAlarm(g.xres, g.yres, elapsed_time);
+        
         //drawCarrot(bal.pos[0], bal.pos[1]);
         //drawTomato(bal.pos[0], bal.pos[1]);
         //drawLettuce(bal.pos[0], bal.pos[1]);
@@ -1057,12 +1059,19 @@ void render()
 
         BossCollision(ga);
 
+        // Draw alarm lights
+        backgroundAlarm(g.xres, g.yres, elapsed_time);
+
         // Draw health bar
         healthBar(g.xres, playerHealth, MAX_HEALTH, elapsed_time);
         
+        // Draw boss's health bar
+        if (lev.current_stage == 16) {
+            bossHealthBar(g.xres, g.yres, bossHealth, MAX_BOSS_HEALTH);
+        }
+
         // Displays score
         displayScore(g.xres, g.yres, playerScore);
-
 
         if (openShop) {
         renderShop(g.xres, g.yres, guns);
@@ -1086,8 +1095,3 @@ void render()
         gameOverScreen(g.xres, g.yres, g.MenuTexture);
     }       
 }
-
-
-
-
-

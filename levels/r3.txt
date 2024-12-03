@@ -1,31 +1,31 @@
 wwwwwwwwwwwwwwwwwwwwwwwwwwwwww
-w                            w                                    
-w                            w 
+w             bb             w                                    
+w             bb             w 
 w                            w
 w                            w                    
 w                            w
+w             bb             w
+w      bb     bb     bb      w
+wb    bbbb   bbbb   bbbb    bw
+wb    bbbb   bbbb   bbbb    bw
+w      bb     bb     bb      w                              
+w             bb             w                                  
+w             bb             w                                    
+d             bb             d                                 
+d             bb             d
+d             bb             d        
+d             bb             d
+w             bb             w
+w             bb             w
+w             bb             w
+w      bb     bb     bb      w
+wb    bbbb   bbbb   bbbb    bw
+wb    bbbb   bbbb   bbbb    bw
+w      bb     bb     bb      w
+w             bb             w
 w                            w
 w                            w
 w                            w
-w                            w
-w                            w                              
-w                            w                                  
-w                            w                                    
-d                            d                                 
-d                            d
-d                            d        
-d                            d
-w                            w
-w                            w
-w                            w
-w                            w
-w                            w
-w                            w
-w                            w
-w                            w
-w                            w
-w                            w
-w                            w
-w                            w
-w                            w
+w             bb             w
+w             bb             w
 wwwwwwwwwwwwwwwwwwwwwwwwwwwwww

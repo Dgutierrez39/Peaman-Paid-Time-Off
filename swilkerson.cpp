@@ -795,7 +795,7 @@ void Eggplant4Collision(Game &ga) {
 void BossCollision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
-        if (checkCollisionB(b->pos[0], b->pos[1], bossX, bossY, collisionThreshold)) {
+        if (checkCollisionB(b->pos[0], b->pos[1], bossX, bossY, 80.0f)) {
             bossHealth -= 10;
             playerScore += 20;
             cout << "Bullet hit the enemy!" << endl;
