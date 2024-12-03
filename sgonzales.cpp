@@ -865,6 +865,11 @@ void drawBrock(float playerX, float playerY)
             printf("Player health: %d\n", playerHealth);
             removeEnemyBullet(i);
             break;
+            if (playerHealth -= 1) {
+                printf("Player health: %d\n", playerHealth);
+                removeEnemyBullet(i);
+                break;
+            }
         }
     }
 
@@ -1278,7 +1283,7 @@ void drawTomato1(float playerX, float playerY)
     }
 
     for (int i = 0; i < bulletCount; ++i) {
-        if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX1, tomatoY1, collisionTomatoThreshold)) {
+        if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX, tomatoY, collisionTomatoThreshold)) {
             tomatoHealth1 -= 1;
             playerScore += 10; 
             printf("Tomato health: %d\n", tomatoHealth1);
@@ -1378,7 +1383,7 @@ void drawTomato2(float playerX, float playerY)
     }
 
     for (int i = 0; i < bulletCount; ++i) {
-        if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX2, tomatoY2, collisionTomatoThreshold)) {
+        if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX, tomatoY, collisionTomatoThreshold)) {
             tomatoHealth2 -= 1;
             playerScore += 10; 
             printf("Tomato health: %d\n", tomatoHealth2);
@@ -1478,7 +1483,7 @@ void drawTomato3(float playerX, float playerY)
     }
 
     for (int i = 0; i < bulletCount; ++i) {
-        if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX3, tomatoY3, collisionTomatoThreshold)) {
+        if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX, tomatoY, collisionTomatoThreshold)) {
             tomatoHealth3 -= 1;
             playerScore += 10; 
             printf("Tomato health: %d\n", tomatoHealth3);
@@ -1578,7 +1583,7 @@ void drawTomato4(float playerX, float playerY)
     }
 
     for (int i = 0; i < bulletCount; ++i) {
-        if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX4, tomatoY4, collisionTomatoThreshold)) {
+        if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX, tomatoY, collisionTomatoThreshold)) {
             tomatoHealth4 -= 1;
             playerScore += 10; 
             printf("Tomato health: %d\n", tomatoHealth4);
@@ -1678,7 +1683,7 @@ void drawTomato5(float playerX, float playerY)
     }
 
     for (int i = 0; i < bulletCount; ++i) {
-        if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX5, tomatoY5, collisionTomatoThreshold)) {
+        if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX, tomatoY, collisionTomatoThreshold)) {
             tomatoHealth5 -= 1;
             playerScore += 10; 
             printf("Tomato health: %d\n", tomatoHealth5);
@@ -1778,7 +1783,7 @@ void drawTomato6(float playerX, float playerY)
     }
 
     for (int i = 0; i < bulletCount; ++i) {
-        if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX6, tomatoY6, collisionTomatoThreshold)) {
+        if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX, tomatoY, collisionTomatoThreshold)) {
             tomatoHealth6 -= 1;
             playerScore += 10; 
             printf("Tomato health: %d\n", tomatoHealth6);
@@ -1954,7 +1959,7 @@ void drawLettuce1(float playerX, float playerY)
         drawGreenEnemyBullet(enemyGreenProjectiles[i]);
     }
     for (int i = 0; i < bulletCount; ++i) {
-        if (checkCollision(projectiles[i].x, projectiles[i].y, lettuceX1, lettuceY1, collisionLettuceThreshold)) {
+        if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX, tomatoY, collisionLettuceThreshold)) {
             lettuceHealth1 -= 1;
             playerScore += 10;
             printf("Lettuce health: %d\n", lettuceHealth1);
@@ -2041,7 +2046,7 @@ void drawLettuce2(float playerX, float playerY)
         drawGreenEnemyBullet(enemyGreenProjectiles[i]);
     }
     for (int i = 0; i < bulletCount; ++i) {
-        if (checkCollision(projectiles[i].x, projectiles[i].y, lettuceX2, lettuceY2, collisionLettuceThreshold)) {
+        if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX, tomatoY, collisionLettuceThreshold)) {
             lettuceHealth2 -= 1;
             playerScore += 10;
             printf("Lettuce health: %d\n", lettuceHealth2);
@@ -2127,7 +2132,7 @@ void drawLettuce3(float playerX, float playerY)
         drawGreenEnemyBullet(enemyGreenProjectiles[i]);
     }
     for (int i = 0; i < bulletCount; ++i) {
-        if (checkCollision(projectiles[i].x, projectiles[i].y, lettuceX3, lettuceY3, collisionLettuceThreshold)) {
+        if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX, tomatoY, collisionLettuceThreshold)) {
             lettuceHealth3 -= 1;
             playerScore += 10;
             printf("Lettuce health: %d\n", lettuceHealth3);
@@ -2205,7 +2210,7 @@ void drawEggplant(float playerX, float playerY)
         drawPurpleEnemyBullet(enemyPurpleProjectiles[i]);
     }
     for (int i = 0; i < bulletCount; ++i) {
-        if (checkCollision(projectiles[i].x, projectiles[i].y, eggplantX, eggplantY, collisionLettuceThreshold)) {
+        if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX, tomatoY, collisionLettuceThreshold)) {
             eggplantHealth -= 1;
             playerScore += 10;
             printf("Eggplant health: %d\n", eggplantHealth);
@@ -2226,8 +2231,8 @@ void drawEggplant1(float playerX, float playerY)
 
     glPushMatrix();
     static float radius = 15.0f;
-    enemies[4].x = eggplantX;
-    enemies[4].y = eggplantY;
+    enemies[4].x = eggplantX1;
+    enemies[4].y = eggplantY1;
     enemies[4].size = 40.0f;
     float speed = 1.0f;
 
@@ -2282,7 +2287,7 @@ void drawEggplant1(float playerX, float playerY)
         drawPurpleEnemyBullet(enemyPurpleProjectiles[i]);
     }
     for (int i = 0; i < bulletCount; ++i) {
-        if (checkCollision(projectiles[i].x, projectiles[i].y, eggplantX1, eggplantY1, collisionLettuceThreshold)) {
+        if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX, tomatoY, collisionLettuceThreshold)) {
             eggplantHealth1 -= 1;
             playerScore += 10;
             printf("Eggplant health: %d\n", eggplantHealth1);
@@ -2369,7 +2374,7 @@ void drawEggplant2(float playerX, float playerY)
         drawPurpleEnemyBullet(enemyPurpleProjectiles[i]);
     }
     for (int i = 0; i < bulletCount; ++i) {
-        if (checkCollision(projectiles[i].x, projectiles[i].y, eggplantX2, eggplantY2, collisionLettuceThreshold)) {
+        if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX, tomatoY, collisionLettuceThreshold)) {
             eggplantHealth1 -= 1;
             playerScore += 10;
             printf("Eggplant health: %d\n", eggplantHealth1);
@@ -2456,7 +2461,7 @@ void drawEggplant3(float playerX, float playerY)
         drawPurpleEnemyBullet(enemyPurpleProjectiles[i]);
     }
     for (int i = 0; i < bulletCount; ++i) {
-        if (checkCollision(projectiles[i].x, projectiles[i].y, eggplantX3, eggplantY3, collisionLettuceThreshold)) {
+        if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX, tomatoY, collisionLettuceThreshold)) {
             eggplantHealth3 -= 1;
             playerScore += 10;
             printf("Eggplant health: %d\n", eggplantHealth3);
@@ -2500,8 +2505,8 @@ void drawEggplant4(float playerX, float playerY)
     if (distance > speed) {
         dx /= distance;
         dy /= distance;
-        eggplantX1 += dx * speed;
-        eggplantY1 += dy * speed;
+        eggplantX4 += dx * speed;
+        eggplantY4 += dy * speed;
     } else {
         eggplantX4 = playerX;
         eggplantY4 = playerY;
@@ -2543,7 +2548,7 @@ void drawEggplant4(float playerX, float playerY)
         drawPurpleEnemyBullet(enemyPurpleProjectiles[i]);
     }
     for (int i = 0; i < bulletCount; ++i) {
-        if (checkCollision(projectiles[i].x, projectiles[i].y, eggplantX4, eggplantY4, collisionLettuceThreshold)) {
+        if (checkCollision(projectiles[i].x, projectiles[i].y, tomatoX, tomatoY, collisionLettuceThreshold)) {
             eggplantHealth4 -= 1;
             playerScore += 10;
             printf("Eggplant health: %d\n", eggplantHealth4);
@@ -2676,11 +2681,11 @@ void drawBoss(float playerX, float playerY)
         bossY += moveSpeed * ((rand() % 2 == 0) ? 1 : -1); 
         if (bossX < 0) 
             bossX = 300;
-        if (bossX > 600) 
+        if (bossX > 400) 
             bossX = 300;
         if (bossY < 0) 
             bossY = 200;
-        if (bossY > 400) 
+        if (bossY > 300) 
             bossY = 200;         
         movementTimer = time(NULL) + 2;
     } 

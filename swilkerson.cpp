@@ -213,8 +213,11 @@ void fire_bullet(int mx, int my) {
     currentGun.currentAmmo--;
 }
 
-void update_bullets(unsigned char map[16][31][30], int row, int col, 
-        float offx, float offy, float tile[2], int stage) {
+//void update_bullets(unsigned char map[16][31][30], int row, int col,
+//        float offx, float offy, float tile[2], int stage) {
+
+
+void update_bullets() {
     int i = 0;
     while (i < ga.nbullets) {
         Bullet *b = &ga.barr[i];
@@ -247,10 +250,10 @@ void update_bullets(unsigned char map[16][31][30], int row, int col,
             ga.nbullets--;
 
         }
-       // ++i;
+        ++i;
 
         //bool collision = false;
-        for (int z = 0; z < col; ++z) { 
+       /* for (int z = 0; z < col; ++z) { 
             for (int j = 0; j < row; ++j) { 
                 //Check tile 
                 if ((map[stage][z][j] == 'w' || map[stage][z][j] == 'b') &&
@@ -269,7 +272,7 @@ void update_bullets(unsigned char map[16][31][30], int row, int col,
         }
        // if (collision) break;
         }
-        i++;
+        i++;*/
 
         //Increment bullet if no collision occurred
        // if (!collision) {
@@ -686,7 +689,7 @@ void EggplantCollision(Game &ga) {
         if (checkCollisionB(b->pos[0], b->pos[1], eggplantX, eggplantY, collisionThreshold)) {
             eggplantHealth -= 1;
             playerScore += 10;
-            cout << "Bullet hit the enemy!" << endl;
+            cout << "Bullet hit the eggplant!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
             --ga.nbullets;
             break;
@@ -700,7 +703,7 @@ void Eggplant1Collision(Game &ga) {
         if (checkCollisionB(b->pos[0], b->pos[1], eggplantX1, eggplantY1, collisionThreshold)) {
             eggplantHealth1 -= 1;
             playerScore += 10;
-            cout << "Bullet hit the enemy!" << endl;
+            cout << "Bullet hit the eggplant1!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
             --ga.nbullets;
             break;
@@ -714,7 +717,7 @@ void Eggplant2Collision(Game &ga) {
         if (checkCollisionB(b->pos[0], b->pos[1], eggplantX2, eggplantY2, collisionThreshold)) {
             eggplantHealth2 -= 1;
             playerScore += 10;
-            cout << "Bullet hit the enemy!" << endl;
+            cout << "Bullet hit the eggplant2!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
             --ga.nbullets;
             break;
@@ -728,7 +731,7 @@ void Eggplant3Collision(Game &ga) {
         if (checkCollisionB(b->pos[0], b->pos[1], eggplantX3, eggplantY3, collisionThreshold)) {
             eggplantHealth3 -= 1;
             playerScore += 10;
-            cout << "Bullet hit the enemy!" << endl;
+            cout << "Bullet hit the eggplant3!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
             --ga.nbullets;
             break;
@@ -742,7 +745,7 @@ void Eggplant4Collision(Game &ga) {
         if (checkCollisionB(b->pos[0], b->pos[1], eggplantX4, eggplantY4, collisionThreshold)) {
             eggplantHealth4 -= 1;
             playerScore += 10;
-            cout << "Bullet hit the enemy!" << endl;
+            cout << "Bullet hit the eggplant4!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
             --ga.nbullets;
             break;

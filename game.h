@@ -165,7 +165,7 @@ void shopGuns(unsigned char key, int &playerScore);
 //void renderShop(int xres, int yres);
 void renderShop(int xres, int yres, vector<Gun>& guns);
 void fire_bullet(int mx, int my);
-void update_bullets(unsigned char map[16][31][30], int row, int col, float offx, float offy, float tile[2], int stage);
+void update_bullets();//(unsigned char map[16][31][30], int row, int col, float offx, float offy, float tile[2], int stage);
 //void update_bullets();
 void display_gun_info();
 void reload();

@@ -44,7 +44,7 @@ using namespace std;
 //David's functions
 extern void Tile_layer(unsigned char map[16][31][30],int row, int col,
         float offx, float offy, float tile[2], int stage);
-extern void Boss_layer(unsigned char map[40][46],int row, int col,
+extern void Boss_layer(unsigned char map[50][50],int row, int col,
         float offx, float offy, float tile[2]);
 
 extern float Player_Collision_x(unsigned char map[16][31][30], int row,
@@ -79,7 +79,7 @@ typedef Flt Matrix[4][4];
 //Shane added
 void fire_bullet(void);
 //void update_bullets(void);
-void update_bullets(unsigned char map[16][31][30], int row, int col, float offx, float offy, float tile[2], int stage);
+void update_bullets();//(unsigned char map[16][31][30], int row, int col, float offx, float offy, float tile[2], int stage);
 void display_gun_info(void);
 void render_bullets(void);
 extern void CarrotCollision(Game &ga);
@@ -335,7 +335,7 @@ class Level {
 
 class Boss {
     public:
-        unsigned char arr[40][46];
+        unsigned char arr[50][50]; 
 
         int nrows, ncols;
         Boss() {
@@ -495,14 +495,18 @@ void X11_wrapper::reshape_window(int width, int height)
         lev.tilesize[1] =  height / 30;
         lev.tx = lev.tilesize[0]/2;
         lev.ty = lev.tilesize[1]/2;
+        bal.movement[0] = g.xres / 100;
+        bal.movement[1] = g.yres / 100;
     }
     else {
         g.xres = width;
         g.yres = height;
-        lev.tilesize[0] =  width / 60;
-        lev.tilesize[1] =  height / 60;
+        lev.tilesize[0] =  width / 40;
+        lev.tilesize[1] =  height / 40;
         lev.tx = lev.tilesize[0]/2;
         lev.ty = lev.tilesize[1]/2;
+        bal.movement[0] = g.xres / 80;
+        bal.movement[1] = g.yres / 80;
     }
     //
     glViewport(0, 0, (GLint)width, (GLint)height);
@@ -672,6 +676,8 @@ int X11_wrapper::check_keys(XEvent *e)
             lev.tilesize[1] =  g.yres / 40;
             lev.tx = lev.tilesize[0]/2;
             lev.ty = lev.tilesize[1]/2;
+            bal.movement[0] = g.xres / 80;
+            bal.movement[1] = g.yres / 80;
             break;
 
          default:
@@ -797,18 +803,8 @@ void physics()
 
     int temp_stage = lev.current_stage;
     int door_lock = 0;
-    int b = (int)(bal.pos[1]/lev.ftsz[1]);
-    b = b % lev.ncols;
-    int a = (int)(bal.pos[0]/lev.ftsz[0]);
-    a = a % lev.nrows;
-
-   /* if (g.keys[XK_w]) {
-        printf("row is: %i\n", a);
-        printf("Column is: %i\n", b);
-        printf("The stage number is: %i\n", lev.current_stage);
-        printf("The slot has a : '%c'\n", lev.arr[lev.current_stage][a][b]);}
-*/
-    if (g.keys[XK_a]){
+    
+    if (g.keys[XK_a] && lev.current_stage != 16){
         bal.pos[0] -= bal.movement[0];
         if ((bal.pos[1] >= ((g.yres/2) - 5*lev.tilesize[1])) && 
             (bal.pos[1] <= ((g.yres/2) + 5*lev.tilesize[1]))) {
@@ -824,7 +820,11 @@ void physics()
                                             bal.pos, lev.tx, lev.ty, 
                                             lev.tilesize,0, lev.current_stage);
     }
-    if (g.keys[XK_d]){
+    else if (g.keys[XK_a]) {
+        bal.pos[0] -= bal.movement[0]; 
+    }
+
+    if (g.keys[XK_d] && lev.current_stage != 16){
         bal.pos[0] += bal.movement[0];
         if ((bal.pos[1] >= ((g.yres/2) - 5*lev.tilesize[1])) &&
                (bal.pos[1] <= ((g.yres/2) + 5*lev.tilesize[1]))) {
@@ -841,14 +841,19 @@ void physics()
                                             bal.pos, lev.tx, lev.ty, 
                                             lev.tilesize,1,lev.current_stage);
         if(lev.current_stage == 16) {
-        lev.tilesize[0] =  g.xres / 30;
-        lev.tilesize[1] =  g.yres / 30;
-        lev.tx = lev.tilesize[0]/4;
-        lev.ty = lev.tilesize[1]/4;
-
+            lev.tilesize[0] =  g.xres / 40;
+            lev.tilesize[1] =  g.yres / 40;
+            lev.tx = lev.tilesize[0]/2;
+            lev.ty = lev.tilesize[1]/2;
+            bal.movement[0] = g.xres / 80;
+            bal.movement[1] = g.yres / 80;
         }
     }
-    if (g.keys[XK_w]) {            
+    else if (g.keys[XK_d]) {
+        bal.pos[0] += bal.movement[0];
+    }   
+    
+    if (g.keys[XK_w] && lev.current_stage != 16) {            
         bal.pos[1] += bal.movement[1];
         if ((bal.pos[0] >= ((g.xres/2) - 5*lev.tilesize[0])) &&
             (bal.pos[0] <= ((g.xres/2) + 5*lev.tilesize[0])))     
@@ -862,7 +867,11 @@ void physics()
                                             bal.pos, lev.tx, lev.ty,
                                             lev.tilesize,1, lev.current_stage);
     }
-    if (g.keys[XK_s]){
+    else if (g.keys[XK_w]) {
+        bal.pos[1] += bal.movement[1];
+    }
+
+    if (g.keys[XK_s] && lev.current_stage != 16){
         bal.pos[1] -= bal.movement[1];
         if ((bal.pos[0] >= ((g.xres/2) - 2*lev.tilesize[0]))
                 && (bal.pos[0] <= ((g.xres/2) + 2*lev.tilesize[0])))
@@ -876,52 +885,22 @@ void physics()
                                             bal.pos, lev.tx, lev.ty, 
                                             lev.tilesize,0, lev.current_stage);
     }
-
-/*
-    for (int i = 0; i < bulletCount; ++i) {
-        if (checkCollision(bullets[i].x, bullets[i].y, bal.pos[0], bal.pos[1], 40.0f)) {
-            playerHealth -= 1;  
-            printf("Player health: %d\n", playerHealth);
-
-            removeBullet(i);
-            break; 
-        }
+    else if (g.keys[XK_s]) {
+        bal.pos[1] -= bal.movement[1];
     }
- */  
-  //  update_bullets();
-    update_bullets(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize, lev.current_stage);
+
+
+
+    update_bullets();
     update_reload();
-//    bullet_collision(lev.arr, lev.nrows, lev.ncols, ga.barr, ga.nbullets, lev);
+
 }
 
-/*
-extern struct timespec lastShotTime;
-const float SHOOT_INTERVAL = 0.5;
-float timediff(struct timespec *start, struct timespec *end) {
-    return (end->tv_sec - start->tv_sec) + (end->tv_nsec - start->tv_nsec) / 1e9;
-}
-*/
 
 
 
 void render()
 {
-    /*
-   static struct timespec lastResetTime;
-   struct timespec currentTimeSpec;
-   clock_gettime(CLOCK_REALTIME, &currentTimeSpec);
-   float currentTime = currentTimeSpec.tv_sec + currentTimeSpec.tv_nsec / 1e9;
-   //std::cout << "Current Time: " << currentTime << std::endl; 
-   float elapsedTime = timediff(&lastShotTime, &currentTimeSpec);
-   //std::cout << "Elapsed Time: " << elapsedTime << " seconds" << std::endl;
-   
-   if (currentTime - lastResetTime.tv_sec >= 5.0f) {
-        currentTime = 0.0f;  // Reset currentTime to 0
-        lastResetTime = currentTimeSpec;  // Update lastResetTime to current time
-    }
-    */
-   //float elapsedTime = getElapsedTime(lastShotTime, currentTimeSpec);
-  // std::cout << "Elapsed Time: " << elapsedTime << std::endl; 
     glClear(GL_COLOR_BUFFER_BIT);
     //draw a quad with texture
     glColor3f(1.0, 1.0, 1.0);
@@ -1025,11 +1004,9 @@ void render()
 
         */
 
-        if (lev.current_stage == 13) {
+        if (lev.current_stage == 16) {
             drawBoss(bal.pos[0], bal.pos[1]);
         }
-        //if (shane_show == 1)
-          //  show_my_featureSW(10, g.yres - 80);
         if (smonungolh_show == 1)
             show_my_featureSM(35, g.yres - 80);
 
@@ -1045,25 +1022,6 @@ void render()
         glVertex2i( lev.tx, -lev.ty);
         glEnd();
         glPopMatrix();
-
-        //Draw the bullets
-       /* for (int i=0; i<ga.nbullets; i++) {
-            Bullet *b = &ga.barr[i];
-            //Log("draw bullet...\n");
-            glColor3f(1.0, 1.0, 1.0);
-            glBegin(GL_POINTS);
-            glVertex2f(b->pos[0],      b->pos[1]);
-            glVertex2f(b->pos[0]-1.0f, b->pos[1]);
-            glVertex2f(b->pos[0]+1.0f, b->pos[1]);
-            glVertex2f(b->pos[0],      b->pos[1]-1.0f);
-            glVertex2f(b->pos[0],      b->pos[1]+1.0f);
-            glColor3f(0.8, 0.8, 0.8);
-            glVertex2f(b->pos[0]-1.0f, b->pos[1]-1.0f);
-            glVertex2f(b->pos[0]-1.0f, b->pos[1]+1.0f);
-            glVertex2f(b->pos[0]+1.0f, b->pos[1]-1.0f);
-            glVertex2f(b->pos[0]+1.0f, b->pos[1]+1.0f);
-            glEnd();
-        }*/
 
         render_bullets();
             

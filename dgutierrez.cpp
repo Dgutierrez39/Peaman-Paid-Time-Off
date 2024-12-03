@@ -35,7 +35,7 @@ void Tile_layer(unsigned char map[16][31][30],int row, int col, float offx,
        
     }
 }
-void Boss_layer(unsigned char map[40][46],int row, int col, float offx,
+void Boss_layer(unsigned char map[50][50],int row, int col, float offx,
         float offy, float tile[2])
 {
     glClearColor(0.1, 0.1, 0.1, 1.0);
@@ -75,10 +75,10 @@ float Player_Collision_x(unsigned char map[16][31][30], int row, int col,
         //int row_count = row-1;
         for (int j = 0; j<row; j++) {
             if ((map[stage][j][i] == 'w' || map[stage][j][i] == 'b')&&
-                    (player[0] + offx-1) > (tile[0]*j) &&
-                    (player[0] - offx+1) < ((2*offx)+(tile[0]*j)) &&
-                    (player[1] - offy+1) < ((2*offy) + (tile[1]*i))  &&
-                    (player[1] + offy-1) > (tile[1]*i)) {
+                    (player[0] + offx-2) > (tile[0]*j) &&
+                    (player[0] - offx+2) < ((2*offx)+(tile[0]*j)) &&
+                    (player[1] - offy+2) < ((2*offy) + (tile[1]*i))  &&
+                    (player[1] + offy-2) > (tile[1]*i)) {
                     
                 if (way == 0){
                     while((player[0] - offx) < ((2*offx) + (tile[0]*j)))
@@ -106,10 +106,10 @@ float Player_Collision_y(unsigned char map[16][31][30], int row, int col,
     for (int i = 0; i<col; i++) {
         for (int j = 0; j<row; j++) {
             if ((map[stage][j][i] == 'w' || map[stage][j][i] == 'b'  )&&
-                    (player[0] + offx-1) > (tile[0]*j) &&
-                    (player[0] - offx+1) < ((2*offx)+(tile[0]*j)) &&
-                    (player[1] - offy+1) < ((2*offy) + (tile[1]*i))  &&
-                    (player[1] + offy-1) > (tile[1]*i)) {
+                    (player[0] + offx-2) > (tile[0]*j) &&
+                    (player[0] - offx+2) < ((2*offx)+(tile[0]*j)) &&
+                    (player[1] - offy+2) < ((2*offy) + (tile[1]*i))  &&
+                    (player[1] + offy-2) > (tile[1]*i)) {
                 
                 //going down
                 
