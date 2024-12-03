@@ -273,7 +273,7 @@ class Level {
             tx = tilesize[0]/2;
             ty = tilesize[1]/2;
             //read level
-            for (int c = 0; c < 15; c++){
+            for (int c = 0; c < 16; c++){
                 FILE *fpi = fopen(stages[c],"r");
                 if (fpi) {
                     nrows=0;
