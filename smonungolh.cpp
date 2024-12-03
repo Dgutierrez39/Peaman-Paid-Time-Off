@@ -134,13 +134,13 @@ void displayScore(int xres, int yres, int score)
 
     // Draw bar
     glPushMatrix();
-	glTranslatef(xres / 30, yres - 10, 0.0f);
+	glTranslatef(xres / 30, yres - 7, 0.0f);
 	glBegin(GL_QUADS);
         glColor3f(score_r, score_g, score_b);
-        glVertex2f(0, -10);
-		glVertex2f(0,  10);
-		glVertex2f(score_length,  10);
-		glVertex2f(score_length, -10);
+        glVertex2f(0, -7);
+		glVertex2f(0,  7);
+		glVertex2f(score_length,  7);
+		glVertex2f(score_length, -7);
 	glEnd();
 	glPopMatrix();
 
