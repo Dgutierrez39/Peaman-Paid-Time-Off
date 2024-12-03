@@ -1,17 +1,17 @@
          wwwwddddwwww         
          w          w                                             
          w          w          
-         w       b  w         
+         w      bb  w         
          w          w                             
-         w   b      w         
+         w   bb     w         
          w          w         
+         w      bb  w         
          w          w         
-         w      b   w         
-         w          w         
+         w  bb      w         
          w          w                                       
-wwwwwwwwww    b     w                                           
+wwwwwwwwww          w                                           
 w    bb             w                                             
-d    bb         bb   w                                          
+d    bb         bb  w                                          
 d                   w         
 d               bb  w                 
 d          bb       w         

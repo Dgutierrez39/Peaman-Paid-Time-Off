@@ -55,6 +55,15 @@ extern float Player_Collision_y(unsigned char map[16][31][30], int row,
         int col, float player[2], float offx, float offy, float tile[2],
         int way, int stage);
 
+extern float Boss_Collision_x(unsigned char map[50][50], int row,
+        int col, float player[2], float offx, float offy, float tile[2],
+        int way);
+
+extern float Boss_Collision_y(unsigned char map[50][50], int row,
+        int col, float player[2], float offx, float offy, float tile[2],
+        int way);
+
+
 extern int Door_X(unsigned char map[16][31][30], int row, int col,
            float player[2], float offx, float offy,
            float tile[2], int way, int stage);
@@ -802,7 +811,7 @@ void physics()
 
     int temp_stage = lev.current_stage;
     int door_lock = 0;
-    
+    //Going left
     if (g.keys[XK_a] && lev.current_stage != 16){
         bal.pos[0] -= bal.movement[0];
         if ((bal.pos[1] >= ((g.yres/2) - 5*lev.tilesize[1])) && 
@@ -821,8 +830,11 @@ void physics()
     }
     else if (g.keys[XK_a]) {
         bal.pos[0] -= bal.movement[0]; 
+        bal.pos[0] = Boss_Collision_x(boss.arr, lev.nrows, lev.ncols,
+                                            bal.pos, lev.tx, lev.ty,
+                                            lev.tilesize,1);
     }
-
+    //Going Right
     if (g.keys[XK_d] && lev.current_stage != 16){
         bal.pos[0] += bal.movement[0];
         if ((bal.pos[1] >= ((g.yres/2) - 5*lev.tilesize[1])) &&
@@ -836,9 +848,9 @@ void physics()
         if (temp_stage != lev.current_stage)
             bal.pos[0] = 2*lev.tilesize[0];
         else
-            bal.pos[0] = Player_Collision_x(lev.arr, lev.nrows, lev.ncols,
+            bal.pos[0] = Boss_Collision_x(boss.arr, lev.nrows, lev.ncols,
                                             bal.pos, lev.tx, lev.ty, 
-                                            lev.tilesize,1,lev.current_stage);
+                                            lev.tilesize,1);
         if(lev.current_stage == 16) {
             lev.tilesize[0] =  g.xres / 40;
             lev.tilesize[1] =  g.yres / 40;
@@ -850,8 +862,11 @@ void physics()
     }
     else if (g.keys[XK_d]) {
         bal.pos[0] += bal.movement[0];
+        bal.pos[0] = Player_Collision_x(lev.arr, lev.nrows, lev.ncols,
+                                            bal.pos, lev.tx, lev.ty,
+                                            lev.tilesize,1,lev.current_stage);
     }   
-    
+    //Going up
     if (g.keys[XK_w] && lev.current_stage != 16) {            
         bal.pos[1] += bal.movement[1];
         if ((bal.pos[0] >= ((g.xres/2) - 5*lev.tilesize[0])) &&
@@ -868,8 +883,11 @@ void physics()
     }
     else if (g.keys[XK_w]) {
         bal.pos[1] += bal.movement[1];
+        bal.pos[1] = Boss_Collision_y(boss.arr, lev.nrows, lev.ncols,
+                                            bal.pos, lev.tx, lev.ty,
+                                            lev.tilesize,0);
     }
-
+    //Going Down
     if (g.keys[XK_s] && lev.current_stage != 16){
         bal.pos[1] -= bal.movement[1];
         if ((bal.pos[0] >= ((g.xres/2) - 2*lev.tilesize[0]))
@@ -886,6 +904,9 @@ void physics()
     }
     else if (g.keys[XK_s]) {
         bal.pos[1] -= bal.movement[1];
+        bal.pos[1] = Boss_Collision_y(boss.arr, lev.nrows, lev.ncols,
+                                            bal.pos, lev.tx, lev.ty,
+                                            lev.tilesize,0);
     }
 
 

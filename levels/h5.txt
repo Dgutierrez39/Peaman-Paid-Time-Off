@@ -10,21 +10,21 @@
                               
                                                             
 wwwwwwwwwwwwwwwwwwwwwwwwwwwwww                                  
-w                            w                                    
+w             bbb            w                                    
 d             bbb            d                                 
 d             bbb            d
 d               b            d        
-d             b b            d
+d               b            d
 w             b b            w
-w             b b            w
+w             b              w
 wwwwwwwwww    b    wwwwwwwwww
          w    bbb   w         
          w    b     w         
-         w    b b   w         
-         w    b b   w         
-         w    b b   w         
+         w    b     w         
+         wbbbbb b   w         
          w      b   w         
-         w    bbb   w         
+         w      b   w         
+         w    bbbbbbw         
          w    bbb   w         
          w    bbb   w         
          w          w          

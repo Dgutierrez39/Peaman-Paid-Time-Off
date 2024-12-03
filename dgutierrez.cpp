@@ -131,6 +131,70 @@ float Player_Collision_y(unsigned char map[16][31][30], int row, int col,
     return player[1];
 }
 
+float Boss_Collision_x(unsigned char map[50][50], int row, int col,
+                      float player[2], float offx, float offy, float tile[2],
+                      int way)
+{
+    for (int i = 0; i<col; i++) {
+        //int row_count = row-1;
+        for (int j = 0; j<row; j++) {
+            if ((map[j][i] == 'w')&&
+                    (player[0] + offx-2) > (tile[0]*j) &&
+                    (player[0] - offx+2) < ((2*offx)+(tile[0]*j)) &&
+                    (player[1] - offy+2) < ((2*offy) + (tile[1]*i))  &&
+                    (player[1] + offy-2) > (tile[1]*i)) {
+
+                if (way == 0){
+                    while((player[0] - offx) < ((2*offx) + (tile[0]*j)))
+                        player[0] += 0.1;
+                }
+                if (way == 1){
+                    while((player[0] + offx) > (tile[0]*j))
+                        player[0] -= 0.1;
+                }
+
+                return player[0];
+            }
+        }
+    }
+    return player[0];
+}
+
+float Boss_Collision_y(unsigned char map[50][50], int row, int col,
+                      float player[2], float offx, float offy, float tile[2],
+                      int way)
+{
+    for (int i = 0; i<col; i++) {
+        for (int j = 0; j<row; j++) {
+            if ((map[j][i] == 'w')&&
+                    (player[0] + offx-2) > (tile[0]*j) &&
+                    (player[0] - offx+2) < ((2*offx)+(tile[0]*j)) &&
+                    (player[1] - offy+2) < ((2*offy) + (tile[1]*i))  &&
+                    (player[1] + offy-2) > (tile[1]*i)) {
+
+                //going down
+
+                if (way == 0) {
+                while ((player[1] - offy) < ((2*offy) + (tile[1]*i))) {
+                        player[1] += 0.1;
+                    }
+                }
+                //Going up
+                if (way == 1){
+                    while ((player[1] + offy) > (tile[1]*i))
+                        player[1] -= 0.1;
+
+                }
+                return player[1];
+            }
+        }
+    }
+    return player[1];
+}
+
+
+
+
 int Door_X(unsigned char map[16][31][30], int row, int col,
            float player[2], float offx, float offy, 
            float tile[2], int way, int stage)

@@ -12,8 +12,8 @@
 wwwwwwwwwwwwwwwwwwwwwwwwwwwwww                                  
 w          b        b        w                                    
 d                   b        d                                 
-d          b        b        d
-d          b        b        d        
+d                   b        d
+d          b                 d        
 d          b                 d
 w          b        b        w
 w          b        b        w
