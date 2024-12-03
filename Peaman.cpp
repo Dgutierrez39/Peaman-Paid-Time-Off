@@ -270,7 +270,7 @@ void Game::check_bullet_lifetime() {
 
 Gun::Gun(string gunName, float speed, double cd, int capacity, float size, int spread, float angle)
     : name(gunName), bulletSpeed(speed), cooldown(cd), ammoCapacity(capacity), currentAmmo(capacity),
-      bulletSize(size), spreadCount(spread), spreadAngle(angle), purchased(false) {}
+      bulletSize(size), spreadCount(spread), spreadAngle(angle), isReloading(false), purchased(false) {}
 
 class Level {
     public:
