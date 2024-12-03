@@ -17,6 +17,7 @@
 #define MAX_BULLETS 10000 
 //#define MAX_ENEMIES 100 
 #define MAX_HEALTH 20
+#define MAX_BOSS_HEALTH 150
 const float shootInterval = 0.1f;
 int playerHealth = MAX_HEALTH;
 int maxHealth = playerHealth;
@@ -113,7 +114,7 @@ int eggplantHealth3 = 40;
 int eggplantHealth4 = 40;
 ///////////////////////
 int playerScore = 0;
-int bossHealth = 350;
+int bossHealth = MAX_BOSS_HEALTH;
 extern int xres;
 extern int yres;
 struct Projectile {
@@ -2677,6 +2678,7 @@ void drawBoss(float playerX, float playerY)
     }
 
     if (time(NULL) > movementTimer) {
+        // ternary operator if = 0 then * by 1 else -1
         bossX += moveSpeed * ((rand() % 2 == 0) ? 1 : -1); 
         bossY += moveSpeed * ((rand() % 2 == 0) ? 1 : -1); 
         if (bossX < 0) 
@@ -2712,7 +2714,7 @@ void drawBoss(float playerX, float playerY)
     if (bossHealth < 100) {
         if (time(NULL) > timer3) {      
             const int bulletCount = 20;
-            const float angleIncrement = 30.0f;
+            const float angleIncrement = 15.0f;
             float baseAngle = atan2(playerY - bossY, playerX - bossX) * 180.0f / 3.14159265358979323846f;
             for (int i = 0; i < bulletCount; ++i) {          
                 float spreadAngle = baseAngle - (angleIncrement * (bulletCount / 2)) + (i * angleIncrement);
@@ -2731,7 +2733,7 @@ void drawBoss(float playerX, float playerY)
         }
         if (time(NULL) > timer2) {      
             const int bulletCount = 10;
-            const float angleIncrement = 30.0f;
+            const float angleIncrement = 45.0f;
             float baseAngle = atan2(playerY - bossY, playerX - bossX) * 180.0f / 3.14159265358979323846f;
             for (int i = 0; i < bulletCount; ++i) {          
                 float spreadAngle = baseAngle - (angleIncrement * (bulletCount / 2)) + (i * angleIncrement);
@@ -2754,14 +2756,15 @@ void drawBoss(float playerX, float playerY)
     if (bossHealth < 50) {
         if (time(NULL) > timer1) {      
             const int bulletCount = 15;
-            const float angleIncrement = 30.0f;
+            const float angleIncrement = 60.0f;
+            //atan2 = arctangent/ converting radians to degrees
             float baseAngle = atan2(playerY - bossY, playerX - bossX) * 180.0f / 3.14159265358979323846f;
             for (int i = 0; i < bulletCount; ++i) {          
                 float spreadAngle = baseAngle - (angleIncrement * (bulletCount / 2)) + (i * angleIncrement);
                 float radianAngle = spreadAngle * M_PI / 180.0f;
                 float deltax = cos(radianAngle);
                 float deltay = sin(radianAngle);
-                shootGreenEnemyBullet(bossX, bossY,bossX + deltax * 100, bossY + deltay * 100);
+                shootEnemyBullet(bossX, bossY,bossX + deltax * 100, bossY + deltay * 100);
             }
             timer1 = time(NULL) + 3;
         }

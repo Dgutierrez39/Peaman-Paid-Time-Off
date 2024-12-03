@@ -87,7 +87,7 @@ public:
     //Determines if the gun can shoot based on cooldown
     bool canShoot(struct timespec &lastShotTime);
 
-    //To purchase a gun
+    //Flag so you can't purchase more than once
     bool purchase(int &playerScore, int cost);
 };
 
@@ -165,7 +165,7 @@ void shopGuns(unsigned char key, int &playerScore);
 //void renderShop(int xres, int yres);
 void renderShop(int xres, int yres, vector<Gun>& guns);
 void fire_bullet(int mx, int my);
-void update_bullets(unsigned char map[16][31][30], int row, int col, float offx, float offy, float tile[2], int stage);
+void update_bullets();//(unsigned char map[16][31][30], int row, int col, float offx, float offy, float tile[2], int stage);
 //void update_bullets();
 void display_gun_info();
 void reload();
@@ -175,12 +175,40 @@ void CarrotCollision(Game &ga);
 extern int playerScore;
 extern bool openShop;
 
+void Carrot1Collision(Game &ga);
+void Carrot2Collision(Game &ga);
+void Carrot3Collision(Game &ga);
+void Carrot4Collision(Game &ga);
+void Carrot5Collision(Game &ga);
 
-extern vector<Enemy> enemyList;
-void EnemyCollision(Game &ga, vector<Enemy> &enemies, 
-        float collisionThreshold);
-bool checkCollision(float bulletX, float bulletY, float enemyX, float enemyY, 
-        float threshold);
+void LettuceCollision(Game &ga);
+void Lettuce1Collision(Game &ga);
+void Lettuce2Collision(Game &ga);
+void Lettuce3Collision(Game &ga);
+
+void TomatoCollision(Game &ga);
+void Tomato1Collision(Game &ga);
+void Tomato2Collision(Game &ga);
+void Tomato3Collision(Game &ga);
+void Tomato4Collision(Game &ga);
+void Tomato5Collision(Game &ga);
+void Tomato6Collision(Game &ga);
+
+void EggplantCollision(Game &ga);
+void Eggplant1Collision(Game &ga);
+void Eggplant2Collision(Game &ga);
+void Eggplant3Collision(Game &ga);
+void Eggplant4Collision(Game &ga);
+
+void BossCollision(Game &ga);
+
+//extern vector<Enemy> enemyList;
+//void EnemyCollision(Game &ga, vector<Enemy> &enemyList,
+//        float collisionThreshold);
+//void EnemyCollision(Game &ga, vector<Enemy> &enemies, 
+//        float collisionThreshold);
+//bool checkCollision(float bulletX, float bulletY, float enemyX, float enemyY, 
+  //      float threshold);
 
 extern int currentGunIndex;
 extern vector<Gun> guns;

@@ -77,43 +77,66 @@ typedef double Vec[3];
 typedef Flt Matrix[4][4];
 
 //Shane added
-//const int MAX_BULLETS = 11;
 void fire_bullet(void);
-//void update_bullets(void);
-void update_bullets(unsigned char map[16][31][30], int row, int col, float offx, float offy, float tile[2], int stage);
+void update_bullets();
 void display_gun_info(void);
 void render_bullets(void);
 extern void CarrotCollision(Game &ga);
+extern void Carrot1Collision(Game &ga);
+extern void Carrot2Collision(Game &ga);
+extern void Carrot3Collision(Game &ga);
+extern void Carrot4Collision(Game &ga);
+extern void Carrot5Collision(Game &ga);
+
+extern void LettuceCollision(Game &ga);
+extern void Lettuce1Collision(Game &ga);
+extern void Lettuce2Collision(Game &ga);
+extern void Lettuce3Collision(Game &ga);
+
+extern void TomatoCollision(Game &ga);
+extern void Tomato1Collision(Game &ga);
+extern void Tomato2Collision(Game &ga);
+extern void Tomato3Collision(Game &ga);
+extern void Tomato4Collision(Game &ga);
+extern void Tomato5Collision(Game &ga);
+extern void Tomato6Collision(Game &ga);
+
+extern void EggplantCollision(Game &ga);
+extern void Eggplant1Collision(Game &ga);
+extern void Eggplant2Collision(Game &ga);
+extern void Eggplant3Collision(Game &ga);
+extern void Eggplant4Collision(Game &ga);
+
+extern void BossCollision(Game &ga);
+
 #define BULLET_LIFESPAN 10.0
 bool openShop = false;
 void renderShop(int, int, vector<Gun>& guns);
 void shopGuns(unsigned char key, int &playerScore);
-//float collisionThreshold = 5.0f;
-vector<Enemy> enemyList = {
-    {eggplantX, eggplantY, 2.0f, eggplantHealth, true},
-    {carrotX, carrotY, 2.0f, carrotHealth, true},
-    {tomatoX, tomatoY, 2.0f, tomatoHealth, true},
-    {lettuceX, lettuceY, 2.5f, lettuceHealth, true}
-};
 
-//extern Gun* currentGun;
-
-// Sebastiann's functions
-extern int smonungolh_show;
-extern void show_my_featureSM(int, int);
-extern int playerHealth;
-extern int bulletCount;
+// Sebastiann's functions and variables
+clock_t start_time;
 extern bool is_dead;
-extern void healthBar(int, int, int);
-extern void isDead(int);
+extern bool boss_is_dead;
+extern int smonungolh_show;
+extern int playerHealth;
 extern int playerScore;
+extern int bulletCount;
+extern int bossHealth;
+extern void show_my_featureSM(int, int);
+extern void healthBar(int, int, int, float);
+extern void isDead(int);
 extern void displayScore(int, int, int);
 extern void gameOverScreen(int, int, GLuint);
 extern void menuScreen(int, int, GLuint);
-
+extern void backgroundAlarm(int, int, float);
+extern void bossIsDead(int);
+extern void bossDefeat(int, int, GLuint);
+extern void bossHealthBar(int, int, int, int);
 
 //macros
 #define MAX_HEALTH 20
+#define MAX_BOSS_HEALTH 350
 #define ALPHA 1
 #define rnd() (((double)rand())/(double)RAND_MAX)
 #define random(a) (rand()%a)
@@ -379,7 +402,9 @@ int main()
   //clock_gettime(CLOCK_REALTIME, &timePause);
   //clock_gettime(CLOCK_REALTIME, &timeStart);
     //main game loop
-    
+
+    start_time = clock();
+
     while (!done) {
         //look for external events such as keyboard, mouse.
         while (x11.getXPending()) {
@@ -865,39 +890,19 @@ void physics()
 
 
 
-    update_bullets(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize, lev.current_stage);
+    update_bullets();
     update_reload();
-//    bullet_collision(lev.arr, lev.nrows, lev.ncols, ga.barr, ga.nbullets, lev);
+
 }
 
-/*
-extern struct timespec lastShotTime;
-const float SHOOT_INTERVAL = 0.5;
-float timediff(struct timespec *start, struct timespec *end) {
-    return (end->tv_sec - start->tv_sec) + (end->tv_nsec - start->tv_nsec) / 1e9;
-}
-*/
 
 
 
 void render()
 {
-    /*
-   static struct timespec lastResetTime;
-   struct timespec currentTimeSpec;
-   clock_gettime(CLOCK_REALTIME, &currentTimeSpec);
-   float currentTime = currentTimeSpec.tv_sec + currentTimeSpec.tv_nsec / 1e9;
-   //std::cout << "Current Time: " << currentTime << std::endl; 
-   float elapsedTime = timediff(&lastShotTime, &currentTimeSpec);
-   //std::cout << "Elapsed Time: " << elapsedTime << " seconds" << std::endl;
-   
-   if (currentTime - lastResetTime.tv_sec >= 5.0f) {
-        currentTime = 0.0f;  // Reset currentTime to 0
-        lastResetTime = currentTimeSpec;  // Update lastResetTime to current time
-    }
-    */
-   //float elapsedTime = getElapsedTime(lastShotTime, currentTimeSpec);
-  // std::cout << "Elapsed Time: " << elapsedTime << std::endl; 
+    clock_t current_time = clock();
+    float elapsed_time = (float)(current_time - start_time) / CLOCKS_PER_SEC;
+
     glClear(GL_COLOR_BUFFER_BIT);
     //draw a quad with texture
     glColor3f(1.0, 1.0, 1.0);
@@ -937,10 +942,12 @@ void render()
         extern void drawEggplant3(float, float);
         extern void drawEggplant4(float, float);
         extern void drawBoss(float, float);
-        if (lev.current_stage != 16)
+        if (lev.current_stage != 16) {
             Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize, lev.current_stage);
-        else
+        } else {
             Boss_layer(boss.arr, boss.nrows, boss.ncols, lev.tx, lev.ty, lev.tilesize);
+        }
+        
         //drawCarrot(bal.pos[0], bal.pos[1]);
         //drawTomato(bal.pos[0], bal.pos[1]);
         //drawLettuce(bal.pos[0], bal.pos[1]);
@@ -1004,10 +1011,6 @@ void render()
         if (lev.current_stage == 16) {
             drawBoss(bal.pos[0], bal.pos[1]);
         }
-        /*
-        if (shane_show == 1)
-            show_my_featureSW(10, g.yres - 80);
-        */
         if (smonungolh_show == 1)
             show_my_featureSM(35, g.yres - 80);
 
@@ -1024,38 +1027,51 @@ void render()
         glEnd();
         glPopMatrix();
 
-        //Draw the bullets
-       /* for (int i=0; i<ga.nbullets; i++) {
-            Bullet *b = &ga.barr[i];
-            //Log("draw bullet...\n");
-            glColor3f(1.0, 1.0, 1.0);
-            glBegin(GL_POINTS);
-            glVertex2f(b->pos[0],      b->pos[1]);
-            glVertex2f(b->pos[0]-1.0f, b->pos[1]);
-            glVertex2f(b->pos[0]+1.0f, b->pos[1]);
-            glVertex2f(b->pos[0],      b->pos[1]-1.0f);
-            glVertex2f(b->pos[0],      b->pos[1]+1.0f);
-            glColor3f(0.8, 0.8, 0.8);
-            glVertex2f(b->pos[0]-1.0f, b->pos[1]-1.0f);
-            glVertex2f(b->pos[0]-1.0f, b->pos[1]+1.0f);
-            glVertex2f(b->pos[0]+1.0f, b->pos[1]-1.0f);
-            glVertex2f(b->pos[0]+1.0f, b->pos[1]+1.0f);
-            glEnd();
-        }*/
-
         render_bullets();
             
         display_gun_info();
 
-        //CarrotCollision(ga);
-        EnemyCollision(ga, enemyList, 5.0f);
+        CarrotCollision(ga);
+        Carrot1Collision(ga);
+        Carrot2Collision(ga);
+        Carrot3Collision(ga);
+        Carrot4Collision(ga);
+        Carrot5Collision(ga);
+
+        LettuceCollision(ga);
+        Lettuce1Collision(ga);
+        Lettuce2Collision(ga);
+        Lettuce3Collision(ga);
+
+        TomatoCollision(ga);
+        Tomato1Collision(ga);
+        Tomato2Collision(ga);
+        Tomato3Collision(ga);
+        Tomato4Collision(ga);
+        Tomato5Collision(ga);
+        Tomato6Collision(ga);
+
+        EggplantCollision(ga);
+        Eggplant1Collision(ga);
+        Eggplant2Collision(ga);
+        Eggplant3Collision(ga);
+        Eggplant4Collision(ga);
+
+        BossCollision(ga);
+
+        // Draw alarm lights
+        backgroundAlarm(g.xres, g.yres, elapsed_time);
 
         // Draw health bar
-        healthBar(g.xres, playerHealth, MAX_HEALTH);
+        healthBar(g.xres, playerHealth, MAX_HEALTH, elapsed_time);
         
+        // Draw boss's health bar
+        if (lev.current_stage == 16) {
+            bossHealthBar(g.xres, g.yres, bossHealth, MAX_BOSS_HEALTH);
+        }
+
         // Displays score
         displayScore(g.xres, g.yres, playerScore);
-
 
         if (openShop) {
         renderShop(g.xres, g.yres, guns);
@@ -1065,14 +1081,17 @@ void render()
         isDead(playerHealth);
         if (is_dead == true) {
             g.menu = 2;
-        }  
+        }
+
+        bossIsDead(bossHealth);
+        if (boss_is_dead == true) {
+            g.menu = 3;
+        }
+    } else if (g.menu == 3) {
+        // Print boss defeat screen
+        bossDefeat(g.xres, g.yres, g.MenuTexture);
     } else {
         // Print game over screen
         gameOverScreen(g.xres, g.yres, g.MenuTexture);
     }       
 }
-
-
-
-
-
