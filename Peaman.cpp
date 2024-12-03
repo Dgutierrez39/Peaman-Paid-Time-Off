@@ -114,19 +114,24 @@ bool openShop = false;
 void renderShop(int, int, vector<Gun>& guns);
 void shopGuns(unsigned char key, int &playerScore);
 
-// Sebastiann's functions
-extern int smonungolh_show;
-extern void show_my_featureSM(int, int);
-extern int playerHealth;
-extern int bulletCount;
+// Sebastiann's functions and variables
+clock_t start_time;
 extern bool is_dead;
-extern void healthBar(int, int, int);
-extern void isDead(int);
+extern bool boss_is_dead;
+extern int smonungolh_show;
+extern int playerHealth;
 extern int playerScore;
+extern int bulletCount;
+extern int bossHealth;
+extern void show_my_featureSM(int, int);
+extern void healthBar(int, int, int, float);
+extern void isDead(int);
 extern void displayScore(int, int, int);
 extern void gameOverScreen(int, int, GLuint);
 extern void menuScreen(int, int, GLuint);
-
+extern void backgroundAlarm(int, int, float);
+extern void bossIsDead(int);
+extern void bossDefeat(int, int, GLuint);
 
 //macros
 #define MAX_HEALTH 20
@@ -395,7 +400,9 @@ int main()
   //clock_gettime(CLOCK_REALTIME, &timePause);
   //clock_gettime(CLOCK_REALTIME, &timeStart);
     //main game loop
-    
+
+    start_time = clock();
+
     while (!done) {
         //look for external events such as keyboard, mouse.
         while (x11.getXPending()) {
@@ -891,6 +898,9 @@ void physics()
 
 void render()
 {
+    clock_t current_time = clock();
+    float elapsed_time = (float)(current_time - start_time) / CLOCKS_PER_SEC;
+
     glClear(GL_COLOR_BUFFER_BIT);
     //draw a quad with texture
     glColor3f(1.0, 1.0, 1.0);
@@ -930,10 +940,12 @@ void render()
         extern void drawEggplant3(float, float);
         extern void drawEggplant4(float, float);
         extern void drawBoss(float, float);
-        if (lev.current_stage != 16)
+        if (lev.current_stage != 16) {
             Tile_layer(lev.arr, lev.nrows, lev.ncols, lev.tx, lev.ty, lev.tilesize, lev.current_stage);
-        else
+        } else {
             Boss_layer(boss.arr, boss.nrows, boss.ncols, lev.tx, lev.ty, lev.tilesize);
+        }
+        backgroundAlarm(g.xres, g.yres, elapsed_time);
         //drawCarrot(bal.pos[0], bal.pos[1]);
         //drawTomato(bal.pos[0], bal.pos[1]);
         //drawLettuce(bal.pos[0], bal.pos[1]);
@@ -1046,7 +1058,7 @@ void render()
         BossCollision(ga);
 
         // Draw health bar
-        healthBar(g.xres, playerHealth, MAX_HEALTH);
+        healthBar(g.xres, playerHealth, MAX_HEALTH, elapsed_time);
         
         // Displays score
         displayScore(g.xres, g.yres, playerScore);
@@ -1060,7 +1072,15 @@ void render()
         isDead(playerHealth);
         if (is_dead == true) {
             g.menu = 2;
-        }  
+        }
+
+        bossIsDead(bossHealth);
+        if (boss_is_dead == true) {
+            g.menu = 3;
+        }
+    } else if (g.menu == 3) {
+        // Print boss defeat screen
+        bossDefeat(g.xres, g.yres, g.MenuTexture);
     } else {
         // Print game over screen
         gameOverScreen(g.xres, g.yres, g.MenuTexture);
