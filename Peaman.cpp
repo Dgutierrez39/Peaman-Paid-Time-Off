@@ -78,8 +78,7 @@ typedef Flt Matrix[4][4];
 
 //Shane added
 void fire_bullet(void);
-//void update_bullets(void);
-void update_bullets();//(unsigned char map[16][31][30], int row, int col, float offx, float offy, float tile[2], int stage);
+void update_bullets();
 void display_gun_info(void);
 void render_bullets(void);
 extern void CarrotCollision(Game &ga);
@@ -114,15 +113,6 @@ extern void BossCollision(Game &ga);
 bool openShop = false;
 void renderShop(int, int, vector<Gun>& guns);
 void shopGuns(unsigned char key, int &playerScore);
-//float collisionThreshold = 5.0f;
-/*vector<Enemy> enemyList = {
-    {eggplantX, eggplantY, 2.0f, eggplantHealth, true},
-    {carrotX, carrotY, 2.0f, carrotHealth, true},
-    {tomatoX, tomatoY, 2.0f, tomatoHealth, true},
-    {lettuceX, lettuceY, 2.5f, lettuceHealth, true}
-};*/
-
-//extern Gun* currentGun;
 
 // Sebastiann's functions
 extern int smonungolh_show;
@@ -1054,8 +1044,6 @@ void render()
         Eggplant4Collision(ga);
 
         BossCollision(ga);
-
-    //    EnemyCollision(ga, enemyList, 5.0f);
 
         // Draw health bar
         healthBar(g.xres, playerHealth, MAX_HEALTH);

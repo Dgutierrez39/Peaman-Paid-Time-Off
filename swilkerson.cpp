@@ -134,28 +134,34 @@ struct timespec lastShotRayGun = {0, 0};
 
 int currentGunIndex = 0;
 vector<Gun> guns = {
+    //name, bullet speed, cooldown, ammo size, bullet size, spread, angle  
     Gun("Pistol", 15.0, 0.3, 10, 1.5f, 1, 0.0f),
     Gun("Shotgun", 10.0, 1.0, 8, 3.0f, 3, 0.2f),
-    Gun("AR", 20.0, 0.3, 15, 2.0f, 1, 0.0f),
-    Gun("LMG", 25.0, 0.5, 50, 2.5f, 1, 0.0f),  
-    Gun("Sniper", 50.0, 1.0, 5, 3.5f, 1, 0.0f),  
+    Gun("AR", 20.0, 0.3, 15, 3.0f, 1, 0.0f),
+    Gun("LMG", 25.0, 0.5, 50, 5.0f, 1, 0.0f),  
+    Gun("Sniper", 50.0, 1.0, 5, 10.0f, 1, 0.0f),  
     Gun("Rocket Launcher", 10.0, 5.0, 1, 5.0f, 1, 0.0f),  
     Gun("Ray Gun", 20.0, 0.5, 20, 2.0f, 1, 0.0f)
 };
 
 
-//Delay for guns
+//delay for guns
 bool Gun::canShoot(struct timespec &lastShotTime) {
     struct timespec currentTime;
-    clock_gettime(CLOCK_REALTIME, &currentTime);
+    clock_gettime(CLOCK_REALTIME, &currentTime); //gets time
     double timeDiff = (currentTime.tv_sec - lastShotTime.tv_sec) +
                       (currentTime.tv_nsec - lastShotTime.tv_nsec) / 1e9;
+    //gun can shoot again when difference is equal to time elapsed
     return timeDiff >= cooldown;
+    //help with time intervals
+    //https://gist.github.com/error454/1448313/
+    //6850ca7a82bf4edb3c5bafaf97ba73b847a2f2e3
 }
 
+//function to see if gun is purchased
 bool Gun::purchase(int &playerScore, int cost) {
     if (playerScore >= cost && !purchased) {
-        playerScore -= cost;
+        playerScore -= cost; //subtracts cost from score when purchased
         purchased = true;
         return true;
     }
@@ -173,38 +179,30 @@ void fire_bullet(int mx, int my) {
     }
 
     if (!currentGun.canShoot(lastShotTime) || currentGun.currentAmmo <= 0) 
-        return;
+        return; //cannot shoot before cooldown or when ammo is 0
 
     for (int i = 0; i < currentGun.spreadCount; ++i) {
         if (ga.nbullets >= MAX_BULLETS) break;
 
-        Bullet new_bullet;
+        Bullet new_bullet; //new bullet created 
         new_bullet.size = currentGun.bulletSize;  
         new_bullet.pos[0] = bal.pos[0];
         new_bullet.pos[1] = bal.pos[1];
 
-        //cout << new_bullet.pos[0] << " " <<  
-        //cout << new_bullet.pos[1] << " " >> 
 
         float dx = mx - new_bullet.pos[0];
-
         float dy = new_bullet.pos[1] - my;
-//        float magnitude = sqrt(dx * dx + dy * dy);
 
-         float angleOffset = (i - currentGun.spreadCount / 2) * 
-             currentGun.spreadAngle;
-        float angle = atan2(dy, dx) + angleOffset;
-       // float angle = atan2(dy, dx);
+        float angleOffset = (i - currentGun.spreadCount / 2) * //calculation for shotgun
+                            currentGun.spreadAngle;
+        float angle = atan2(dy, dx) + angleOffset; //tangent inverse 
+        //https://www.geeksforgeeks.org/atan2-function-in-c-stl/
 
-        // + angleOffset;
-        //float angle = atan2(dy, dx);
-
-        cout << angle << endl;
-
-        new_bullet.vel[0] = cos(angle) * currentGun.bulletSpeed;
+        //give bullet velocity in x and y directions
+        new_bullet.vel[0] = cos(angle) * currentGun.bulletSpeed; 
         new_bullet.vel[1] = sin(angle) * currentGun.bulletSpeed;
         clock_gettime(CLOCK_REALTIME, &new_bullet.time);
-        ga.barr[ga.nbullets++] = new_bullet;
+        ga.barr[ga.nbullets++] = new_bullet; //add to bullet array
     }
 
     struct timespec currentTime;
@@ -213,19 +211,17 @@ void fire_bullet(int mx, int my) {
     currentGun.currentAmmo--;
 }
 
-//void update_bullets(unsigned char map[16][31][30], int row, int col,
-//        float offx, float offy, float tile[2], int stage) {
-
-
+//function to call in physics 
 void update_bullets() {
     int i = 0;
     while (i < ga.nbullets) {
         Bullet *b = &ga.barr[i];
 
-        //Move bullet
+        //move bullet
         b->pos[0] += b->vel[0];
         b->pos[1] += b->vel[1];
-
+        
+        //deletes bullets if they go off the edge of the screen
         if (b->pos[0] < 0.0) {
            memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
                 sizeof(Bullet));
@@ -251,98 +247,24 @@ void update_bullets() {
 
         }
         ++i;
-
-        //bool collision = false;
-       /* for (int z = 0; z < col; ++z) { 
-            for (int j = 0; j < row; ++j) { 
-                //Check tile 
-                if ((map[stage][z][j] == 'w' || map[stage][z][j] == 'b') &&
-                b->pos[0] > tile[0] * j &&
-                b->pos[0] < ((2*offx)+(tile[0]*j)) &&
-                b->pos[1] > ((2*offy) + (tile[1]*z)) &&
-                b->pos[1] < tile[1] * z) {
-                //Delete bullet
-                memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
-                --ga.nbullets;
-             //   collision = true;
-                cout << "Bullet hit restricted tile at " << b->pos[0] << 
-                    ", " << b->pos[1] << "\n";
-                //eak;
-            }
-        }
-       // if (collision) break;
-        }
-        i++;*/
-
-        //Increment bullet if no collision occurred
-       // if (!collision) {
-       //     ++i;
-      //  }
     }
 
     
     ga.check_bullet_lifetime();
 }
 
-//Bullet update 
-/*void update_bullets() {
-
-    int i = 0;
-    while (i < ga.nbullets) {
-        Bullet *b = &ga.barr[i];
-
-        b->pos[0] += b->vel[0];
-        b->pos[1] += b->vel[1];
-
-        if (b->pos[0] < 0.0) {
-           memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
-                sizeof(Bullet));
-            ga.nbullets--;
-
-        }
-        else if (b->pos[0] > (float)g.xres) {
-            memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
-                sizeof(Bullet));
-            ga.nbullets--;
-
-        }
-        else if (b->pos[1] < 0.0) {
-           memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
-                sizeof(Bullet));
-            ga.nbullets--;
-
-        }
-        else if (b->pos[1] > (float)g.yres) {
-           memcpy(&ga.barr[i], &ga.barr[ga.nbullets-1],
-                sizeof(Bullet));
-            ga.nbullets--;
-
-        }
-        ++i;
-
-
-            
-    }
-
-    //for (int i = 0; i < ga.nbullets; ++i) {
-    //    Bullet &bullet = ga.barr[i];
-    //    bullet.pos[0] += bullet.vel[0];
-    //    bullet.pos[1] += bullet.vel[1];
-    //    } 
-
-
-    ga.check_bullet_lifetime(); 
-}*/
-
 void render_bullets() {
 
     for (int i = 0; i < ga.nbullets; i++) {
         Bullet *b = &ga.barr[i];
         glColor3f(1.0, 1.0, 1.0);  
-
-        glBegin(GL_POLYGON);  //Went from GL_POINTS to GL_POLYGON to draw bullet
-        int numSegments = 16; //Number of segments for a bullet
+        //Went from GL_POINTS to GL_POLYGON to draw filled shape
+        glBegin(GL_POLYGON);  
+       // https://stackoverflow.com/questions/46258919/drawing-circle-with
+       // -gl-polygon-radius-out-of-scale
+        int numSegments = 16; //determines smoothness
         for (int j = 0; j < numSegments; j++) {
+            //            2 radians in circle * pi * current segment / 16
             float angle = 2.0f * 3.14159265359f * float(j) / float(numSegments); 
             float x = b->pos[0] + cos(angle) * b->size;  
             float y = b->pos[1] + sin(angle) * b->size;  
@@ -350,93 +272,202 @@ void render_bullets() {
         }
         glEnd();
     }
-
-  /*  for (int i=0; i<ga.nbullets; i++) {
-            Bullet *b = &ga.barr[i];
-            //Log("draw bullet...\n");
-            glColor3f(1.0, 1.0, 1.0);
-            glBegin(GL_POINTS);
-            glVertex2f(b->pos[0],      b->pos[1]);
-            glVertex2f(b->pos[0]-1.0f, b->pos[1]);
-            glVertex2f(b->pos[0]+1.0f, b->pos[1]);
-            glVertex2f(b->pos[0],      b->pos[1]-1.0f);
-            glVertex2f(b->pos[0],      b->pos[1]+1.0f);
-            glColor3f(0.8, 0.8, 0.8);
-            glVertex2f(b->pos[0]-1.0f, b->pos[1]-1.0f);
-            glVertex2f(b->pos[0]-1.0f, b->pos[1]+1.0f);
-            glVertex2f(b->pos[0]+1.0f, b->pos[1]-1.0f);
-            glVertex2f(b->pos[0]+1.0f, b->pos[1]+1.0f);
-            glEnd();
-    }*/
-    
-      
-}
-/*
-bool checkCollisionWithEnemy(float bulletX, float bulletY, const Enemy &enemy, float threshold) {
-    float dx = bulletX - enemy.x;
-    float dy = bulletY - enemy.y;
-    float distance = sqrt(dx * dx + dy * dy);
-    return distance <= threshold;
 }
 
-void EnemyCollision(Game &ga, vector<Enemy> &enemyList, float collisionThreshold) {
-    for (int i = 0; i < ga.nbullets; ++i) {
-        Bullet *b = &ga.barr[i];
-        for (Enemy &enemy : enemyList) {
-            if (enemy.active) {
-                float dx = b->pos[0] - enemy.x;
-                float dy = b->pos[1] - enemy.y;
-                float distance = sqrt(dx * dx + dy * dy);
+void display_gun_info() {
+    //get current gun
+    Gun &currentGun = guns[currentGunIndex];
 
-                if (distance <= collisionThreshold) {
-                    //Bullet hit the enemy
-                    enemy.health -= 1;
-                    if (enemy.health <= 0) {
-                        enemy.active = false; 
-                        cout << "Enemy eliminated!" << endl;
-                    }
-                    
-                    playerScore += 10;
+    Rect r;
+    r.bot = 25;
+    r.left = g.xres - 250;
+    r.center = 0;
 
-                    
-                    memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
-                    --ga.nbullets;
-                    --i; 
-                    break; //Exit the loop 
-                }
-            }
+
+    char gun_info[128];
+    if (currentGun.isReloading) {
+        //Print reloading
+        sprintf(gun_info, "%s: %d/%d - Reloading", currentGun.name.c_str(),
+                currentGun.currentAmmo, currentGun.ammoCapacity);
+    } else {
+
+        sprintf(gun_info, "%s: %d/%d", currentGun.name.c_str(),
+                currentGun.currentAmmo, currentGun.ammoCapacity);
+    }
+
+    unsigned int text_color = 0xFFFFFFFF;
+
+    glEnable(GL_TEXTURE_2D);
+    ggprint8b(&r, 16, text_color, gun_info);
+    glDisable(GL_TEXTURE_2D);
+}
+
+void reload() {
+    Gun &currentGun = guns[currentGunIndex];
+    //make sure gun is not currently reloading
+    if (currentGun.isReloading) {
+        return;
+    }
+
+    currentGun.isReloading = true;
+    clock_gettime(CLOCK_REALTIME, &currentGun.reloadStartTime);
+    //Record reload start time
+    cout << "Reloading " << currentGun.name << "..." << endl;
+}
+
+void update_reload() {
+    Gun &currentGun = guns[currentGunIndex];
+
+    //if reloading, check time
+    if (currentGun.isReloading) {
+        struct timespec currentTime;
+        clock_gettime(CLOCK_REALTIME, &currentTime);  //Get time
+
+        //calculate time since reload
+        double timeDiff = (currentTime.tv_sec -
+        currentGun.reloadStartTime.tv_sec) +
+        (currentTime.tv_nsec - currentGun.reloadStartTime.tv_nsec) / 1e9;
+
+        //reload after 2 sec
+        if (timeDiff >= 2.0) {
+            currentGun.currentAmmo = currentGun.ammoCapacity;  //Refill ammo
+            currentGun.isReloading = false;  //Set reloading to back to false
+            cout << "Reloaded " << currentGun.name << "!" << endl;
         }
     }
 }
-*/
-/*
-void EnemyCollision(Game &ga, vector<Enemy> &enemies, float threshold) {
-    for (int i = 0; i < ga.nbullets; ++i) {
-        Bullet* b = &ga.barr[i];
 
-        // Loop through each enemy
-        for (auto &enemy : enemies) {
-            if (enemy.active && checkCollisionWithEnemy(b->pos[0], b->pos[1], enemy, threshold)) {
-                enemy.health -= 1;  // Decrease enemy health
-                playerScore += 10;  // Increase score
-                cout << "Bullet hit an enemy!" << endl;
+void renderShop(int xres, int yres, vector<Gun>& guns) {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //Helps create translucent background
+    glColor4f(0.0f, 0.0f, 0.0f, 0.5f); //Black with 50% opacity
+    glBegin(GL_QUADS);
+        glVertex2i(0, 0);
+        glVertex2i(0, yres);
+        glVertex2i(xres, yres);
+        glVertex2i(xres, 0);
+    glEnd();
 
-                // Remove the bullet if it hits an enemy
-                memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
-                --ga.nbullets;
+    //Shop title
+    Rect title;
+    title.bot = yres - 50;
+    title.left = xres / 2 - 100;
+    title.center = 1;
 
-                // If the enemy's health reaches 0, deactivate the enemy
-                if (enemy.health <= 0) {
-                    enemy.active = false;
-                    cout << "Enemy defeated!" << endl;
-                }
+    unsigned int text_color = 0xFFFFFFFF;
 
-                break;  // Exit the loop once the bullet hits an enemy
-            }
+    glEnable(GL_TEXTURE_2D);
+    ggprint16(&title, 32, text_color, "The Shop");
+
+    //Gun list
+    const char* gunNames[] = {
+        "Shotgun - $20 - press 'z' to purchase",
+        "AR - $30 - press 'x' to purchase",
+        "LMG - $40 - press 'c' to purchase",
+        "Sniper - $50 - press 'v' to purchase",
+        "Rocket Launcher - $1000000 - press 'n' to purchase",
+        "Ray Gun - $1000000 - press 'm' to purchase"
+    };
+
+    Rect item;
+    item.bot = yres - 100;
+    item.left = xres / 4;
+    item.center = 0;
+
+    for (size_t i = 0; i < 6; ++i) {
+        string displayText = gunNames[i];
+        //convert guns to string
+
+        //purchased status if the gun is already bought
+        if (guns[i + 1].purchased) {
+            displayText += " (Purchased)";
         }
+
+        ggprint16(&item, 32, text_color, displayText.c_str());
+        item.bot -= 50;
+    }
+
+    glDisable(GL_BLEND);
+}
+
+void shopGuns(unsigned char key, int &playerScore) {
+    if (!openShop) return;
+
+    int cost = 0;
+
+    switch (key) {
+        case 'z':  //shotgun
+            cost = 20; //price 
+            if (!guns[1].purchased && guns[1].purchase(playerScore, cost)) {
+                guns[1].purchased = true;  //mark shotgun sold
+                printf("Bought Shotgun! Remaining score: %d\n", playerScore);
+            } else if (guns[1].purchased) {
+                printf("Shotgun already purchased!\n");
+            } else {
+                printf("Not enough points!\n");
+            }
+            break;
+        case 'x':  //AR
+            cost = 30; //price 
+            if (!guns[2].purchased && guns[2].purchase(playerScore, cost)) {
+                guns[2].purchased = true;  
+                printf("Bought AR! Remaining score: %d\n", playerScore);
+            } else if (guns[2].purchased) {
+                printf("AR already purchased!\n");
+            } else {
+                printf("Not enough points!\n");
+            }
+            break;
+        case 'c':  //LMG
+            cost = 40; 
+            if (!guns[3].purchased && guns[3].purchase(playerScore, cost)) {
+                guns[3].purchased = true;  
+                printf("Bought Sniper! Remaining score: %d\n", playerScore);
+            } else if (guns[3].purchased) {
+                printf("Sniper already purchased!\n");
+            } else {
+                printf("Not enough points!\n");
+            }
+            break;
+        case 'v':  //Sniper
+            cost = 50; 
+            if (!guns[4].purchased && guns[4].purchase(playerScore, cost)) {
+                guns[4].purchased = true;  
+                printf("Bought LMG! Remaining score: %d\n", playerScore);
+            } else if (guns[4].purchased) {
+                printf("LMG already purchased!\n");
+            } else {
+                printf("Not enough points!\n");
+            }
+            break;
+         case 'n':  //Rocket Launcher
+            cost = 1000000; 
+            if (!guns[5].purchased && guns[5].purchase(playerScore, cost)) {
+                guns[5].purchased = true;  
+                printf("Bought Rocket Launcher! Remaining score: %d\n",
+                        playerScore);
+            } else if (guns[5].purchased) {
+                printf("Rocket Launcher already purchased!\n");
+            } else {
+                printf("Not enough points!\n");
+            }
+            break;
+        case 'm':  //Ray gun
+            cost = 1000000; 
+            if (!guns[6].purchased && guns[6].purchase(playerScore, cost)) {
+                guns[6].purchased = true;  
+                printf("Bought Ray Gun! Remaining score: %d\n", playerScore);
+            } else if (guns[6].purchased) {
+                printf("Ray Gun already purchased!\n");
+            } else {
+                printf("Not enough points!\n");
+            }
+            break;
     }
 }
-*/
+
+
 
 bool checkCollisionB(float bulletX, float bulletY, float enemyX, float enemyY, float threshold) {
     float dx = bulletX - enemyX;
@@ -766,257 +797,5 @@ void BossCollision(Game &ga) {
         }
     }
 }
-
-/*
-bool checkCollisionCarrot(float bulletX, float bulletY, float carrotX, 
-        float carrotY, float threshold) {
-    float dx = bulletX - carrotX;
-    float dy = bulletY - carrotY;
-    float distance = sqrt(dx * dx + dy * dy);
-    return distance <= threshold;
-}
-
-void CarrotCollision(Game &ga) {
-    for (int i = 0; i < ga.nbullets; ++i) {
-        Bullet* b = &ga.barr[i];  
-
-        if (checkCollisionCarrot(b->pos[0], b->pos[1], carrotX, carrotY, 
-                    collisionCarrotThreshold)) {
-            carrotHealth -= 1;  
-            playerScore += 10;  
-           // printf("Carrot health: %d\n", carrotHealth);
-           // printf("Player Score: %d\n", playerScore);
-            cout << "Bullet hit the carrot!" << endl;
-
-            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
-            --ga.nbullets;  
-
-            break;  
-        }
-    }
-}
-*/
-
-/*
-bool checkCollisionEggplant(float bulletX, float bulletY, float eggplantX, float eggplantY, float threshold) {
-    float dx = bulletX - eggplantX;
-    float dy = bulletY - eggplantY;
-    float distance = sqrt(dx * dx + dy * dy);
-    return distance <= threshold;
-}
-
-void CollisionEggplant(Game &ga) {
-    for (int i = 0; i < ga.nbullets; ++i) {
-        Bullet* b = &ga.barr[i];  
-
-        if (checkCollisionEggplant(b->pos[0], b->pos[1], eggplantX, eggplantY, collisionThreshold)) {
-            //Bullet hit eggplant
-            eggplantHealth -= 1;  
-            //playerScore += 10;    
-            printf("Eggplant health: %d\n", eggplantHealth);
-            //printf("Player Score: %d\n", playerScore);
-
-            memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
-            --ga.nbullets;  
-
-            break;  
-        }
-    }
-}*/
-
-void display_gun_info() {
-    Gun &currentGun = guns[currentGunIndex];
-
-    Rect r;
-    r.bot = 25;               
-    r.left = g.xres - 250;    
-    r.center = 0;             
-
-    
-    char gun_info[128]; 
-    if (currentGun.isReloading) {
-        //Print reloading 
-        sprintf(gun_info, "%s: %d/%d - Reloading", currentGun.name.c_str(), 
-                currentGun.currentAmmo, currentGun.ammoCapacity);
-    } else {
-        
-        sprintf(gun_info, "%s: %d/%d", currentGun.name.c_str(), 
-                currentGun.currentAmmo, currentGun.ammoCapacity);
-    }
-
-    unsigned int text_color = 0xFFFFFFFF;
-
-    glEnable(GL_TEXTURE_2D);
-    ggprint8b(&r, 16, text_color, gun_info);
-    glDisable(GL_TEXTURE_2D);
-}
-
-void reload() {
-Gun &currentGun = guns[currentGunIndex];
-
-    //Start reloading 
-    if (currentGun.isReloading) {
-        return;  
-    }
-
-    currentGun.isReloading = true;  
-    clock_gettime(CLOCK_REALTIME, &currentGun.reloadStartTime);  
-    //Record reload start time
-    cout << "Reloading " << currentGun.name << "..." << endl;
-}
-
-void update_reload() {
-    Gun &currentGun = guns[currentGunIndex];
-
-    //If reloading, check time
-    if (currentGun.isReloading) {
-        struct timespec currentTime;
-        clock_gettime(CLOCK_REALTIME, &currentTime);  //Get time
-
-        //Calculate time since reload 
-        double timeDiff = (currentTime.tv_sec - 
-        currentGun.reloadStartTime.tv_sec) +
-        (currentTime.tv_nsec - currentGun.reloadStartTime.tv_nsec) / 1e9;
-
-        //Reload after 2 sec
-        if (timeDiff >= 2.0) {
-            currentGun.currentAmmo = currentGun.ammoCapacity;  //Refill ammo
-            currentGun.isReloading = false;  //Set reloading to back to false
-            cout << "Reloaded " << currentGun.name << "!" << endl;
-        }
-    }
-}
-
-void renderShop(int xres, int yres, vector<Gun>& guns) {
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
-    //Helps create translucent background
-    glColor4f(0.0f, 0.0f, 0.0f, 0.5f); //Black with 50% opacity
-    glBegin(GL_QUADS);
-        glVertex2i(0, 0);
-        glVertex2i(0, yres);
-        glVertex2i(xres, yres);
-        glVertex2i(xres, 0);
-    glEnd();
-
-    //Shop title
-    Rect title;
-    title.bot = yres - 50;
-    title.left = xres / 2 - 100;
-    title.center = 1;
-
-    unsigned int text_color = 0xFFFFFFFF;
-
-    glEnable(GL_TEXTURE_2D);
-    ggprint16(&title, 32, text_color, "The Shop");
-
-    //Gun list
-    const char* gunNames[] = {
-        "Shotgun - $20 - press 'z' to purchase",
-        "AR - $30 - press 'x' to purchase",
-        "LMG - $50 - press 'c' to purchase",
-        "Sniper - $40 - press 'v' to purchase",
-        "Rocket Launcher - $1000000 - press 'n' to purchase",
-        "Ray Gun - $1000000 - press 'm' to purchase"
-    };
-
-    Rect item;
-    item.bot = yres - 100;
-    item.left = xres / 4;
-    item.center = 0;
-
-    for (size_t i = 0; i < 6; ++i) {
-        string displayText = gunNames[i]; 
-        //Convert guns to string
-
-        //Purchased status if the gun is already bought
-        if (guns[i + 1].purchased) {
-            displayText += " (Purchased)";
-        }
-
-        ggprint16(&item, 32, text_color, displayText.c_str());
-        item.bot -= 50; 
-    }
-
-    glDisable(GL_BLEND);
-}
-
-void shopGuns(unsigned char key, int &playerScore) {
-    if (!openShop) return;
-
-    int cost = 0;
-
-    switch (key) {
-        case 'z':  // Shotgun
-            cost = 20; // Price for Shotgun
-            if (!guns[1].purchased && guns[1].purchase(playerScore, cost)) {
-                guns[1].purchased = true;  // Mark Shotgun as purchased
-                printf("Bought Shotgun! Remaining score: %d\n", playerScore);
-            } else if (guns[1].purchased) {
-                printf("Shotgun already purchased!\n");
-            } else {
-                printf("Not enough points!\n");
-            }
-            break;
-        case 'x':  // AR
-            cost = 30; // Price for AR
-            if (!guns[2].purchased && guns[2].purchase(playerScore, cost)) {
-                guns[2].purchased = true;  // Mark AR as purchased
-                printf("Bought AR! Remaining score: %d\n", playerScore);
-            } else if (guns[2].purchased) {
-                printf("AR already purchased!\n");
-            } else {
-                printf("Not enough points!\n");
-            }
-            break;
-        case 'c':  // LMG
-            cost = 40; // Price for Sniper
-            if (!guns[3].purchased && guns[3].purchase(playerScore, cost)) {
-                guns[3].purchased = true;  // Mark Sniper as purchased
-                printf("Bought Sniper! Remaining score: %d\n", playerScore);
-            } else if (guns[3].purchased) {
-                printf("Sniper already purchased!\n");
-            } else {
-                printf("Not enough points!\n");
-            }
-            break;
-        case 'v':  // Sniper
-            cost = 50; // Price for LMG
-            if (!guns[4].purchased && guns[4].purchase(playerScore, cost)) {
-                guns[4].purchased = true;  // Mark LMG as purchased
-                printf("Bought LMG! Remaining score: %d\n", playerScore);
-            } else if (guns[4].purchased) {
-                printf("LMG already purchased!\n");
-            } else {
-                printf("Not enough points!\n");
-            }
-            break;
-        case 'n':  // Rocket Launcher
-            cost = 1000000; // Price for Rocket Launcher
-            if (!guns[5].purchased && guns[5].purchase(playerScore, cost)) {
-                guns[5].purchased = true;  // Mark Rocket Launcher as purchased
-                printf("Bought Rocket Launcher! Remaining score: %d\n", 
-                        playerScore);
-            } else if (guns[5].purchased) {
-                printf("Rocket Launcher already purchased!\n");
-            } else {
-                printf("Not enough points!\n");
-            }
-            break;
-        case 'm':  // Ray Gun
-            cost = 1000000; // Price for Ray Gun
-            if (!guns[6].purchased && guns[6].purchase(playerScore, cost)) {
-                guns[6].purchased = true;  // Mark Ray Gun as purchased
-                printf("Bought Ray Gun! Remaining score: %d\n", playerScore);
-            } else if (guns[6].purchased) {
-                printf("Ray Gun already purchased!\n");
-            } else {
-                printf("Not enough points!\n");
-            }
-            break;
-    }
-}
-
-
 
 

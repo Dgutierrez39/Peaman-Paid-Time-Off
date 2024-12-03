@@ -87,7 +87,7 @@ public:
     //Determines if the gun can shoot based on cooldown
     bool canShoot(struct timespec &lastShotTime);
 
-    //To purchase a gun
+    //Flag so you can't purchase more than once
     bool purchase(int &playerScore, int cost);
 };
 
