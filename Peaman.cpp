@@ -848,9 +848,9 @@ void physics()
         if (temp_stage != lev.current_stage)
             bal.pos[0] = 2*lev.tilesize[0];
         else
-            bal.pos[0] = Boss_Collision_x(boss.arr, lev.nrows, lev.ncols,
+            bal.pos[0] = Player_Collision_x(lev.arr, lev.nrows, lev.ncols,
                                             bal.pos, lev.tx, lev.ty, 
-                                            lev.tilesize,1);
+                                            lev.tilesize,1, lev.current_stage);
         if(lev.current_stage == 16) {
             lev.tilesize[0] =  g.xres / 40;
             lev.tilesize[1] =  g.yres / 40;
@@ -862,9 +862,9 @@ void physics()
     }
     else if (g.keys[XK_d]) {
         bal.pos[0] += bal.movement[0];
-        bal.pos[0] = Player_Collision_x(lev.arr, lev.nrows, lev.ncols,
+        bal.pos[0] = Boss_Collision_x(boss.arr, lev.nrows, lev.ncols,
                                             bal.pos, lev.tx, lev.ty,
-                                            lev.tilesize,1,lev.current_stage);
+                                            lev.tilesize,1);
     }   
     //Going up
     if (g.keys[XK_w] && lev.current_stage != 16) {            
