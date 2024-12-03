@@ -449,7 +449,7 @@ void CarrotCollision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
         if (checkCollisionB(b->pos[0], b->pos[1], carrotX, carrotY, collisionCarrotThreshold)) {
-            carrotHealth -= 1;
+            carrotHealth -= 5;
             playerScore += 10;
             cout << "Bullet hit the enemy!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
@@ -463,7 +463,7 @@ void Carrot1Collision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
         if (checkCollisionB(b->pos[0], b->pos[1], carrotX1, carrotY1, collisionCarrotThreshold)) {
-            carrotHealth1 -= 1;
+            carrotHealth1 -= 5;
             playerScore += 10;
             cout << "Bullet hit the enemy!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
@@ -477,7 +477,7 @@ void Carrot2Collision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
         if (checkCollisionB(b->pos[0], b->pos[1], carrotX2, carrotY2, collisionCarrotThreshold)) {
-            carrotHealth2 -= 1;
+            carrotHealth2 -= 5;
             playerScore += 10;
             cout << "Bullet hit the enemy!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
@@ -491,7 +491,7 @@ void Carrot3Collision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
         if (checkCollisionB(b->pos[0], b->pos[1], carrotX3, carrotY3, collisionCarrotThreshold)) {
-            carrotHealth3 -= 1;
+            carrotHealth3 -= 5;
             playerScore += 10;
             cout << "Bullet hit the enemy!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
@@ -505,7 +505,7 @@ void Carrot4Collision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
         if (checkCollisionB(b->pos[0], b->pos[1], carrotX4, carrotY4, collisionCarrotThreshold)) {
-            carrotHealth4 -= 1;
+            carrotHealth4 -= 5;
             playerScore += 10;
             cout << "Bullet hit the enemy!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
@@ -519,7 +519,7 @@ void Carrot5Collision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
         if (checkCollisionB(b->pos[0], b->pos[1], carrotX5, carrotY5, collisionCarrotThreshold)) {
-            carrotHealth5 -= 1;
+            carrotHealth5 -= 5;
             playerScore += 10;
             cout << "Bullet hit the enemy!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
@@ -533,7 +533,7 @@ void LettuceCollision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
         if (checkCollisionB(b->pos[0], b->pos[1], lettuceX, lettuceY, collisionLettuceThreshold)) {
-            lettuceHealth -= 1;
+            lettuceHealth -= 5;
             playerScore += 10;
             cout << "Bullet hit the enemy!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
@@ -547,7 +547,7 @@ void Lettuce1Collision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
         if (checkCollisionB(b->pos[0], b->pos[1], lettuceX1, lettuceY1, collisionLettuceThreshold)) {
-            lettuceHealth1 -= 1;
+            lettuceHealth1 -= 5;
             playerScore += 10;
             cout << "Bullet hit the enemy!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
@@ -561,7 +561,7 @@ void Lettuce2Collision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
         if (checkCollisionB(b->pos[0], b->pos[1], lettuceX2, lettuceY2, collisionLettuceThreshold)) {
-            lettuceHealth2 -= 1;
+            lettuceHealth2 -= 5;
             playerScore += 10;
             cout << "Bullet hit the enemy!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
@@ -575,7 +575,7 @@ void Lettuce3Collision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
         if (checkCollisionB(b->pos[0], b->pos[1], lettuceX3, lettuceY3, collisionLettuceThreshold)) {
-            lettuceHealth3 -= 1;
+            lettuceHealth3 -= 5;
             playerScore += 10;
             cout << "Bullet hit the enemy!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
@@ -589,7 +589,7 @@ void TomatoCollision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
         if (checkCollisionB(b->pos[0], b->pos[1], tomatoX, tomatoY, collisionTomatoThreshold)) {
-            tomatoHealth -= 1;
+            tomatoHealth -= 3;
             playerScore += 10;
             cout << "Bullet hit the tomatoe!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
@@ -603,7 +603,7 @@ void Tomato1Collision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
         if (checkCollisionB(b->pos[0], b->pos[1], tomatoX1, tomatoY1, collisionTomatoThreshold)) {
-            tomatoHealth1 -= 1;
+            tomatoHealth1 -= 3;
             playerScore += 10;
             cout << "Bullet hit the tomatoe!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
@@ -617,7 +617,7 @@ void Tomato2Collision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
         if (checkCollisionB(b->pos[0], b->pos[1], tomatoX2, tomatoY2, collisionTomatoThreshold)) {
-            tomatoHealth2 -= 1;
+            tomatoHealth2 -= 3;
             playerScore += 10;
             cout << "Bullet hit the tomatoe!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
@@ -631,7 +631,7 @@ void Tomato3Collision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
         if (checkCollisionB(b->pos[0], b->pos[1], tomatoX3, tomatoY3, collisionTomatoThreshold)) {
-            tomatoHealth3 -= 1;
+            tomatoHealth3 -= 3;
             playerScore += 10;
             cout << "Bullet hit the tomatoe!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
@@ -645,7 +645,7 @@ void Tomato4Collision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
         if (checkCollisionB(b->pos[0], b->pos[1], tomatoX4, tomatoY4, collisionTomatoThreshold)) {
-            tomatoHealth4 -= 1;
+            tomatoHealth4 -= 3;
             playerScore += 10;
             cout << "Bullet hit the tomatoe!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
@@ -659,7 +659,7 @@ void Tomato5Collision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
         if (checkCollisionB(b->pos[0], b->pos[1], tomatoX5, tomatoY5, collisionTomatoThreshold)) {
-            tomatoHealth5 -= 1;
+            tomatoHealth5 -= 3;
             playerScore += 10;
             cout << "Bullet hit the tomatoe!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
@@ -673,7 +673,7 @@ void Tomato6Collision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
         if (checkCollisionB(b->pos[0], b->pos[1], tomatoX6, tomatoY6, collisionTomatoThreshold)) {
-            tomatoHealth6 -= 1;
+            tomatoHealth6 -= 3;
             playerScore += 10;
             cout << "Bullet hit the tomatoe!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
@@ -687,7 +687,7 @@ void EggplantCollision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
         if (checkCollisionB(b->pos[0], b->pos[1], eggplantX, eggplantY, collisionThreshold)) {
-            eggplantHealth -= 1;
+            eggplantHealth -= 5;
             playerScore += 10;
             cout << "Bullet hit the eggplant!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
@@ -701,7 +701,7 @@ void Eggplant1Collision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
         if (checkCollisionB(b->pos[0], b->pos[1], eggplantX1, eggplantY1, collisionThreshold)) {
-            eggplantHealth1 -= 1;
+            eggplantHealth1 -= 5;
             playerScore += 10;
             cout << "Bullet hit the eggplant1!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
@@ -715,7 +715,7 @@ void Eggplant2Collision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
         if (checkCollisionB(b->pos[0], b->pos[1], eggplantX2, eggplantY2, collisionThreshold)) {
-            eggplantHealth2 -= 1;
+            eggplantHealth2 -= 5;
             playerScore += 10;
             cout << "Bullet hit the eggplant2!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
@@ -729,7 +729,7 @@ void Eggplant3Collision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
         if (checkCollisionB(b->pos[0], b->pos[1], eggplantX3, eggplantY3, collisionThreshold)) {
-            eggplantHealth3 -= 1;
+            eggplantHealth3 -= 5;
             playerScore += 10;
             cout << "Bullet hit the eggplant3!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
@@ -743,7 +743,7 @@ void Eggplant4Collision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
         if (checkCollisionB(b->pos[0], b->pos[1], eggplantX4, eggplantY4, collisionThreshold)) {
-            eggplantHealth4 -= 1;
+            eggplantHealth4 -= 5;
             playerScore += 10;
             cout << "Bullet hit the eggplant4!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
@@ -757,7 +757,7 @@ void BossCollision(Game &ga) {
     for (int i = 0; i < ga.nbullets; ++i) {
         Bullet* b = &ga.barr[i];
         if (checkCollisionB(b->pos[0], b->pos[1], bossX, bossY, collisionThreshold)) {
-            bossHealth -= 1;
+            bossHealth -= 10;
             playerScore += 20;
             cout << "Bullet hit the enemy!" << endl;
             memcpy(&ga.barr[i], &ga.barr[ga.nbullets - 1], sizeof(Bullet));
@@ -916,8 +916,8 @@ void renderShop(int xres, int yres, vector<Gun>& guns) {
         "AR - $30 - press 'x' to purchase",
         "LMG - $50 - press 'c' to purchase",
         "Sniper - $40 - press 'v' to purchase",
-        "Rocket Launcher - $60 - press 'n' to purchase",
-        "Ray Gun - $70 - press 'm' to purchase"
+        "Rocket Launcher - $1000000 - press 'n' to purchase",
+        "Ray Gun - $1000000 - press 'm' to purchase"
     };
 
     Rect item;
@@ -992,7 +992,7 @@ void shopGuns(unsigned char key, int &playerScore) {
             }
             break;
         case 'n':  // Rocket Launcher
-            cost = 60; // Price for Rocket Launcher
+            cost = 1000000; // Price for Rocket Launcher
             if (!guns[5].purchased && guns[5].purchase(playerScore, cost)) {
                 guns[5].purchased = true;  // Mark Rocket Launcher as purchased
                 printf("Bought Rocket Launcher! Remaining score: %d\n", 
@@ -1004,7 +1004,7 @@ void shopGuns(unsigned char key, int &playerScore) {
             }
             break;
         case 'm':  // Ray Gun
-            cost = 70; // Price for Ray Gun
+            cost = 1000000; // Price for Ray Gun
             if (!guns[6].purchased && guns[6].purchase(playerScore, cost)) {
                 guns[6].purchased = true;  // Mark Ray Gun as purchased
                 printf("Bought Ray Gun! Remaining score: %d\n", playerScore);
