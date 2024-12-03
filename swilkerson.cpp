@@ -145,7 +145,7 @@ vector<Gun> guns = {
 };
 
 
-//delay for guns
+//cooldown for guns
 bool Gun::canShoot(struct timespec &lastShotTime) {
     struct timespec currentTime;
     clock_gettime(CLOCK_REALTIME, &currentTime); //gets time
